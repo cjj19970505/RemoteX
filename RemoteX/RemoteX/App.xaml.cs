@@ -13,7 +13,8 @@ namespace RemoteX
 		{
 			InitializeComponent();
 
-			MainPage = new RemoteX.MainPage();
+            //MainPage = new RemoteX.MainPage();
+            MainPage = new NavigationPage(new Bluetooth.BluetoothDeviceListPage());
 		}
 
 		protected override void OnStart ()
