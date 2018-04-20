@@ -59,7 +59,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BluetoothConnection.cs" />
-    <Compile Include="BluetoothConnectionManager.cs" />
+    <Compile Include="BluetoothManager.cs" />
     <Compile Include="BluetoothDeviceWrapper.cs" />
     <Compile Include="MainActivity.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />

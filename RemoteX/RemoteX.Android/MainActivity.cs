@@ -25,15 +25,6 @@ namespace RemoteX.Droid
             global::Xamarin.Forms.Forms.Init(this, bundle);
             LoadApplication(new App());
         }
-
-        public void searchForBluetoothDevices()
-        {
-            IntentFilter foundFilter = new IntentFilter(BluetoothDevice.ActionFound);
-            IntentFilter finshFilter = new IntentFilter(BluetoothAdapter.ActionDiscoveryFinished);
-            IntentFilter startFilter = new IntentFilter(BluetoothAdapter.ActionDiscoveryStarted);
-            //RegisterReceiver()
-        }
-
         
     }
 }

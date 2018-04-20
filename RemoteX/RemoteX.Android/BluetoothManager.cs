@@ -10,14 +10,17 @@ using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
+using Java.Util;
 
-[assembly: Xamarin.Forms.Dependency(typeof(RemoteX.Droid.BluetoothConnectionManager))]
+[assembly: Xamarin.Forms.Dependency(typeof(RemoteX.Droid.BluetoothManager))]
 namespace RemoteX.Droid
 {
     /// <summary>
+    /// 对IBluetoothManager的Android端的实现
+    /// 使用使和Android.Bluetooth.BluetoothManager区分开来，两个不一样
     /// 
     /// </summary>
-    class BluetoothConnectionManager : RemoteX.Bluetooth.IBluetoothManager
+    class BluetoothManager : RemoteX.Bluetooth.IBluetoothManager
     {
         BluetoothAdapter _BluetoothAdapter;
         bool _IsDiscoverying;
@@ -25,7 +28,7 @@ namespace RemoteX.Droid
         Receiver _DevicesFoundReceiver;
         Receiver _DiscoveryFinishedReceiver;
 
-        public BluetoothConnectionManager()
+        public BluetoothManager()
         {
             _IsDiscoverying = false;
             _BluetoothAdapter = BluetoothAdapter.DefaultAdapter;
@@ -73,18 +76,25 @@ namespace RemoteX.Droid
             _BluetoothAdapter.StartDiscovery();
         }
 
-        public IConnection createRfcommClientConnection(RemoteX.Bluetooth.IBluetoothDevice device, Guid guid)
+        public IConnection createRfcommClientConnection(RemoteX.Bluetooth.IBluetoothDevice deviceWrapper, Guid guid)
         {
-
-            return null;
+            UUID uuid = UUID.FromString(guid.ToString());
+            if(!(deviceWrapper is BluetoothDeviceWrapper))
+            {
+                return null;
+            }
+            BluetoothDevice device = (deviceWrapper as BluetoothDeviceWrapper).BluetoothDevice;
+            BluetoothClientConnection clientConnection = new BluetoothClientConnection(device, uuid);
+            System.Diagnostics.Debug.WriteLine("Connection Created");
+            return clientConnection;
         }
 
         private class Receiver : BroadcastReceiver
         {
-            BluetoothConnectionManager bluetoothConnectionManager;
-            public Receiver(BluetoothConnectionManager bluetoothConnectionManager)
+            BluetoothManager _BluetoothManager;
+            public Receiver(BluetoothManager bluetoothManager)
             {
-                this.bluetoothConnectionManager = bluetoothConnectionManager;
+                this._BluetoothManager = bluetoothManager;
             }
 
             public override void OnReceive(Context context, Intent intent)
@@ -92,31 +102,23 @@ namespace RemoteX.Droid
                 string action = intent.Action;
                 if (BluetoothAdapter.ActionDiscoveryStarted == action)
                 {
-                    this.bluetoothConnectionManager.IsDiscoverying = true;
-                    bluetoothConnectionManager.onDiscoveryStarted?.Invoke(bluetoothConnectionManager);
+                    this._BluetoothManager.IsDiscoverying = true;
+                    _BluetoothManager.onDiscoveryStarted?.Invoke(_BluetoothManager);
                     Application.Context.UnregisterReceiver(this);
                 }
                 if (BluetoothDevice.ActionFound == action)
                 {
                     BluetoothDevice device = intent.GetParcelableExtra(BluetoothDevice.ExtraDevice) as BluetoothDevice;
-                    /*
-                    RemoteX.Bluetooth.BluetoothDevice bluetoothDevice = new RemoteX.Bluetooth.BluetoothDevice(bluetoothConnectionManager)
-                    {
-                        Name = device.Name,
-                        MacAddress = device.Address,
-                        AndroidInstance = device
-                    };
-                    */
                     BluetoothDeviceWrapper deviceWrapper = new BluetoothDeviceWrapper(device);
 
-                    bluetoothConnectionManager.onDevicesFound?.Invoke(bluetoothConnectionManager, new RemoteX.Bluetooth.IBluetoothDevice[] { deviceWrapper });
+                    _BluetoothManager.onDevicesFound?.Invoke(_BluetoothManager, new RemoteX.Bluetooth.IBluetoothDevice[] { deviceWrapper });
                 }
                 if (BluetoothAdapter.ActionDiscoveryFinished == action)
                 {
-                    bluetoothConnectionManager.IsDiscoverying = false;
-                    bluetoothConnectionManager.onDiscoveryFinished?.Invoke(bluetoothConnectionManager);
+                    _BluetoothManager.IsDiscoverying = false;
+                    _BluetoothManager.onDiscoveryFinished?.Invoke(_BluetoothManager);
                     Application.Context.UnregisterReceiver(this);
-                    Application.Context.UnregisterReceiver(bluetoothConnectionManager._DevicesFoundReceiver);
+                    Application.Context.UnregisterReceiver(_BluetoothManager._DevicesFoundReceiver);
                 }
 
             }

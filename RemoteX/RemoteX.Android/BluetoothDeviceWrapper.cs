@@ -67,6 +67,19 @@ namespace RemoteX.Droid
             BluetoothDevice.FetchUuidsWithSdp();
         }
 
+        public void stopFetchingUuidsWithSdp()
+        {
+            if(!IsFetchingUuids)
+            {
+                return;
+            }
+            IsFetchingUuids = false;
+            BluetoothAdapter.DefaultAdapter.CancelDiscovery();
+            Application.Context.UnregisterReceiver(_Receiver);
+        }
+
+
+
         private class Receiver : BroadcastReceiver
         {
             private BluetoothDeviceWrapper _DeviceWrapper;

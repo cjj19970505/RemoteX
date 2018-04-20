@@ -18,7 +18,7 @@ using RemoteX;
 
 namespace RemoteX.Droid
 {
-    class BluetoothConnection : IConnection
+    class BluetoothClientConnection : IConnection
     {
         private static string TAG = "BluetoothConnection";
         private BluetoothDevice _Device;
@@ -32,7 +32,7 @@ namespace RemoteX.Droid
         public event MessageHandler onReceiveMessage;
         public event ConnectionHandler onConnectionEstalblishResult;
 
-        public BluetoothConnection(BluetoothDevice device, UUID guid)
+        public BluetoothClientConnection(BluetoothDevice device, UUID guid)
         {
             this._Device = device;
             this._SdpUuid = guid;
@@ -46,13 +46,12 @@ namespace RemoteX.Droid
             }
         }
 
-        public async void establishConnectionAsync()
+        public async Task<ConnectionEstablishState> establishConnectionAsync()
         {
             if (_Device == null)
             {
-                Log.Error(TAG, "You haven't set the target device");
                 onConnectionEstalblishResult?.Invoke(this, ConnectionEstablishState.failed);
-                return;
+                return ConnectionEstablishState.failed;
             }
             BluetoothSocket tmp = null;
             if(_BluetoothAdapter == null)
@@ -65,28 +64,29 @@ namespace RemoteX.Droid
             }
             catch(Java.IO.IOException e)
             {
-                Log.Error(TAG, e.Message);
                 onConnectionEstalblishResult?.Invoke(this, ConnectionEstablishState.failed);
-                return;
+                return ConnectionEstablishState.failed;
             }
             _BluetoothSocket = tmp;
             _BluetoothAdapter.CancelDiscovery();
             try
             {
+                System.Diagnostics.Debug.WriteLine("BLUETOOTH::CONNECTING TO " + _Device.Name);
                 await _BluetoothSocket.ConnectAsync();
+                System.Diagnostics.Debug.WriteLine("BLUETOOTH::SUCCESSFUL ");
             }
             catch(Exception connectionException)
             {
-                Log.Error(TAG, connectionException.Message);
                 try
                 {
                     _BluetoothSocket.Close();
                 }
                 catch(Java.IO.IOException socketCloseException)
                 {
-                    Log.Error(TAG, socketCloseException.Message);
                     onConnectionEstalblishResult?.Invoke(this, ConnectionEstablishState.failed);
+                    return ConnectionEstablishState.failed;
                 }
+                return ConnectionEstablishState.failed;
             }
             try
             {
@@ -95,23 +95,29 @@ namespace RemoteX.Droid
             }
             catch(Java.IO.IOException streamException)
             {
-                Log.Error(TAG, streamException.Message);
+                try
+                {
+                    _BluetoothSocket.Close();
+                }
+                catch (Java.IO.IOException socketCloseException)
+                {
+                    onConnectionEstalblishResult?.Invoke(this, ConnectionEstablishState.failed);
+                    return ConnectionEstablishState.failed;
+                }
                 onConnectionEstalblishResult?.Invoke(this, ConnectionEstablishState.failed);
+                return ConnectionEstablishState.failed;
             }
             onConnectionEstalblishResult?.Invoke(this, ConnectionEstablishState.Succeed);
+            return ConnectionEstablishState.Succeed;
         }
         
         public async void sendAsync(byte[] message)
         {
             
         }
-
-        /// <summary>
-        /// 会阻塞
-        /// </summary>
-        private void send(byte[] message)
+        public async Task<ConnectionEstablishState> ConnectAsync()
         {
-
+            return await establishConnectionAsync();
         }
 
     }

@@ -37,5 +37,10 @@ namespace RemoteX.Bluetooth
         /// 若当前正在查询Uuid（即IsFetchingUuids == true），则什么都不做
         /// </summary>
         void FetchUuidsWithSdp();
+
+        /// <summary>
+        /// 其实这个不能真正阻止FetchingUuid，只能关闭发现，撤销Receiver之类的
+        /// </summary>
+        void stopFetchingUuidsWithSdp();
     }
 }

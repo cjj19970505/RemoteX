@@ -29,7 +29,7 @@ namespace RemoteX.Bluetooth
 
             var viewLayout = new StackLayout()
             {
-                Orientation = StackOrientation.Horizontal,
+                Orientation = StackOrientation.Vertical,
                 Children = { deviceNameLabel, deviceMacLabel }
             };
             this.View = viewLayout;

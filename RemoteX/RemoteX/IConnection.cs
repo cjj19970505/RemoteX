@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace RemoteX
 {
@@ -20,10 +21,11 @@ namespace RemoteX
         ConnectionType connectionType { get; }
         event MessageHandler onReceiveMessage;
         event ConnectionHandler onConnectionEstalblishResult;
-
         void sendAsync(byte[] message);
 
-        
-        
+        /// <summary>
+        /// 建立连接（务必实现异步）
+        /// </summary>
+        Task<ConnectionEstablishState> ConnectAsync();
     }
 }
