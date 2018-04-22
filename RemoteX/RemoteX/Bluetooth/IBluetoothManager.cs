@@ -10,7 +10,7 @@ namespace RemoteX.Bluetooth
     /// <summary>
     /// 蓝牙管理器
     /// </summary>
-    public interface IBluetoothManager
+    public interface IBluetoothManager:IConnectionManager
     {
         /// <summary>
         /// 查找设备过程中找到时触发
@@ -36,12 +36,12 @@ namespace RemoteX.Bluetooth
         /// 开始查找设备
         /// 查找到的设备会通过onDeviceFound传出
         /// </summary>
-        void searchForBlutoothDevices();
+        void SearchForBlutoothDevices();
 
         /// <summary>
         /// 创建蓝牙的客户端连接
         /// </summary>
         /// <returns></returns>
-        IConnection createRfcommClientConnection(IBluetoothDevice device, Guid guid);
+        IConnection CreateRfcommClientConnection(IBluetoothDevice device, Guid guid);
     }
 }

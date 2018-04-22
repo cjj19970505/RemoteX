@@ -111,9 +111,9 @@ namespace RemoteX.Droid
             return ConnectionEstablishState.Succeed;
         }
         
-        public async void sendAsync(byte[] message)
+        public async Task sendAsync(byte[] message)
         {
-            
+            await _OutputStream.WriteAsync(message, 0, message.Length);
         }
         public async Task<ConnectionEstablishState> ConnectAsync()
         {

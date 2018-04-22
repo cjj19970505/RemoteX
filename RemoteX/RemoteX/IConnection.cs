@@ -21,7 +21,7 @@ namespace RemoteX
         ConnectionType connectionType { get; }
         event MessageHandler onReceiveMessage;
         event ConnectionHandler onConnectionEstalblishResult;
-        void sendAsync(byte[] message);
+        Task sendAsync(byte[] message);
 
         /// <summary>
         /// 建立连接（务必实现异步）

@@ -27,6 +27,7 @@ namespace RemoteX.Droid
         Receiver _DiscoveryStartedReceiver;
         Receiver _DevicesFoundReceiver;
         Receiver _DiscoveryFinishedReceiver;
+        private List<BluetoothClientConnection> _BluetoothConnections;
 
         public BluetoothManager()
         {
@@ -35,6 +36,7 @@ namespace RemoteX.Droid
             _DiscoveryStartedReceiver = new Receiver(this);
             _DevicesFoundReceiver = new Receiver(this);
             _DiscoveryFinishedReceiver = new Receiver(this);
+            _BluetoothConnections = new List<BluetoothClientConnection>();
         }
         public bool IsDiscoverying
         {
@@ -58,12 +60,23 @@ namespace RemoteX.Droid
                 return false;
             }
         }
+        public IConnection DefaultConnection
+        {
+            get
+            {
+                if(_BluetoothConnections!=null && _BluetoothConnections.Count>0)
+                {
+                    return _BluetoothConnections[0];
+                }
+                return null;
+            }
+        }
 
         public event RemoteX.Bluetooth.BluetoothScanResultHandler onDevicesFound;
         public event RemoteX.Bluetooth.BluetoothStartEndScanHandler onDiscoveryFinished;
         public event RemoteX.Bluetooth.BluetoothStartEndScanHandler onDiscoveryStarted;
 
-        public void searchForBlutoothDevices()
+        public void SearchForBlutoothDevices()
         {
             IntentFilter startFilter = new IntentFilter(BluetoothAdapter.ActionDiscoveryStarted);
             IntentFilter foundFilter = new IntentFilter(BluetoothDevice.ActionFound);
@@ -76,7 +89,7 @@ namespace RemoteX.Droid
             _BluetoothAdapter.StartDiscovery();
         }
 
-        public IConnection createRfcommClientConnection(RemoteX.Bluetooth.IBluetoothDevice deviceWrapper, Guid guid)
+        public IConnection CreateRfcommClientConnection(RemoteX.Bluetooth.IBluetoothDevice deviceWrapper, Guid guid)
         {
             UUID uuid = UUID.FromString(guid.ToString());
             if(!(deviceWrapper is BluetoothDeviceWrapper))
@@ -85,6 +98,7 @@ namespace RemoteX.Droid
             }
             BluetoothDevice device = (deviceWrapper as BluetoothDeviceWrapper).BluetoothDevice;
             BluetoothClientConnection clientConnection = new BluetoothClientConnection(device, uuid);
+            _BluetoothConnections.Add(clientConnection);
             System.Diagnostics.Debug.WriteLine("Connection Created");
             return clientConnection;
         }

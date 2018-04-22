@@ -23,7 +23,7 @@ namespace RemoteX.Bluetooth
             Button scanDevicesButton = new Button();
             scanDevicesButton.Clicked += (object sender, EventArgs e) =>
             {
-                bluetoothManager.searchForBlutoothDevices();
+                bluetoothManager.SearchForBlutoothDevices();
                 bluetoothDeviceList.Clear();
             };
             bluetoothManager.onDiscoveryStarted += (IBluetoothManager bluetoothManager) => { scanDevicesButton.IsEnabled = false; scanDevicesButton.Text = "Discovering"; };

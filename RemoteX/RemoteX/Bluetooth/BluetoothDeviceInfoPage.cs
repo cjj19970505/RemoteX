@@ -114,7 +114,7 @@ namespace RemoteX.Bluetooth
             ConnectionEstablishState connectState = ConnectionEstablishState.failed;
             while (connectState == ConnectionEstablishState.failed)
             {
-                IConnection connection = DependencyService.Get<IBluetoothManager>().createRfcommClientConnection(_BluetoothDevice, (Guid)_SelectedGuid);
+                IConnection connection = DependencyService.Get<IBluetoothManager>().CreateRfcommClientConnection(_BluetoothDevice, (Guid)_SelectedGuid);
                 connectState = await connection.ConnectAsync();
                 Debug.WriteLine("EMMMM" + connectState);
             }
