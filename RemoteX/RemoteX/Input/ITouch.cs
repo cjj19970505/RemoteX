@@ -13,6 +13,7 @@ namespace RemoteX.Input
     public interface ITouch
     {
         List<Vector2> HistoryPosition { get; }
+        int Id { get; }
         Vector2 Position { get; }
     }
 }

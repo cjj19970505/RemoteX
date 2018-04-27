@@ -13,6 +13,14 @@ namespace RemoteX.Mathf
             this.x = x;
             this.y = y;
         }
+        public float Magnitude
+        {
+            get
+            {
+                return (float)Math.Sqrt(x * x + y * y);
+            }
+        }
+
         public static Vector2 Zero
         {
             get
@@ -28,10 +36,21 @@ namespace RemoteX.Mathf
         {
             return new Vector2(lhs.x - rhs.x, lhs.y - rhs.y);
         }
+        public static bool operator==(Vector2 lhs, Vector2 rhs)
+        {
+            return (lhs.x == rhs.x) && (lhs.y == rhs.y);
+        }
+        public static bool operator !=(Vector2 lhs, Vector2 rhs)
+        {
+            return (lhs.x != rhs.x) || (lhs.y != rhs.y);
+        }
+
         public override string ToString()
         {
             return "(" + x + ", " + y + ")";
         }
+
+        
     }
 
 }

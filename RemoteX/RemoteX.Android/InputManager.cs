@@ -34,13 +34,10 @@ namespace RemoteX.Droid
 
         public bool OnTouch(MotionEvent e)
         {
-            //int pointerId = (event.getAction()&MotionEvent.ACTION_POINTER_ID_MASK)>>> MotionEvent.ACTION_POINTER_ID_SHIFT; 
-            int pointerId = ((int)(e.Action & MotionEventActions.PointerIndexMask))>>((int)(MotionEventActions.PointerIndexShift));
+            int pointerIndex = ((int)(e.Action & MotionEventActions.PointerIndexMask))>>((int)(MotionEventActions.PointerIndexShift));
+            int pointerId = e.GetPointerId(pointerIndex);
             int down = (int)(e.ActionMasked & MotionEventActions.PointerDown);
             int up = (int)(e.ActionMasked & MotionEventActions.PointerUp);
-            //System.Diagnostics.Debug.WriteLine("[" + pointerId + ": DOWN::" + down + ", UP::" + up + "]");
-            //Touch touch;
-            //System.Diagnostics.Debug.WriteLine(e.GetPointerId(pointerId) + " " + e.ActionMasked);
             
             switch(e.ActionMasked)
             {
@@ -48,24 +45,37 @@ namespace RemoteX.Droid
                 case MotionEventActions.PointerDown:
                     {
                         Touch touch = new Touch(pointerId);
+                        touch.Position = new Vector2(e.GetX(pointerIndex), e.GetY(pointerIndex));
                         _Touches.Add(pointerId, touch);
-                        //System.Diagnostics.Debug.WriteLine(pointerId + " " + e.ActionMasked);
+                        OnTouchAction?.Invoke(touch, TouchMotionAction.Down);
                         break;
                     }
                 case MotionEventActions.Up:
                 case MotionEventActions.PointerUp:
                     {
+                        Touch touch = _Touches[pointerId];
                         _Touches.Remove(pointerId);
-                        //System.Diagnostics.Debug.WriteLine(pointerId + " " + "Up");
+                        OnTouchAction?.Invoke(touch, TouchMotionAction.Up);
                         break;
                     }
                 case MotionEventActions.Move:
                     {
-                        e.
+                        foreach(var pair in _Touches)
+                        {
+                            int pIndex = e.FindPointerIndex(pair.Key);
+                            Vector2 currentPos = new Vector2(e.GetX(pIndex), e.GetY(pIndex));
+                            if(pair.Value.Position != currentPos)
+                            {
+                                pair.Value.Position = currentPos;
+                                OnTouchAction?.Invoke(pair.Value, TouchMotionAction.Move);
+                            }
+                        }
                         break;
                     }
-
             }
+
+
+
             return true;
         }
         private class Touch:ITouch
@@ -73,11 +83,13 @@ namespace RemoteX.Droid
             public List<Vector2> HistoryPosition { get; }
             public Vector2 Position { get; set; }
             public int Id { get; private set; }
+
             public Touch(int id)
             {
                 this.Id = id;
                 this.Position = Vector2.Zero;
             }
+
             public override string ToString()
             {
                 return "[" + Id + " " + Position + "]";
