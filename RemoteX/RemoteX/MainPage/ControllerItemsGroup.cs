@@ -10,6 +10,10 @@ namespace RemoteX.MainPage
         public ControllerItemsGroup():base("Controller")
         {
             this.Add(new MasterMenuItem("Message Talker", new Controller.WordsTalkerPage()));
+            this.Add(new MasterMenuItem("Mother Fucker", new Controller.SensorTestPage()));
+            this.Add(new MasterMenuItem("Mother Fucker", new Controller.TouchMousePage()));
+            //this.Add());
+            // new Controller.SensorTestPage();
         }
     }
 }

@@ -7,7 +7,7 @@ namespace RemoteX.MainPage
     class MasterItemGroup:List<MasterMenuItem>
     {
         public string Title { get; set; }
-        protected MasterItemGroup(string title)
+        protected MasterItemGroup(string title):base()
         {
             this.Title = title;
         }

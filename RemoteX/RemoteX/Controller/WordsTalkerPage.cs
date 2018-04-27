@@ -7,13 +7,14 @@ using Xamarin.Forms;
 using RemoteX.Bluetooth;
 using System.Diagnostics;
 using RemoteX.Data;
+using RemoteX.Sensor;
 
 namespace RemoteX.Controller
 {
-	public class WordsTalkerPage : ContentPage
+	public class WordsTalkerPage : ControllerPage
 	{
         private Editor sendEditor;
-		public WordsTalkerPage ()
+		public WordsTalkerPage ():base()
 		{
             sendEditor = new Editor();
             Button sendButton = new Button()
@@ -31,7 +32,6 @@ namespace RemoteX.Controller
                     sendButton
                 }
             };
-
             Content = new StackLayout {
                 Orientation = StackOrientation.Vertical,
                 VerticalOptions = LayoutOptions.End,
