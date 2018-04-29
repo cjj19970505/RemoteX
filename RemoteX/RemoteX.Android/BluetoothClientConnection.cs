@@ -31,11 +31,13 @@ namespace RemoteX.Droid
 
         public event MessageHandler onReceiveMessage;
         public event ConnectionHandler onConnectionEstalblishResult;
+        public ConnectionEstablishState ConnectionEstablishState { get; private set; }
 
         public BluetoothClientConnection(BluetoothDevice device, UUID guid)
         {
             this._Device = device;
             this._SdpUuid = guid;
+            this.ConnectionEstablishState = ConnectionEstablishState.NoEstablishment;
         }
 
         public ConnectionType connectionType
@@ -45,12 +47,11 @@ namespace RemoteX.Droid
                 return ConnectionType.Bluetooth;
             }
         }
-
+        
         public async Task<ConnectionEstablishState> establishConnectionAsync()
         {
             if (_Device == null)
             {
-                onConnectionEstalblishResult?.Invoke(this, ConnectionEstablishState.failed);
                 return ConnectionEstablishState.failed;
             }
             BluetoothSocket tmp = null;
@@ -64,14 +65,12 @@ namespace RemoteX.Droid
             }
             catch(Java.IO.IOException e)
             {
-                onConnectionEstalblishResult?.Invoke(this, ConnectionEstablishState.failed);
                 return ConnectionEstablishState.failed;
             }
             _BluetoothSocket = tmp;
             _BluetoothAdapter.CancelDiscovery();
             try
             {
-                System.Diagnostics.Debug.WriteLine("BLUETOOTH::CONNECTING TO " + _Device.Name);
                 await _BluetoothSocket.ConnectAsync();
                 System.Diagnostics.Debug.WriteLine("BLUETOOTH::SUCCESSFUL ");
             }
@@ -83,7 +82,6 @@ namespace RemoteX.Droid
                 }
                 catch(Java.IO.IOException socketCloseException)
                 {
-                    onConnectionEstalblishResult?.Invoke(this, ConnectionEstablishState.failed);
                     return ConnectionEstablishState.failed;
                 }
                 return ConnectionEstablishState.failed;
@@ -101,23 +99,45 @@ namespace RemoteX.Droid
                 }
                 catch (Java.IO.IOException socketCloseException)
                 {
-                    onConnectionEstalblishResult?.Invoke(this, ConnectionEstablishState.failed);
                     return ConnectionEstablishState.failed;
                 }
-                onConnectionEstalblishResult?.Invoke(this, ConnectionEstablishState.failed);
                 return ConnectionEstablishState.failed;
             }
-            onConnectionEstalblishResult?.Invoke(this, ConnectionEstablishState.Succeed);
             return ConnectionEstablishState.Succeed;
         }
         
         public async Task sendAsync(byte[] message)
         {
+            //byte[] dataLengthBytes = BitConverter.GetBytes(message.Length);
+            //await _OutputStream.WriteAsync(dataLengthBytes, 0, dataLengthBytes.Length);
             await _OutputStream.WriteAsync(message, 0, message.Length);
         }
         public async Task<ConnectionEstablishState> ConnectAsync()
         {
-            return await establishConnectionAsync();
+            this.ConnectionEstablishState = ConnectionEstablishState.Connecting;
+            ConnectionEstablishState state;
+            do
+            {
+                state = await establishConnectionAsync();
+                System.Diagnostics.Debug.WriteLine("CONTINUEING BITCHES");
+            }
+            while (state == ConnectionEstablishState.failed && !_AbortConnecting);
+            if(_AbortConnecting)
+            {
+                this.ConnectionEstablishState = ConnectionEstablishState.Abort;
+                _AbortConnecting = false;
+            }
+            else
+            {
+                this.ConnectionEstablishState = state;
+            }
+            this.onConnectionEstalblishResult?.Invoke(this, this.ConnectionEstablishState);
+            return state;
+        }
+        private bool _AbortConnecting = false;
+        public void AbortConnecting()
+        {
+            _AbortConnecting = true;
         }
 
     }

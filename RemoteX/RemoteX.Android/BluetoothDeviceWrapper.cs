@@ -52,7 +52,6 @@ namespace RemoteX.Droid
                 }
                 LastestFetchedUuids = guids;
             }
-
         }
 
         public void FetchUuidsWithSdp()

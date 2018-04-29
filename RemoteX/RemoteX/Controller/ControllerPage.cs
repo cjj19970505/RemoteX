@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
+using System.Threading.Tasks;
 using Xamarin.Forms;
 
 namespace RemoteX.Controller
@@ -12,5 +12,17 @@ namespace RemoteX.Controller
     /// </summary>
 	public class ControllerPage : ContentPage
 	{
+        public virtual void OnEnterPage()
+        {
+
+        }
+
+        /// <summary>
+        /// 一定要Call一下base.OnExitPage()
+        /// </summary>
+        public virtual async Task OnExitPage()
+        {
+            await Navigation.PopAsync();
+        }
 	}
 }

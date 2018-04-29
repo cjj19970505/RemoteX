@@ -7,7 +7,8 @@ namespace RemoteX.Data
     public enum DataType
     {
         SensorRotationVector = 11, SensorGyroscope = 4, SetMouseBoundary = 102, MouseRotationVector = 103,
-        MouseLeftDown = 302, MouseLeftUp = 304, MouseRightDown = 308, MouseRightUp = 316, MouseScrollVerticle = 428, MouseScrollHorizontal = 556
+        MouseLeftDown = 302, MouseLeftUp = 304, MouseRightDown = 308, MouseRightUp = 316, MouseScrollVerticle = 428, MouseScrollHorizontal = 556,
+        TouchMouseSpeed = 601
     };
     public struct Data
     {
@@ -129,6 +130,8 @@ namespace RemoteX.Data
                     return 1;
                 case (int)DataType.MouseScrollHorizontal:
                     return 1;
+                case (int)DataType.TouchMouseSpeed:
+                    return 2;
 
             }
             if (sensorType >= 1000 && sensorType < 2000)

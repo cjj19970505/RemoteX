@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-
+/// <summary>
+/// 整个Mathf都是模仿Unity的
+/// </summary>
 namespace RemoteX.Mathf
 {
     public struct Vector2
@@ -28,15 +30,23 @@ namespace RemoteX.Mathf
                 return new Vector2(0, 0);
             }
         }
-        public static Vector2 operator+(Vector2 lhs, Vector2 rhs)
+        public static Vector2 operator +(Vector2 lhs, Vector2 rhs)
         {
             return new Vector2(lhs.x + rhs.x, lhs.y + rhs.y);
         }
-        public static Vector2 operator-(Vector2 lhs, Vector2 rhs)
+        public static Vector2 operator -(Vector2 lhs, Vector2 rhs)
         {
             return new Vector2(lhs.x - rhs.x, lhs.y - rhs.y);
         }
-        public static bool operator==(Vector2 lhs, Vector2 rhs)
+        public static Vector2 operator *(Vector2 lhs, float rhs)
+        {
+            return new Vector2(lhs.x * rhs, lhs.y * rhs);
+        }
+        public static Vector2 operator *(float lhs, Vector2 rhs)
+        {
+            return new Vector2(lhs * rhs.x, lhs * rhs.y);
+        }
+        public static bool operator ==(Vector2 lhs, Vector2 rhs)
         {
             return (lhs.x == rhs.x) && (lhs.y == rhs.y);
         }
@@ -44,6 +54,8 @@ namespace RemoteX.Mathf
         {
             return (lhs.x != rhs.x) || (lhs.y != rhs.y);
         }
+
+        
 
         public override string ToString()
         {

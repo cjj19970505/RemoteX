@@ -99,7 +99,6 @@ namespace RemoteX.Droid
             BluetoothDevice device = (deviceWrapper as BluetoothDeviceWrapper).BluetoothDevice;
             BluetoothClientConnection clientConnection = new BluetoothClientConnection(device, uuid);
             _BluetoothConnections.Add(clientConnection);
-            System.Diagnostics.Debug.WriteLine("Connection Created");
             return clientConnection;
         }
 

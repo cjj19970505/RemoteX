@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Xamarin.Forms;
 
 namespace RemoteX.MainPage
 {
@@ -18,9 +19,8 @@ namespace RemoteX.MainPage
             {
                 new MasterItemGroup("Connection")
                 {
-                    new MasterMenuItem("Bluetooth",new Bluetooth.BluetoothDeviceListPage()),
-                    new MasterMenuItem("WIFI P2P"),
-                    new MasterMenuItem("Network")
+                    new MasterMenuItem("Bluetooth",typeof(Bluetooth.BluetoothDeviceListPage)),
+                    new MasterMenuItem("WIFI P2P", typeof(ContentPage))
                 },
                 new ControllerItemsGroup()
             };

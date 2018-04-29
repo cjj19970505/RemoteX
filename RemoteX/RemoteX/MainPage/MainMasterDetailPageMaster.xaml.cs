@@ -33,9 +33,9 @@ namespace RemoteX.MainPage
                 return;
             }
             MasterMenuItem item = e.SelectedItem as MasterMenuItem;
-            if(item.TargetPage != null)
+            if(item.TargetPageType != typeof(ContentPage))
             {
-                await DetailPage.Navigation.PushAsync(item.TargetPage);
+                await DetailPage.Navigation.PushAsync((Page)Activator.CreateInstance(item.TargetPageType));
             }
         }
 

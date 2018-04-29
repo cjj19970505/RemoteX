@@ -7,114 +7,113 @@ using Xamarin.Forms;
 using RemoteX.Input;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using RemoteX.Mathf;
+using RemoteX.Bluetooth;
+using RemoteX.Data;
 
 namespace RemoteX.Controller
 {
 	public class TouchMousePage : ControllerPage
 	{
-        private ObservableCollection<TouchInfoItem> _TouchInfoItems;
+        private ITouch _FirstTouch;
+        private Vector2 previousTouchPos;
+        private float _SpeedFactor;
+        private float _RotateRadiusFactor;
 		public TouchMousePage ():base()
 		{
             IInputManager inputManager = DependencyService.Get<IInputManager>();
-            _TouchInfoItems = new ObservableCollection<TouchInfoItem>();
             inputManager.OnTouchAction += onTouchAction;
             Title = "Touch Mouse Page";
-            ListView touchesListView = new ListView()
+            previousTouchPos = Vector2.Zero;
+            Slider speedFactorSlider = new Slider
             {
-                ItemsSource = _TouchInfoItems,
-                ItemTemplate = new DataTemplate(typeof(TouchInfoCell))
+                Minimum = 0,
+                Maximum = 10,
+                Value = 1
             };
+            Slider radiusFactorSlider = new Slider
+            {
+                Minimum = 0,
+                Maximum = 5,
+                Value = 0.5
+            };
+            speedFactorSlider.ValueChanged += onSpeedValueChanged;
+            radiusFactorSlider.ValueChanged += onRadiusValueChanged;
             Content = new StackLayout {
+                Orientation = StackOrientation.Vertical,
 				Children = {
-					new Label { Text = "Input" },
-                    touchesListView
-				}
+                    speedFactorSlider,
+                    radiusFactorSlider
+                }
 			};
-            
-            
+            initialTime = DateTime.Now;
+            previousTime = initialTime;
+            Device.StartTimer(TimeSpan.FromSeconds(1f/60), _Update);
+
 		}
-        private class TouchInfoCell:ViewCell
+        private DateTime initialTime;
+        private DateTime previousTime;
+        
+        private bool _Update()
         {
-            public TouchInfoCell()
+            DateTime currTime = DateTime.Now;
+            float deltaTime = (float)(currTime - previousTime).TotalSeconds;
+            float t = (float)(currTime - initialTime).TotalSeconds;
+            float x = (float)Math.Sin(_SpeedFactor*t);
+            float y = (float)Math.Cos(_SpeedFactor*t);
+            Vector2 speed = new Vector2(x, y) * _RotateRadiusFactor * 10;
+            Debug.WriteLine(t+" "+ speed);
+            IBluetoothManager bluetoothManager = DependencyService.Get<IBluetoothManager>();
+            IConnection connection = bluetoothManager.DefaultConnection;
+            if (connection != null)
             {
-                Label idLabel = new Label();
-                idLabel.SetBinding(Label.TextProperty, "Id");
-                Label posLabel = new Label();
-                posLabel.SetBinding(Label.TextProperty, "Position");
-                this.View = new StackLayout()
-                {
-
-                    Children = {
-                        idLabel,
-                        posLabel
-                    }
-                };
+                Data.Data data = new Data.Data((int)DataType.TouchMouseSpeed, new float[] { speed.x, speed.y });
+                connection.sendAsync(Data.Data.encodeSensorData(data));
             }
+            previousTime = currTime;
+            return true;
+        }
+        private void onSpeedValueChanged(object sender, ValueChangedEventArgs e)
+        {
+            _SpeedFactor = (float)e.NewValue;
         }
 
-        private class TouchInfoItem: INotifyPropertyChanged
+        private void onRadiusValueChanged(object sender, ValueChangedEventArgs e)
         {
-            private ITouch _Touch;
-            public TouchInfoItem(ITouch touch)
-            {
-                this._Touch = touch;
-            }
-            public ITouch Touch
-            {
-                get
-                {
-                    return _Touch;
-                }
-            }
-            public string Position
-            {
-                get
-                {
-                    return _Touch.Position.ToString();
-                }
-            }
-            public int Id
-            {
-                get
-                {
-                    return _Touch.Id;
-                }
-            }
-            public void propertyChange()
-            {
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Position"));
-            }
-            public event PropertyChangedEventHandler PropertyChanged;
+            _RotateRadiusFactor = (float)e.NewValue;
         }
 
-        void onTouchAction(ITouch touch, TouchMotionAction action)
+
+        private async void onTouchAction(ITouch touch, TouchMotionAction action)
         {
-            if(action == TouchMotionAction.Down)
+            if(_FirstTouch == null && action == TouchMotionAction.Down)
             {
-                _TouchInfoItems.Add(new TouchInfoItem(touch));
+                _FirstTouch = touch;
+                previousTouchPos = touch.Position;
+            }
+            if(touch != _FirstTouch)
+            {
+                return;
+            }
+            if(action == TouchMotionAction.Move)
+            {
+                Vector2 speed = (touch.Position - previousTouchPos)*_SpeedFactor;
+                previousTouchPos = touch.Position;
+                IBluetoothManager bluetoothManager = DependencyService.Get<IBluetoothManager>();
+                IConnection connection = bluetoothManager.DefaultConnection;
+                if(connection != null)
+                {
+                    Data.Data data = new Data.Data((int)DataType.TouchMouseSpeed, new float[] { speed.x, speed.y });
+                    await connection.sendAsync(Data.Data.encodeSensorData(data));
+                }
             }
             else if(action == TouchMotionAction.Up)
             {
-                for(int i = 0; i<_TouchInfoItems.Count;i++)
+                if(touch == _FirstTouch)
                 {
-                    if(_TouchInfoItems[i].Touch == touch)
-                    {
-                        _TouchInfoItems.Remove(_TouchInfoItems[i]);
-                        break;
-                    }
-                }
-            }
-            else
-            {
-                for (int i = 0; i < _TouchInfoItems.Count; i++)
-                {
-                    if (_TouchInfoItems[i].Touch == touch)
-                    {
-                        _TouchInfoItems[i].propertyChange();
-                        break;
-                    }
+                    _FirstTouch = null;
                 }
             }
         }
-	}
+    }
 }

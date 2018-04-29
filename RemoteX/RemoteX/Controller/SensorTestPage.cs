@@ -22,6 +22,10 @@ namespace RemoteX.Controller
 			};
 		}
 
+        public override void OnEnterPage()
+        {
+        }
+
         void onSensorChanged()
         {
 

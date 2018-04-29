@@ -15,10 +15,10 @@ namespace RemoteX.Bluetooth
         ObservableCollection<Guid> guidList;
 
         private Guid? _SelectedGuid;
-
+        
         public BluetoothDeviceInfoPage(IBluetoothDevice bluetoothDevice)
         {
-            this._SelectedGuid = null;
+            this._SelectedGuid = Guid.Parse("14c5449a-6267-4c7e-bd10-63dd79740e50");
             this._BluetoothDevice = bluetoothDevice;
             this.Title = _BluetoothDevice.Name;
             guidList = new ObservableCollection<Guid>();
@@ -53,7 +53,7 @@ namespace RemoteX.Bluetooth
             uuidListView.ItemSelected += onGuidSelected;
             if (guidList.Count == 0)
             {
-                uuidListView.BeginRefresh();
+                //uuidListView.BeginRefresh();
             }
 
             _BluetoothDevice.OnUuidsFetched += (IBluetoothDevice device, Guid[] guids) =>
@@ -101,6 +101,7 @@ namespace RemoteX.Bluetooth
             {
                 return;
             }
+
             this._SelectedGuid = e.SelectedItem as Guid?;
         }
 
@@ -112,12 +113,9 @@ namespace RemoteX.Bluetooth
                 return;
             }
             ConnectionEstablishState connectState = ConnectionEstablishState.failed;
-            while (connectState == ConnectionEstablishState.failed)
-            {
-                IConnection connection = DependencyService.Get<IBluetoothManager>().CreateRfcommClientConnection(_BluetoothDevice, (Guid)_SelectedGuid);
-                connectState = await connection.ConnectAsync();
-                Debug.WriteLine("EMMMM" + connectState);
-            }
+            IConnection connection = DependencyService.Get<IBluetoothManager>().CreateRfcommClientConnection(_BluetoothDevice, (Guid)_SelectedGuid);
+            connectState = await connection.ConnectAsync();
+            
 
         }
     }

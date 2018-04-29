@@ -4,6 +4,7 @@
              x:Class="RemoteX.MainPage.MainMasterDetailPageMaster"
              Title="Master">
     <StackLayout>
+        
         <ListView x:Name="MenuItemsListView"
                   GroupDisplayBinding="{Binding Title}"
                   IsGroupingEnabled="True">
