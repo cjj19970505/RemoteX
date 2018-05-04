@@ -49,22 +49,26 @@ namespace RemoteX.Controller
             initialTime = DateTime.Now;
             previousTime = initialTime;
             Device.StartTimer(TimeSpan.FromSeconds(1f/60), _Update);
+            stopUpdate = false;
 
-		}
+        }
         private DateTime initialTime;
         private DateTime previousTime;
-        
+        private bool stopUpdate;
         private bool _Update()
         {
+            if(stopUpdate)
+            {
+                return false;
+            }
             DateTime currTime = DateTime.Now;
             float deltaTime = (float)(currTime - previousTime).TotalSeconds;
             float t = (float)(currTime - initialTime).TotalSeconds;
             float x = (float)Math.Sin(_SpeedFactor*t);
             float y = (float)Math.Cos(_SpeedFactor*t);
             Vector2 speed = new Vector2(x, y) * _RotateRadiusFactor * 10;
-            Debug.WriteLine(t+" "+ speed);
-            IBluetoothManager bluetoothManager = DependencyService.Get<IBluetoothManager>();
-            IConnection connection = bluetoothManager.DefaultConnection;
+            IConnectionManager connectionManager = DependencyService.Get<IConnectionManager>();
+            IConnection connection = connectionManager.ControllerConnection;
             if (connection != null)
             {
                 Data.Data data = new Data.Data((int)DataType.TouchMouseSpeed, new float[] { speed.x, speed.y });
@@ -99,8 +103,8 @@ namespace RemoteX.Controller
             {
                 Vector2 speed = (touch.Position - previousTouchPos)*_SpeedFactor;
                 previousTouchPos = touch.Position;
-                IBluetoothManager bluetoothManager = DependencyService.Get<IBluetoothManager>();
-                IConnection connection = bluetoothManager.DefaultConnection;
+                IConnectionManager controllerManager = DependencyService.Get<IConnectionManager>();
+                IConnection connection = controllerManager.ControllerConnection;
                 if(connection != null)
                 {
                     Data.Data data = new Data.Data((int)DataType.TouchMouseSpeed, new float[] { speed.x, speed.y });
@@ -114,6 +118,14 @@ namespace RemoteX.Controller
                     _FirstTouch = null;
                 }
             }
+        }
+
+        protected override void OnDisappearing()
+        {
+            base.OnDisappearing();
+            stopUpdate = true;
+            IInputManager inputManager = DependencyService.Get<IInputManager>();
+            inputManager.OnTouchAction -= onTouchAction;
         }
     }
 }

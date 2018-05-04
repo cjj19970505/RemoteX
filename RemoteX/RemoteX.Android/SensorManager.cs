@@ -144,7 +144,7 @@ namespace RemoteX.Droid
                 {
                     return;
                 }
-                OnSensorDataUpdated(this, e.Values.ToArray<float>());
+                OnSensorDataUpdated?.Invoke(this, e.Values.ToArray<float>());
             }
 
             public void Activate()

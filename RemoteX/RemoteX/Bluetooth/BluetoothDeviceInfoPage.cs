@@ -112,10 +112,27 @@ namespace RemoteX.Bluetooth
                 Debug.WriteLine("NO UUID SELECTED");
                 return;
             }
+            IConnectionManager connectionManager = DependencyService.Get<IConnectionManager>();
+            IConnection currentConnection = connectionManager.ControllerConnection;
             ConnectionEstablishState connectState = ConnectionEstablishState.failed;
             IConnection connection = DependencyService.Get<IBluetoothManager>().CreateRfcommClientConnection(_BluetoothDevice, (Guid)_SelectedGuid);
+            if(connectionManager.ControllerConnection != null)
+            {
+                bool result = await DisplayAlert("Connect", "Stop Current Connection ?", "Yes", "No");
+                if(result)
+                {
+                    if(currentConnection.ConnectionEstablishState == ConnectionEstablishState.Connecting)
+                    {
+                        currentConnection.AbortConnecting();
+                    }
+                }
+            }
+            connectionManager.ControllerConnection = connection;
             connectState = await connection.ConnectAsync();
-            
+            if(connectState == ConnectionEstablishState.Succeed)
+            {
+                
+            }
 
         }
     }

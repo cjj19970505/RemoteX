@@ -18,127 +18,139 @@ using RemoteX;
 
 namespace RemoteX.Droid
 {
-    class BluetoothClientConnection : IConnection
+    partial class BluetoothManager
     {
-        private static string TAG = "BluetoothConnection";
-        private BluetoothDevice _Device;
-        private UUID _SdpUuid;
-        private BluetoothAdapter _BluetoothAdapter;
-
-        protected Stream _InputStream;
-        protected Stream _OutputStream;
-        protected BluetoothSocket _BluetoothSocket;
-
-        public event MessageHandler onReceiveMessage;
-        public event ConnectionHandler onConnectionEstalblishResult;
-        public ConnectionEstablishState ConnectionEstablishState { get; private set; }
-
-        public BluetoothClientConnection(BluetoothDevice device, UUID guid)
+        class BluetoothClientConnection : RemoteX.Bluetooth.IBluetoothConnection
         {
-            this._Device = device;
-            this._SdpUuid = guid;
-            this.ConnectionEstablishState = ConnectionEstablishState.NoEstablishment;
-        }
+            private static string TAG = "BluetoothConnection";
+            private BluetoothDevice _Device;
+            private UUID _SdpUuid;
+            private BluetoothAdapter _BluetoothAdapter;
 
-        public ConnectionType connectionType
-        {
-            get
+            protected Stream _InputStream;
+            protected Stream _OutputStream;
+            protected BluetoothSocket _BluetoothSocket;
+
+            public event MessageHandler onReceiveMessage;
+            public event ConnectionHandler onConnectionEstalblishResult;
+            public ConnectionEstablishState ConnectionEstablishState { get; private set; }
+
+            private BluetoothManager _BluetoothManager;
+            public BluetoothClientConnection(BluetoothManager bluetoothManager, BluetoothDevice device, UUID guid)
             {
-                return ConnectionType.Bluetooth;
+                this._BluetoothManager = bluetoothManager;
+                this._Device = device;
+                this._SdpUuid = guid;
+                this.ConnectionEstablishState = ConnectionEstablishState.NoEstablishment;
             }
-        }
-        
-        public async Task<ConnectionEstablishState> establishConnectionAsync()
-        {
-            if (_Device == null)
+
+            public ConnectionType connectionType
             {
-                return ConnectionEstablishState.failed;
-            }
-            BluetoothSocket tmp = null;
-            if(_BluetoothAdapter == null)
-            {
-                _BluetoothAdapter = BluetoothAdapter.DefaultAdapter;
-            }
-            try
-            {
-                tmp = _Device.CreateInsecureRfcommSocketToServiceRecord(_SdpUuid);
-            }
-            catch(Java.IO.IOException e)
-            {
-                return ConnectionEstablishState.failed;
-            }
-            _BluetoothSocket = tmp;
-            _BluetoothAdapter.CancelDiscovery();
-            try
-            {
-                await _BluetoothSocket.ConnectAsync();
-                System.Diagnostics.Debug.WriteLine("BLUETOOTH::SUCCESSFUL ");
-            }
-            catch(Exception connectionException)
-            {
-                try
+                get
                 {
-                    _BluetoothSocket.Close();
+                    return ConnectionType.Bluetooth;
                 }
-                catch(Java.IO.IOException socketCloseException)
+            }
+
+            private async Task<ConnectionEstablishState> establishConnectionAsync()
+            {
+                if (_Device == null)
                 {
                     return ConnectionEstablishState.failed;
                 }
-                return ConnectionEstablishState.failed;
-            }
-            try
-            {
-                _InputStream = _BluetoothSocket.InputStream;
-                _OutputStream = _BluetoothSocket.OutputStream;
-            }
-            catch(Java.IO.IOException streamException)
-            {
+                BluetoothSocket tmp = null;
+                if (_BluetoothAdapter == null)
+                {
+                    _BluetoothAdapter = BluetoothAdapter.DefaultAdapter;
+                }
                 try
                 {
-                    _BluetoothSocket.Close();
+                    tmp = _Device.CreateInsecureRfcommSocketToServiceRecord(_SdpUuid);
                 }
-                catch (Java.IO.IOException socketCloseException)
+                catch (Java.IO.IOException e)
                 {
                     return ConnectionEstablishState.failed;
                 }
-                return ConnectionEstablishState.failed;
+                _BluetoothSocket = tmp;
+                _BluetoothAdapter.CancelDiscovery();
+                try
+                {
+                    await _BluetoothSocket.ConnectAsync();
+                    System.Diagnostics.Debug.WriteLine("BLUETOOTH::SUCCESSFUL ");
+                }
+                catch (Exception connectionException)
+                {
+                    try
+                    {
+                        _BluetoothSocket.Close();
+                    }
+                    catch (Java.IO.IOException socketCloseException)
+                    {
+                        return ConnectionEstablishState.failed;
+                    }
+                    return ConnectionEstablishState.failed;
+                }
+                try
+                {
+                    _InputStream = _BluetoothSocket.InputStream;
+                    _OutputStream = _BluetoothSocket.OutputStream;
+                }
+                catch (Java.IO.IOException streamException)
+                {
+                    try
+                    {
+                        _BluetoothSocket.Close();
+                    }
+                    catch (Java.IO.IOException socketCloseException)
+                    {
+                        return ConnectionEstablishState.failed;
+                    }
+                    return ConnectionEstablishState.failed;
+                }
+                return ConnectionEstablishState.Succeed;
             }
-            return ConnectionEstablishState.Succeed;
-        }
-        
-        public async Task sendAsync(byte[] message)
-        {
-            //byte[] dataLengthBytes = BitConverter.GetBytes(message.Length);
-            //await _OutputStream.WriteAsync(dataLengthBytes, 0, dataLengthBytes.Length);
-            await _OutputStream.WriteAsync(message, 0, message.Length);
-        }
-        public async Task<ConnectionEstablishState> ConnectAsync()
-        {
-            this.ConnectionEstablishState = ConnectionEstablishState.Connecting;
-            ConnectionEstablishState state;
-            do
-            {
-                state = await establishConnectionAsync();
-                System.Diagnostics.Debug.WriteLine("CONTINUEING BITCHES");
-            }
-            while (state == ConnectionEstablishState.failed && !_AbortConnecting);
-            if(_AbortConnecting)
-            {
-                this.ConnectionEstablishState = ConnectionEstablishState.Abort;
-                _AbortConnecting = false;
-            }
-            else
-            {
-                this.ConnectionEstablishState = state;
-            }
-            this.onConnectionEstalblishResult?.Invoke(this, this.ConnectionEstablishState);
-            return state;
-        }
-        private bool _AbortConnecting = false;
-        public void AbortConnecting()
-        {
-            _AbortConnecting = true;
-        }
 
-    }
+            public async Task sendAsync(byte[] message)
+            {
+                //byte[] dataLengthBytes = BitConverter.GetBytes(message.Length);
+                //await _OutputStream.WriteAsync(dataLengthBytes, 0, dataLengthBytes.Length);
+                await _OutputStream.WriteAsync(message, 0, message.Length);
+            }
+            public async Task<ConnectionEstablishState> ConnectAsync()
+            {
+                this.ConnectionEstablishState = ConnectionEstablishState.Connecting;
+                _BluetoothManager._BluetoothConnections.Add(this);
+                onConnectionEstalblishResult?.Invoke(this, this.ConnectionEstablishState);
+                ConnectionEstablishState state;
+                do
+                {
+                    state = await establishConnectionAsync();
+                }
+                while (state == ConnectionEstablishState.failed && !_AbortConnecting);
+                if (_AbortConnecting)
+                {
+                    _BluetoothManager._BluetoothConnections.Remove(this);
+                    this.ConnectionEstablishState = ConnectionEstablishState.Abort;
+                    _AbortConnecting = false;
+                }
+                else
+                {
+                    this.ConnectionEstablishState = state;
+                }
+                this.onConnectionEstalblishResult?.Invoke(this, this.ConnectionEstablishState);
+                return state;
+            }
+            private bool _AbortConnecting = false;
+            public void AbortConnecting()
+            {
+                _AbortConnecting = true;
+            }
+
+            public void Abort()
+            {
+                throw new NotImplementedException();
+            }
+        }
+    } 
+    
 }

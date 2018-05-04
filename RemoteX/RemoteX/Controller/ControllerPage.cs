@@ -16,13 +16,5 @@ namespace RemoteX.Controller
         {
 
         }
-
-        /// <summary>
-        /// 一定要Call一下base.OnExitPage()
-        /// </summary>
-        public virtual async Task OnExitPage()
-        {
-            await Navigation.PopAsync();
-        }
 	}
 }

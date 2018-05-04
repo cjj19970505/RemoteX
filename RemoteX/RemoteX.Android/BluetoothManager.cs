@@ -20,13 +20,18 @@ namespace RemoteX.Droid
     /// 使用使和Android.Bluetooth.BluetoothManager区分开来，两个不一样
     /// 
     /// </summary>
-    class BluetoothManager : RemoteX.Bluetooth.IBluetoothManager
+    partial class BluetoothManager : RemoteX.Bluetooth.IBluetoothManager
     {
         BluetoothAdapter _BluetoothAdapter;
         bool _IsDiscoverying;
         Receiver _DiscoveryStartedReceiver;
         Receiver _DevicesFoundReceiver;
         Receiver _DiscoveryFinishedReceiver;
+
+        /// <summary>
+        /// 只有正在 建立连接 已经建立完连接 才有资格加入这里面
+        /// 就是说只有需要管理的资源才加进来啦
+        /// </summary>
         private List<BluetoothClientConnection> _BluetoothConnections;
 
         public BluetoothManager()
@@ -97,9 +102,26 @@ namespace RemoteX.Droid
                 return null;
             }
             BluetoothDevice device = (deviceWrapper as BluetoothDeviceWrapper).BluetoothDevice;
-            BluetoothClientConnection clientConnection = new BluetoothClientConnection(device, uuid);
+            BluetoothClientConnection clientConnection = new BluetoothClientConnection(this, device, uuid);
             _BluetoothConnections.Add(clientConnection);
             return clientConnection;
+        }
+
+        public RemoteX.Bluetooth.IBluetoothDevice[] PairedDevices
+        {
+            get
+            {
+                ICollection<BluetoothDevice> pairedDevices = _BluetoothAdapter.BondedDevices;
+                List<RemoteX.Bluetooth.IBluetoothDevice> devices = new List<Bluetooth.IBluetoothDevice>();
+                foreach(var droidDevice in pairedDevices)
+                {
+                    BluetoothDeviceWrapper bluetoothDeviceWrapper = new BluetoothDeviceWrapper(droidDevice);
+                    devices.Add(bluetoothDeviceWrapper);
+                }
+                return devices.ToArray();
+            }
+            
+            
         }
 
         private class Receiver : BroadcastReceiver

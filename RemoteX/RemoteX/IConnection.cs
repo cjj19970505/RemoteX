@@ -30,6 +30,11 @@ namespace RemoteX
         void AbortConnecting();
 
         /// <summary>
+        /// 中止通信，删除连接
+        /// </summary>
+        void Abort();
+
+        /// <summary>
         /// 建立连接（务必实现异步）
         /// 仅在连接成功时返回，否则一直阻塞
         /// </summary>

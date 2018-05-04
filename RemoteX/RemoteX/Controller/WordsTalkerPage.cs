@@ -45,8 +45,8 @@ namespace RemoteX.Controller
         private async void onSendBtnClicked(object sender, EventArgs e)
         {
             string text = sendEditor.Text;
-            IBluetoothManager bluetoothManager = DependencyService.Get<IBluetoothManager>();
-            IConnection connection = bluetoothManager.DefaultConnection;
+            IConnectionManager connectionManager = DependencyService.Get<IConnectionManager>();
+            IConnection connection = connectionManager.ControllerConnection;
             if(connection==null)
             {
                 Debug.WriteLine("No Connection");

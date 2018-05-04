@@ -5,6 +5,11 @@ using System.Text;
 namespace RemoteX.Bluetooth
 {
     public delegate void BluetoothDeviceGetUuidsHanlder(IBluetoothDevice bluetoothDevice, Guid[] guids);
+
+    /// <summary>
+    /// 目前不保证在不同的地方获取相同的一个设备时，两个IBluetoothDevice实例引用相同
+    /// 但是以后要保证哦
+    /// </summary>
     public interface IBluetoothDevice
     {
         /// <summary>

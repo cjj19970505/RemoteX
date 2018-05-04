@@ -17,13 +17,37 @@ namespace RemoteX.MainPage
     {
         public ListView ListView;
         public Page DetailPage { get; set; }
+        Label connectionStateLabel;
         public MainMasterDetailPageMaster()
         {
             InitializeComponent();
+            connectionStateLabel = new Label();
+            IConnection connection = DependencyService.Get<IConnectionManager>().ControllerConnection;
+            if(connection == null)
+            {
+                connectionStateLabel.Text = "No Connection";
+            }
+            else
+            {
+                connectionStateLabel.Text = connection.ConnectionEstablishState.ToString();
+            }
+            DependencyService.Get<IConnectionManager>().onControllerConnectionEstalblishResult += onControllerConnectionEstalblishResult;
             //BindingContext = new MainMasterDetailPageMasterViewModel();
+            
             ListView = MenuItemsListView;
+            ListView.Header = new StackLayout
+            {
+                Children =
+                {
+                    connectionStateLabel
+                }
+            };
             ListView.ItemsSource = MasterItemGroup.All;
             ListView.ItemSelected += onMenuItemSelected;
+        }
+        private void onControllerConnectionEstalblishResult(IConnection connection, ConnectionEstablishState connectionEstablishState)
+        {
+            connectionStateLabel.Text = connectionEstablishState.ToString();
         }
 
         private async void onMenuItemSelected(object sender, SelectedItemChangedEventArgs e)
