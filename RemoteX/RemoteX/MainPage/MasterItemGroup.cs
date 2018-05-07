@@ -21,6 +21,7 @@ namespace RemoteX.MainPage
                 {
                     new MasterMenuItem("Bluetooth",typeof(Bluetooth.BluetoothDeviceListPage)),
                     new MasterMenuItem("WIFI P2P", typeof(ContentPage))
+
                 },
                 new ControllerItemsGroup()
             };

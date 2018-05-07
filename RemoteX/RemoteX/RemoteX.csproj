@@ -5,6 +5,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="新文件夹1\**" />
+    <EmbeddedResource Remove="新文件夹1\**" />
+    <None Remove="新文件夹1\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="MainMasterDetailPage.xaml.cs" />
     <Compile Remove="MainMasterDetailPageDetail.xaml.cs" />
     <Compile Remove="MainMasterDetailPageMaster.xaml.cs" />
@@ -18,7 +24,22 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="UI\Icon\InfoIcon.png" />
+    <None Remove="UI\Icon\RedWarning.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="UI\Icon\InfoIcon.png" />
+    <EmbeddedResource Include="UI\Icon\RedWarning.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="SkiaSharp.Views.Forms" Version="1.60.0" />
     <PackageReference Include="Xamarin.Forms" Version="2.5.0.280555" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\RemoteXDataLibary\RemoteXDataLibary.csproj" />
   </ItemGroup>
 
   <ItemGroup>

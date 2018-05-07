@@ -17,11 +17,11 @@ namespace RemoteX.MainPage
             InitializeComponent();
             MasterPage.ListView.ItemSelected += ListView_ItemSelected;
             MasterPage.DetailPage = Detail;
-            
         }
 
         private void ListView_ItemSelected(object sender, SelectedItemChangedEventArgs e)
         {
+            System.Diagnostics.Debug.WriteLine("RectMotherFucker: " + this.MasterBounds);
             var item = e.SelectedItem as MainMasterDetailPageMenuItem;
             if (item == null)
                 return;

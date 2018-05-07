@@ -22,7 +22,7 @@ namespace RemoteX
         ConnectionEstablishState ConnectionEstablishState { get; }
         event MessageHandler onReceiveMessage;
         event ConnectionHandler onConnectionEstalblishResult;
-        Task sendAsync(byte[] message);
+        Task SendAsync(byte[] message);
 
         /// <summary>
         /// 若迟迟没有返回连接成功的结果，可以调用这个中止连接

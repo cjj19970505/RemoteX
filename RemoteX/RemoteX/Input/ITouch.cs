@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using RemoteX.Mathf;
+using RemoteXDataLibary.Mathf;
 
 namespace RemoteX.Input
 {

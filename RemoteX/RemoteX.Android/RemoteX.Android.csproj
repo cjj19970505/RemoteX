@@ -50,6 +50,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="SkiaSharp.Views.Forms">
+      <Version>1.60.0</Version>
+    </PackageReference>
     <PackageReference Include="Xamarin.Forms" Version="2.5.0.280555" />
     <PackageReference Include="Xamarin.Android.Support.Design" Version="25.4.0.2" />
     <PackageReference Include="Xamarin.Android.Support.v7.AppCompat" Version="25.4.0.2" />
@@ -89,6 +92,10 @@
     </AndroidResource>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\RemoteXDataLibary\RemoteXDataLibary.csproj">
+      <Project>{2981f4e2-c75c-4ffb-979e-b3e965c4d0d8}</Project>
+      <Name>RemoteXDataLibary</Name>
+    </ProjectReference>
     <ProjectReference Include="..\RemoteX\RemoteX.csproj">
       <Project>{5C72240C-35E4-45D0-971C-83BE8C72BCBE}</Project>
       <Name>RemoteX</Name>

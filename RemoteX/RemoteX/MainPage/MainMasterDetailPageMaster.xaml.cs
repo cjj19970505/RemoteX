@@ -23,7 +23,7 @@ namespace RemoteX.MainPage
             InitializeComponent();
             connectionStateLabel = new Label();
             IConnection connection = DependencyService.Get<IConnectionManager>().ControllerConnection;
-            if(connection == null)
+            if (connection == null)
             {
                 connectionStateLabel.Text = "No Connection";
             }
@@ -32,16 +32,31 @@ namespace RemoteX.MainPage
                 connectionStateLabel.Text = connection.ConnectionEstablishState.ToString();
             }
             DependencyService.Get<IConnectionManager>().onControllerConnectionEstalblishResult += onControllerConnectionEstalblishResult;
-            //BindingContext = new MainMasterDetailPageMasterViewModel();
-            
+
             ListView = MenuItemsListView;
-            ListView.Header = new StackLayout
+
+
+            StackLayout headerLayout = new StackLayout
             {
+                BackgroundColor = Color.Black,
+                Orientation = StackOrientation.Vertical,
                 Children =
                 {
-                    connectionStateLabel
+                    new StackLayout
+                    {
+                        Orientation = StackOrientation.Vertical, HorizontalOptions = LayoutOptions.Center,
+                        Children =
+                        {
+                            new Label
+                            {
+                                Text = "RemoteX", FontSize = 30, FontAttributes = FontAttributes.Bold, TextColor = Color.White
+                            }
+                        }
+                    }
                 }
+
             };
+            ListView.Header = headerLayout;
             ListView.ItemsSource = MasterItemGroup.All;
             ListView.ItemSelected += onMenuItemSelected;
         }
@@ -52,12 +67,12 @@ namespace RemoteX.MainPage
 
         private async void onMenuItemSelected(object sender, SelectedItemChangedEventArgs e)
         {
-            if(e.SelectedItem == null)
+            if (e.SelectedItem == null)
             {
                 return;
             }
             MasterMenuItem item = e.SelectedItem as MasterMenuItem;
-            if(item.TargetPageType != typeof(ContentPage))
+            if (item.TargetPageType != typeof(ContentPage))
             {
                 await DetailPage.Navigation.PushAsync((Page)Activator.CreateInstance(item.TargetPageType));
             }
@@ -66,7 +81,7 @@ namespace RemoteX.MainPage
         class MainMasterDetailPageMasterViewModel : INotifyPropertyChanged
         {
             public ObservableCollection<MainMasterDetailPageMenuItem> MenuItems { get; set; }
-            
+
             public MainMasterDetailPageMasterViewModel()
             {
                 MenuItems = new ObservableCollection<MainMasterDetailPageMenuItem>(new[]
@@ -78,7 +93,7 @@ namespace RemoteX.MainPage
                     new MainMasterDetailPageMenuItem { Id = 4, Title = "Page 5" },
                 });
             }
-            
+
             #region INotifyPropertyChanged Implementation
             public event PropertyChangedEventHandler PropertyChanged;
             void OnPropertyChanged([CallerMemberName] string propertyName = "")

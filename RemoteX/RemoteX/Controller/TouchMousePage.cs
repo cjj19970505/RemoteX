@@ -7,9 +7,9 @@ using Xamarin.Forms;
 using RemoteX.Input;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using RemoteX.Mathf;
+using RemoteXDataLibary.Mathf;
 using RemoteX.Bluetooth;
-using RemoteX.Data;
+using RemoteXDataLibary;
 
 namespace RemoteX.Controller
 {
@@ -71,8 +71,8 @@ namespace RemoteX.Controller
             IConnection connection = connectionManager.ControllerConnection;
             if (connection != null)
             {
-                Data.Data data = new Data.Data((int)DataType.TouchMouseSpeed, new float[] { speed.x, speed.y });
-                connection.sendAsync(Data.Data.encodeSensorData(data));
+                Data data = new Data((int)DataType.TouchMouseSpeed, new float[] { speed.x, speed.y });
+                connection.SendAsync(Data.encodeSensorData(data));
             }
             previousTime = currTime;
             return true;
@@ -107,8 +107,8 @@ namespace RemoteX.Controller
                 IConnection connection = controllerManager.ControllerConnection;
                 if(connection != null)
                 {
-                    Data.Data data = new Data.Data((int)DataType.TouchMouseSpeed, new float[] { speed.x, speed.y });
-                    await connection.sendAsync(Data.Data.encodeSensorData(data));
+                    Data data = new Data((int)DataType.TouchMouseSpeed, new float[] { speed.x, speed.y });
+                    await connection.SendAsync(Data.encodeSensorData(data));
                 }
             }
             else if(action == TouchMotionAction.Up)

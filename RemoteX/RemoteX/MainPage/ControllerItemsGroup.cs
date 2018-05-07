@@ -13,6 +13,7 @@ namespace RemoteX.MainPage
             this.Add(new MasterMenuItem("Message Talker", typeof(WordsTalkerPage)));
             this.Add(new MasterMenuItem("SensorTestr", typeof(SensorTestPage)));
             this.Add(new MasterMenuItem("TouchTest", typeof(TouchMousePage)));
+            this.Add(new MasterMenuItem("SkiaTest", typeof(SkiaTestController)));
             //this.Add());
             // new Controller.SensorTestPage();
         }

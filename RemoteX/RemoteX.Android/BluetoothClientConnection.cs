@@ -35,6 +35,8 @@ namespace RemoteX.Droid
             public event ConnectionHandler onConnectionEstalblishResult;
             public ConnectionEstablishState ConnectionEstablishState { get; private set; }
 
+
+
             private BluetoothManager _BluetoothManager;
             public BluetoothClientConnection(BluetoothManager bluetoothManager, BluetoothDevice device, UUID guid)
             {
@@ -110,11 +112,14 @@ namespace RemoteX.Droid
                 return ConnectionEstablishState.Succeed;
             }
 
-            public async Task sendAsync(byte[] message)
+            public async Task SendAsync(byte[] message)
             {
                 //byte[] dataLengthBytes = BitConverter.GetBytes(message.Length);
                 //await _OutputStream.WriteAsync(dataLengthBytes, 0, dataLengthBytes.Length);
+                DateTime beforeSend = DateTime.Now;
                 await _OutputStream.WriteAsync(message, 0, message.Length);
+                TimeSpan timeSpan = DateTime.Now - beforeSend;
+                System.Diagnostics.Debug.WriteLine(timeSpan);
             }
             public async Task<ConnectionEstablishState> ConnectAsync()
             {

@@ -6,7 +6,7 @@ using System.Text;
 using Xamarin.Forms;
 using RemoteX.Bluetooth;
 using System.Diagnostics;
-using RemoteX.Data;
+using RemoteXDataLibary;
 using RemoteX.Sensor;
 
 namespace RemoteX.Controller
@@ -52,13 +52,13 @@ namespace RemoteX.Controller
                 Debug.WriteLine("No Connection");
                 return;
             }
-            Data.Data data = new Data.Data((int)DataType.MouseRightDown, new float[] { 1.0f });
+            Data data = new Data((int)DataType.MouseRightDown, new float[] { 1.0f });
             Debug.WriteLine("SENDINGDATA::" + data);
-            await connection.sendAsync(Data.Data.encodeSensorData(data));
+            await connection.SendAsync(Data.encodeSensorData(data));
             Debug.WriteLine("SUCCFULLY SENDED::" + data);
-            data = new Data.Data((int)DataType.MouseRightUp, new float[] { 1.0f });
+            data = new Data((int)DataType.MouseRightUp, new float[] { 1.0f });
             Debug.WriteLine("SENDINGDATA::" + data);
-            await connection.sendAsync(Data.Data.encodeSensorData(data));
+            await connection.SendAsync(Data.encodeSensorData(data));
             Debug.WriteLine("SUCCFULLY SENDED::"+data);
 
         }

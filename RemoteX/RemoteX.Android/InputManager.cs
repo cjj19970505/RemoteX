@@ -10,7 +10,7 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using RemoteX.Input;
-using RemoteX.Mathf;
+using RemoteXDataLibary.Mathf;
 
 [assembly: Xamarin.Forms.Dependency(typeof(RemoteX.Droid.InputManager))]
 namespace RemoteX.Droid
