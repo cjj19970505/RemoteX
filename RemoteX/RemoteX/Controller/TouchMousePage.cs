@@ -39,7 +39,7 @@ namespace RemoteX.Controller
             };
             speedFactorSlider.ValueChanged += onSpeedValueChanged;
             radiusFactorSlider.ValueChanged += onRadiusValueChanged;
-            Content = new StackLayout {
+            ControllerContentView = new StackLayout {
                 Orientation = StackOrientation.Vertical,
 				Children = {
                     speedFactorSlider,
@@ -48,7 +48,7 @@ namespace RemoteX.Controller
 			};
             initialTime = DateTime.Now;
             previousTime = initialTime;
-            Device.StartTimer(TimeSpan.FromSeconds(1f/60), _Update);
+            //Device.StartTimer(TimeSpan.FromMilliseconds(1.0/60.0), _Update);
             stopUpdate = false;
 
         }
@@ -105,7 +105,7 @@ namespace RemoteX.Controller
                 previousTouchPos = touch.Position;
                 IConnectionManager controllerManager = DependencyService.Get<IConnectionManager>();
                 IConnection connection = controllerManager.ControllerConnection;
-                if(connection != null)
+                if(connection != null && connection.ConnectionEstablishState == ConnectionEstablishState.Succeed)
                 {
                     Data data = new Data((int)DataType.TouchMouseSpeed, new float[] { speed.x, speed.y });
                     await connection.SendAsync(Data.encodeSensorData(data));

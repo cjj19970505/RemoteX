@@ -70,7 +70,7 @@ namespace RemoteX.Droid
         /// <returns>如果为null则转化不存在</returns>
         private Android.Hardware.SensorType? sensorTypeToDroidSensorType(SensorType sensorType)
         {
-            switch(sensorType)
+            switch (sensorType)
             {
                 case SensorType.Gyroscope:
                     return Android.Hardware.SensorType.Gyroscope;
@@ -97,7 +97,7 @@ namespace RemoteX.Droid
         /// <summary>
         /// RemoteX种ISensor的具体实现
         /// </summary>
-        private class Sensor:Java.Lang.Object, ISensor, Android.Hardware.ISensorEventListener
+        private class Sensor : Java.Lang.Object, ISensor, Android.Hardware.ISensorEventListener
         {
             public SensorType SensorType
             {
@@ -117,11 +117,19 @@ namespace RemoteX.Droid
             public event SensorDataHandler OnSensorDataUpdated;
             private SensorManager _SensorManager;
             private bool _Registered;
-            public Sensor(SensorManager sensorManager ,Android.Hardware.Sensor droidSensor)
+            public double UpdateTimestep { get; set; }
+            /// <summary>
+            /// 最后更新数据时的时间
+            /// </summary>
+            private DateTime _LatestUpdatedDataDateTime;
+
+            public Sensor(SensorManager sensorManager, Android.Hardware.Sensor droidSensor)
             {
                 this.DroidSensor = droidSensor;
                 this._SensorManager = sensorManager;
                 _Registered = false;
+                _LatestUpdatedDataDateTime = DateTime.Now;
+                UpdateTimestep = 15;
             }
 
             private SensorType? droidSensorTypeToSensorType(Android.Hardware.SensorType droidSensorType)
@@ -140,16 +148,23 @@ namespace RemoteX.Droid
             }
             public void OnSensorChanged(Android.Hardware.SensorEvent e)
             {
-                if(e.Sensor.Type != DroidSensorType)
+                if (e.Sensor.Type != DroidSensorType)
                 {
                     return;
                 }
-                OnSensorDataUpdated?.Invoke(this, e.Values.ToArray<float>());
+                if ((DateTime.Now - _LatestUpdatedDataDateTime).TotalMilliseconds >= UpdateTimestep)
+                {
+                    _LatestUpdatedDataDateTime = DateTime.Now;
+                    OnSensorDataUpdated?.Invoke(this, e.Values.ToArray<float>());
+                }
+
             }
+
+
 
             public void Activate()
             {
-                if(_Registered)
+                if (_Registered)
                 {
                     return;
                 }
@@ -158,7 +173,7 @@ namespace RemoteX.Droid
             }
             public void Deactivate()
             {
-                if(_Registered)
+                if (_Registered)
                 {
                     _SensorManager._DroidSensorManager.UnregisterListener(this);
                 }

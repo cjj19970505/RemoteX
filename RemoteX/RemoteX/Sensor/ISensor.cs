@@ -13,11 +13,14 @@ namespace RemoteX.Sensor
     {
         SensorType SensorType { get; }
 
+        double UpdateTimestep { get; set; }
+
         /// <summary>
         /// 传感器数据更新时触发
         /// </summary>
         event SensorDataHandler OnSensorDataUpdated;
         void Activate();
         void Deactivate();
+        
     }
 }

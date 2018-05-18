@@ -15,6 +15,7 @@ using Android.Widget;
 using Java.IO;
 using Java.Util;
 using RemoteX;
+using Xamarin.Forms;
 
 namespace RemoteX.Droid
 {
@@ -35,8 +36,14 @@ namespace RemoteX.Droid
             public event ConnectionHandler onConnectionEstalblishResult;
             public ConnectionEstablishState ConnectionEstablishState { get; private set; }
 
+            private bool _AbortConnecting = false;
 
-
+            /// <summary>
+            /// 最后一次发送的时间
+            /// 用来衡量发送的两个消息的时间差距，主要要在接收端做延迟防抖动处理
+            /// </summary>
+            private DateTime _LastSendDateTime;
+            
             private BluetoothManager _BluetoothManager;
             public BluetoothClientConnection(BluetoothManager bluetoothManager, BluetoothDevice device, UUID guid)
             {
@@ -45,7 +52,6 @@ namespace RemoteX.Droid
                 this._SdpUuid = guid;
                 this.ConnectionEstablishState = ConnectionEstablishState.NoEstablishment;
             }
-
             public ConnectionType connectionType
             {
                 get
@@ -53,7 +59,6 @@ namespace RemoteX.Droid
                     return ConnectionType.Bluetooth;
                 }
             }
-
             private async Task<ConnectionEstablishState> establishConnectionAsync()
             {
                 if (_Device == null)
@@ -109,18 +114,66 @@ namespace RemoteX.Droid
                     }
                     return ConnectionEstablishState.failed;
                 }
+                _LastSendDateTime = DateTime.Now;
                 return ConnectionEstablishState.Succeed;
+            }
+
+            /// <summary>
+            /// 将要发送的数据加上一些头部控制信息
+            /// </summary>
+            /// <param name="message"></param>
+            /// <returns></returns>
+            private byte[] _PackMessage(byte[] message, int controlCode = 0)
+            {
+                TimeSpan timeSpan;
+                if (controlCode == 0)
+                {
+                    DateTime currDateTime = DateTime.Now;
+                    timeSpan = currDateTime - _LastSendDateTime;
+                    _LastSendDateTime = currDateTime;
+                }
+                else
+                {
+                    timeSpan = new TimeSpan(0, 0, 0, 0, -controlCode);
+                }
+                
+                byte[] dataLengthBytes = BitConverter.GetBytes(message.Length);
+                byte[] timeMsg = BitConverter.GetBytes(timeSpan.TotalMilliseconds);
+                byte[] packedMsg = new byte[message.Length + timeMsg.Length + dataLengthBytes.Length];
+                dataLengthBytes.CopyTo(packedMsg, 0);
+                timeMsg.CopyTo(packedMsg, dataLengthBytes.Length);
+                message.CopyTo(packedMsg, dataLengthBytes.Length + timeMsg.Length);
+                return packedMsg;
             }
 
             public async Task SendAsync(byte[] message)
             {
-                //byte[] dataLengthBytes = BitConverter.GetBytes(message.Length);
-                //await _OutputStream.WriteAsync(dataLengthBytes, 0, dataLengthBytes.Length);
-                DateTime beforeSend = DateTime.Now;
-                await _OutputStream.WriteAsync(message, 0, message.Length);
-                TimeSpan timeSpan = DateTime.Now - beforeSend;
-                System.Diagnostics.Debug.WriteLine(timeSpan);
+                byte[] packedMsg = _PackMessage(message);
+                await _OutputStream.WriteAsync(packedMsg, 0, packedMsg.Length);
             }
+
+            private async Task SendAsync(int controlCode)
+            {
+                try
+                {
+                    byte[] packedMsg = _PackMessage(new byte[] { 0 }, 4);
+                    await _OutputStream.WriteAsync(packedMsg, 0, packedMsg.Length);
+                }
+                catch(Exception e)
+                {
+                    if(e.Message == "Broken pipe")
+                    {
+                        _ReleaseAllConnectionResource();
+                        //this.ConnectionEstablishState = ConnectionEstablishState.Disconnect;
+                        //onConnectionEstalblishResult?.Invoke(this, ConnectionEstablishState.Disconnect);
+
+                        this.ConnectionEstablishState = ConnectionEstablishState.Connecting;
+                        ConnectAsync();
+                        onConnectionEstalblishResult?.Invoke(this, ConnectionEstablishState.Connecting);
+                    }
+                }
+            }
+            
             public async Task<ConnectionEstablishState> ConnectAsync()
             {
                 this.ConnectionEstablishState = ConnectionEstablishState.Connecting;
@@ -142,18 +195,41 @@ namespace RemoteX.Droid
                 {
                     this.ConnectionEstablishState = state;
                 }
+                if(this.ConnectionEstablishState == ConnectionEstablishState.Succeed)
+                {
+                    Device.StartTimer(new TimeSpan(0, 0, 0, 0, 500), sendControlCodeTimerFunc);
+                }
                 this.onConnectionEstalblishResult?.Invoke(this, this.ConnectionEstablishState);
                 return state;
             }
-            private bool _AbortConnecting = false;
+
+            private bool sendControlCodeTimerFunc()
+            {
+                Task.Run(async () => { await SendAsync(4); });
+                return true;
+            }
+            
             public void AbortConnecting()
             {
                 _AbortConnecting = true;
             }
 
-            public void Abort()
+            private void _ReleaseAllConnectionResource()
             {
-                throw new NotImplementedException();
+                
+                if(_InputStream != null)
+                {
+                    _InputStream.Close();
+                }
+                if(_OutputStream != null)
+                {
+                    _OutputStream.Close();
+                }
+                if(_BluetoothSocket != null)
+                {
+                    _BluetoothSocket.Close();
+                }
+                ConnectionEstablishState = ConnectionEstablishState.Abort;
             }
         }
     } 

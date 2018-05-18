@@ -17,11 +17,46 @@ namespace RemoteX.Droid
     /// <summary>
     /// 对RemoteX.IConnectionManager的具体实现
     /// </summary>
-    class ConnectionManager:IConnectionManager
+    class ConnectionManager : IConnectionManager
     {
         private IConnection _ControllerConnection;
-        public event ConnectionHandler onControllerConnectionEstalblishResult;
-        public event MessageHandler onControllerConnectionReceiveMessage;
+        public event ConnectionHandler _OnControllerConnectionEstablishResult;
+        public event ConnectionHandler onControllerConnectionEstalblishResult
+        {
+            add
+            {
+                _OnControllerConnectionEstablishResult += value;
+                if (_ControllerConnection != null)
+                {
+                    _ControllerConnection.onConnectionEstalblishResult += value;
+                }
+
+            }
+            remove
+            {
+                _OnControllerConnectionEstablishResult -= value;
+                if (_ControllerConnection != null)
+                {
+                    _ControllerConnection.onConnectionEstalblishResult -= value;
+                }
+
+            }
+        }
+
+        public event MessageHandler _OnControllerConnectionReceiveMessage;
+        public event MessageHandler onControllerConnectionReceiveMessage
+        {
+            add
+            {
+                _OnControllerConnectionReceiveMessage += value;
+                _ControllerConnection.onReceiveMessage += value;
+            }
+            remove
+            {
+                _OnControllerConnectionReceiveMessage -= value;
+                _ControllerConnection.onReceiveMessage -= value;
+            }
+        }
         public ConnectionManager()
         {
             _ControllerConnection = null;
@@ -30,20 +65,25 @@ namespace RemoteX.Droid
         {
             get
             {
+                if(_ControllerConnection!=null && (_ControllerConnection.ConnectionEstablishState == ConnectionEstablishState.Abort || _ControllerConnection.ConnectionEstablishState == ConnectionEstablishState.Disconnect))
+                {
+                    ControllerConnection = null;
+                }
                 return _ControllerConnection;
             }
             set
             {
-                if(_ControllerConnection != null)
+                if (_ControllerConnection != null)
                 {
-                    _ControllerConnection.onConnectionEstalblishResult -= onControllerConnectionEstalblishResult;
-                    _ControllerConnection.onReceiveMessage -= onControllerConnectionReceiveMessage;
+                    _ControllerConnection.onConnectionEstalblishResult -= _OnControllerConnectionEstablishResult;
+                    _ControllerConnection.onReceiveMessage -= _OnControllerConnectionReceiveMessage;
+
                 }
                 _ControllerConnection = value;
-                if(_ControllerConnection != null)
+                if (_ControllerConnection != null)
                 {
-                    _ControllerConnection.onConnectionEstalblishResult += onControllerConnectionEstalblishResult;
-                    _ControllerConnection.onReceiveMessage += onControllerConnectionReceiveMessage;
+                    _ControllerConnection.onConnectionEstalblishResult += _OnControllerConnectionEstablishResult;
+                    _ControllerConnection.onReceiveMessage += _OnControllerConnectionReceiveMessage;
                 }
             }
         }

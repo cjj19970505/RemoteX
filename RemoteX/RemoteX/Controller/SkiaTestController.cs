@@ -13,7 +13,7 @@ namespace RemoteX.Controller
     public class SkiaTestController : ContentPage
     {
         AbsoluteLayout absoluteLayout;
-
+        SnackBar snackBar;
         public SkiaTestController()
         {
             SKCanvasView canvasView = new SKCanvasView();
@@ -50,7 +50,7 @@ namespace RemoteX.Controller
                     }
             };
             absoluteLayout = new AbsoluteLayout();
-
+            snackBar = new SnackBar();
             Frame frame = new Frame
             {
                 Padding = 5,
@@ -67,7 +67,7 @@ namespace RemoteX.Controller
 
             absoluteLayout.Children.Add(stackLayout);
             absoluteLayout.Children.Add(canvasView);
-            absoluteLayout.Children.Add(new SnackBar());
+            absoluteLayout.Children.Add(snackBar);
 
             System.Diagnostics.Debug.WriteLine("RECT::" + absoluteLayout.Bounds);
             Button animBtn = new Button();
@@ -90,7 +90,20 @@ namespace RemoteX.Controller
         }
         private async void onAnimBtnClicked(object sender, EventArgs e)
         {
-            await absoluteLayout.RelRotateTo(180);
+            //await absoluteLayout.RelRotateTo(180);
+            switch(snackBar.BarType)
+            {
+                case BarType.Error:
+                    snackBar.BarType = BarType.Succeed;
+                    break;
+                case BarType.Succeed:
+                    snackBar.BarType = BarType.Warning;
+                    break;
+                case BarType.Warning:
+                    snackBar.BarType = BarType.Error;
+                    break;
+            }
+            //snackBar.BarType = BarType.Error;
         }
         private void paintSurface(object sender, SKPaintSurfaceEventArgs e)
         {

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 namespace RemoteX
 {
     public enum ConnectionType { Bluetooth, UDP, TCP};
-    public enum ConnectionEstablishState { NoEstablishment ,Succeed, failed, Connecting, Abort}
+    public enum ConnectionEstablishState { NoEstablishment ,Succeed, failed, Connecting, Abort, Disconnect}
     public delegate void MessageHandler(IConnection connection ,byte[] message);
     public delegate void ConnectionHandler(IConnection connection, ConnectionEstablishState connectionEstablishState);
     /// <summary>
@@ -28,11 +28,6 @@ namespace RemoteX
         /// 若迟迟没有返回连接成功的结果，可以调用这个中止连接
         /// </summary>
         void AbortConnecting();
-
-        /// <summary>
-        /// 中止通信，删除连接
-        /// </summary>
-        void Abort();
 
         /// <summary>
         /// 建立连接（务必实现异步）
