@@ -38,44 +38,43 @@ namespace RemoteX.Droid
             int pointerId = e.GetPointerId(pointerIndex);
             int down = (int)(e.ActionMasked & MotionEventActions.PointerDown);
             int up = (int)(e.ActionMasked & MotionEventActions.PointerUp);
-            
-            switch(e.ActionMasked)
+            lock(_Touches)
             {
-                case MotionEventActions.Down:
-                case MotionEventActions.PointerDown:
-                    {
-                        Touch touch = new Touch(pointerId);
-                        touch.Position = new Vector2(e.GetX(pointerIndex), e.GetY(pointerIndex));
-                        _Touches.Add(pointerId, touch);
-                        OnTouchAction?.Invoke(touch, TouchMotionAction.Down);
-                        break;
-                    }
-                case MotionEventActions.Up:
-                case MotionEventActions.PointerUp:
-                    {
-                        Touch touch = _Touches[pointerId];
-                        _Touches.Remove(pointerId);
-                        OnTouchAction?.Invoke(touch, TouchMotionAction.Up);
-                        break;
-                    }
-                case MotionEventActions.Move:
-                    {
-                        foreach(var pair in _Touches)
+                switch (e.ActionMasked)
+                {
+                    case MotionEventActions.Down:
+                    case MotionEventActions.PointerDown:
                         {
-                            int pIndex = e.FindPointerIndex(pair.Key);
-                            Vector2 currentPos = new Vector2(e.GetX(pIndex), e.GetY(pIndex));
-                            if(pair.Value.Position != currentPos)
-                            {
-                                pair.Value.Position = currentPos;
-                                OnTouchAction?.Invoke(pair.Value, TouchMotionAction.Move);
-                            }
+                            Touch touch = new Touch(pointerId);
+                            touch.Position = new Vector2(e.GetX(pointerIndex), e.GetY(pointerIndex));
+                            _Touches.Add(pointerId, touch);
+                            OnTouchAction?.Invoke(touch, TouchMotionAction.Down);
+                            break;
                         }
-                        break;
-                    }
+                    case MotionEventActions.Up:
+                    case MotionEventActions.PointerUp:
+                        {
+                            Touch touch = _Touches[pointerId];
+                            _Touches.Remove(pointerId);
+                            OnTouchAction?.Invoke(touch, TouchMotionAction.Up);
+                            break;
+                        }
+                    case MotionEventActions.Move:
+                        {
+                            foreach (var pair in _Touches)
+                            {
+                                int pIndex = e.FindPointerIndex(pair.Key);
+                                Vector2 currentPos = new Vector2(e.GetX(pIndex), e.GetY(pIndex));
+                                if (pair.Value.Position != currentPos)
+                                {
+                                    pair.Value.Position = currentPos;
+                                    OnTouchAction?.Invoke(pair.Value, TouchMotionAction.Move);
+                                }
+                            }
+                            break;
+                        }
+                }
             }
-
-
-
             return true;
         }
         private class Touch:ITouch

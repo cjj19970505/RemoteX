@@ -39,11 +39,12 @@ namespace RemoteX.Controller
         }
         public ControllerPage()
         {
+            NavigationPage.SetHasNavigationBar(this, false);
             _DefaultLayout = new AbsoluteLayout();
             _ConnectionStateSnackBar = new SnackBar();
             _ConnectionManager = DependencyService.Get<IConnectionManager>();
             
-            if(_ConnectionManager.ControllerConnection == null || _ConnectionManager.ControllerConnection.ConnectionEstablishState == ConnectionEstablishState.NoEstablishment)
+            if (_ConnectionManager.ControllerConnection == null || _ConnectionManager.ControllerConnection.ConnectionEstablishState == ConnectionEstablishState.NoEstablishment)
             {
                 _ConnectionStateSnackBar.BarType = BarType.Error;
             }

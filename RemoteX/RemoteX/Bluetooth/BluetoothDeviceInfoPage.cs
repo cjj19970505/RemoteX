@@ -58,7 +58,6 @@ namespace RemoteX.Bluetooth
 
             _BluetoothDevice.OnUuidsFetched += (IBluetoothDevice device, Guid[] guids) =>
             {
-                System.Diagnostics.Debug.WriteLine("UUID GET");
                 if (uuidListView.IsRefreshing)
                 {
                     uuidListView.EndRefresh();

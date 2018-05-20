@@ -15,6 +15,7 @@ namespace RemoteX.MainPage
         public MainMasterDetailPageDetail()
         {
             InitializeComponent();
+            
         }
     }
 }

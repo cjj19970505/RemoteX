@@ -11,8 +11,8 @@ namespace RemoteX
 	{
 		public App ()
 		{
-			InitializeComponent();
-
+            InitializeComponent();
+            
             //MainPage = new RemoteX.MainPage();
             //MainPage = new NavigationPage(new Bluetooth.BluetoothDeviceListPage());
             MainPage = new MainPage.MainMasterDetailPage();

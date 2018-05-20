@@ -15,6 +15,7 @@ namespace RemoteX.Bluetooth
         Button scanDevicesButton;
         public BluetoothDeviceListPage()
         {
+
             bluetoothManager = DependencyService.Get<IBluetoothManager>();
             bluetoothDeviceList = new ObservableCollection<IBluetoothDevice>();
             resetDeviceList();

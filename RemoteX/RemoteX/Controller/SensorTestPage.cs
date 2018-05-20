@@ -41,7 +41,6 @@ namespace RemoteX.Controller
                     connection.SendAsync(Data.encodeSensorData(new Data((int)DataType.SensorGyroscope, data)));
                 }
             }
-
         }
         protected override void OnDisappearing()
         {

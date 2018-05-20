@@ -24,6 +24,10 @@ namespace RemoteX.Droid
             TabLayoutResource = Resource.Layout.Tabbar;
             ToolbarResource = Resource.Layout.Toolbar;
 
+            RequestWindowFeature(WindowFeatures.NoTitle);//设置无标题
+            Window.SetFlags(WindowManagerFlags.Fullscreen, WindowManagerFlags.Fullscreen);//设置全屏
+            RequestedOrientation = ScreenOrientation.Landscape;
+            
             base.OnCreate(bundle);
             
             global::Xamarin.Forms.Forms.Init(this, bundle);
@@ -50,6 +54,15 @@ namespace RemoteX.Droid
         {
             InputManager.OnTouch(ev);
             return base.DispatchTouchEvent(ev);
+        }
+
+        public override bool OnKeyDown([GeneratedEnum] Keycode keyCode, KeyEvent e)
+        {
+            if(keyCode == Keycode.Back)
+            {
+                return false;
+            }
+            return base.OnKeyDown(keyCode, e);
         }
     }
 }
