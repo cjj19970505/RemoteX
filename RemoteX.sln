@@ -11,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RemoteX.UWP", "RemoteX\Remo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RemoteX", "RemoteX\RemoteX\RemoteX.csproj", "{5F2B0EDA-1F45-4916-B5C4-4D1E61AA838F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RemoteXDataLibary", "..\..\RemoteXDataLibary\RemoteXDataLibary.csproj", "{2981F4E2-C75C-4FFB-979E-B3E965C4D0D8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RemoteXDataLibary", "..\..\RemoteXDataLibary\RemoteXDataLibary.csproj", "{2981F4E2-C75C-4FFB-979E-B3E965C4D0D8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
