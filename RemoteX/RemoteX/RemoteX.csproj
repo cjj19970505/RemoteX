@@ -42,6 +42,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\RemoteXDataLibary\RemoteXDataLibary.csproj" />
+    <ProjectReference Include="..\..\SkiaBehaviour\SkiaBehaviour.csproj" />
   </ItemGroup>
 
   <ItemGroup>
