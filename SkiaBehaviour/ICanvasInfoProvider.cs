@@ -17,6 +17,7 @@ namespace SkiaBehaviour
     public interface ICanvasInfoProvider
     {
         SKCanvas Canvas { get; }
-        
+        SKRectI DeviceClipBounds { get;}
+
     }
 }

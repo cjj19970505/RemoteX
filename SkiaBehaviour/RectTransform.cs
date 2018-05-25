@@ -33,10 +33,10 @@ namespace SkiaBehaviour
 
         public RectTransform(SkiaObject skiaObject)
         {
-            this.SkiaObject = SkiaObject;
+            this.SkiaObject = skiaObject;
             SkiaBehaviourEngine = SkiaObject.SkiaBehaviourEngine;
         }
-
+        
         public SKRect Rect
         {
             get

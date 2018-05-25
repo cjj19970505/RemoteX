@@ -17,9 +17,10 @@ namespace RemoteX.SkiaComponent
             set
             {
                 this._Canvas = value;
+                DeviceClipBounds = value.DeviceClipBounds;
             }
         }
-
+        public SKRectI DeviceClipBounds { get; private set; }
         public CanvasInfoProvider()
         {
 
@@ -35,6 +36,11 @@ namespace RemoteX.SkiaComponent
         {
             SKRectI rect = _Canvas.DeviceClipBounds;
             return new SKPoint(point.X/rect.Width, point.Y/rect.Height);
+        }
+
+        public SKPoint DeviceToCanvasPoint(SKPoint point)
+        {
+            return point;
         }
     }
 }

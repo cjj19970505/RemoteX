@@ -64,7 +64,6 @@ namespace RemoteX.Controller
         {
             base.OnAppearing();
             _ConnectionManager.onControllerConnectionEstalblishResult += _OnConnectionResult;
-            Debug.WriteLine("FUCK");
         }
 
         protected override void OnDisappearing()
@@ -75,7 +74,6 @@ namespace RemoteX.Controller
 
         private void _OnConnectionResult(IConnection connection, ConnectionEstablishState connectionEstablishState)
         {
-            Debug.WriteLine("BULLSHIT2");
             if (connectionEstablishState == ConnectionEstablishState.Succeed)
             {
                 _ConnectionStateSnackBar.BarType = BarType.Succeed;

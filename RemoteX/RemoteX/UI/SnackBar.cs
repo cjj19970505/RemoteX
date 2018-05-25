@@ -151,7 +151,6 @@ namespace RemoteX.UI
 
         private void onBtnTapped(object sender, EventArgs e)
         {
-            System.Diagnostics.Debug.WriteLine("FUCK YOU");
         }
 
     }

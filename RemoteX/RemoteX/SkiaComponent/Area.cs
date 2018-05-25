@@ -47,7 +47,5 @@ namespace RemoteX.SkiaComponent
             }
             return false;
         }
-
-        
     }
 }

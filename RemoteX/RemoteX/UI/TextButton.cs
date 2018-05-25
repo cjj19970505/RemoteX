@@ -17,7 +17,6 @@ namespace RemoteX.UI
 
         private void onTapped(object sender, EventArgs e)
         {
-            System.Diagnostics.Debug.WriteLine("FUCK");
         }
     }
 }

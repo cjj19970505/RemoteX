@@ -15,6 +15,7 @@ namespace RemoteX.MainPage
             this.Add(new MasterMenuItem("TouchTest", typeof(TouchMousePage)));
             this.Add(new MasterMenuItem("SkiaTest", typeof(SkiaTestController)));
             this.Add(new MasterMenuItem("SKiaController", typeof(SkiaController)));
+            this.Add(new MasterMenuItem("KeyboardController", typeof(KeyboardController)));
             //this.Add());
             // new Controller.SensorTestPage();
         }
