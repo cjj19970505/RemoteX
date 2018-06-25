@@ -15,7 +15,7 @@
     <AndroidManifest>Properties\AndroidManifest.xml</AndroidManifest>
     <MonoAndroidResourcePrefix>Resources</MonoAndroidResourcePrefix>
     <MonoAndroidAssetsPrefix>Assets</MonoAndroidAssetsPrefix>
-    <AndroidUseLatestPlatformSdk>false</AndroidUseLatestPlatformSdk>
+    <AndroidUseLatestPlatformSdk>true</AndroidUseLatestPlatformSdk>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
   </PropertyGroup>
@@ -51,14 +51,14 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="SkiaSharp.Views.Forms">
-      <Version>1.60.0</Version>
+      <Version>1.60.1</Version>
     </PackageReference>
-    <PackageReference Include="Xamarin.Forms" Version="3.0.0.482510" />
-    <PackageReference Include="Xamarin.Android.Support.Design" Version="27.0.2" />
-    <PackageReference Include="Xamarin.Android.Support.v7.AppCompat" Version="27.0.2" />
-    <PackageReference Include="Xamarin.Android.Support.v4" Version="27.0.2" />
-    <PackageReference Include="Xamarin.Android.Support.v7.CardView" Version="27.0.2" />
-    <PackageReference Include="Xamarin.Android.Support.v7.MediaRouter" Version="27.0.2" />
+    <PackageReference Include="Xamarin.Forms" Version="3.1.0.583944" />
+    <PackageReference Include="Xamarin.Android.Support.Design" Version="27.0.2.1" />
+    <PackageReference Include="Xamarin.Android.Support.v7.AppCompat" Version="27.0.2.1" />
+    <PackageReference Include="Xamarin.Android.Support.v4" Version="27.0.2.1" />
+    <PackageReference Include="Xamarin.Android.Support.v7.CardView" Version="27.0.2.1" />
+    <PackageReference Include="Xamarin.Android.Support.v7.MediaRouter" Version="27.0.2.1" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BluetoothClientConnection.cs" />

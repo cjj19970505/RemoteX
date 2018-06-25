@@ -26,18 +26,13 @@ namespace RemoteX.Controller
             ControllerContentView = CanvasView;
             canvasInfoProvider = new CanvasInfoProvider();
             SkiaBehaviourEngine = new SkiaBehaviourEngine(canvasInfoProvider);
+            SkiaInputManager skiaInputManager = SkiaBehaviourEngine.Instantiate<SkiaInputManager>();
             exit = false;
             Device.StartTimer(TimeSpan.FromSeconds(1 / 60f), () => { CanvasView.InvalidateSurface(); return !exit; });
 
         }
-
-        protected virtual void Update()
-        {
-        }
-
-        protected virtual void Start()
-        {
-        }
+        protected virtual void Start() { }
+        protected virtual void Update() { }
         private void canvasView_Init(object sender, SKPaintSurfaceEventArgs e)
         {
             SKSurface surface = e.Surface;
@@ -56,6 +51,7 @@ namespace RemoteX.Controller
                 firstFrame = false;
             }
             SkiaBehaviourEngine.Update();
+            Update();
         }
         protected override void OnDisappearing()
         {

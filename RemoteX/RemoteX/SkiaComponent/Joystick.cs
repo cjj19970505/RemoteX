@@ -8,9 +8,9 @@ using Xamarin.Forms;
 
 namespace RemoteX.SkiaComponent
 {
-    abstract class Joystick:SkiaObject
+    abstract class Joystick:SkiaObject, ISkiaInputComponent
     {
-        protected ITouch OnTouch { get; private set; }
+        protected SkiaTouch OnSkiaTouch { get; private set; }
         protected virtual IArea StartRegion { get; }
         public float Distance { get; private set; }
 
@@ -22,26 +22,50 @@ namespace RemoteX.SkiaComponent
         {
             get
             {
-                if (OnTouch != null)
+                if (OnSkiaTouch != null)
                 {
                     return true;
                 }
                 return false;
             }
         }
+
+        public int InputHeightLevel
+        {
+            get
+            {
+                return 2;
+            }
+        }
+
+        public IArea FirstTouchArea
+        {
+            get
+            {
+                return StartRegion;
+            }
+        }
+
         SKPoint startPos;
         protected override void Init()
         {
-            DependencyService.Get<IInputManager>().OnTouchAction += handleTouchAction;
+            SkiaBehaviourEngine.GetSkiaInputManager().OnSkiaTouchAction += handleSkiaTouchAction;
+            
         }
-        void handleTouchAction(ITouch touch, TouchMotionAction action)
+
+        private void handleSkiaTouchAction(SkiaTouch skiaTouch, TouchMotionAction action)
         {
+            if(skiaTouch.HeightLevel != InputHeightLevel)
+            {
+                return;
+            }
+            ITouch touch = skiaTouch.Touch;
             CanvasInfoProvider canvasInfoProvider = SkiaBehaviourEngine.CanvasInfoProvider as CanvasInfoProvider;
             if (action == TouchMotionAction.Down)
             {
-                if (OnTouch == null && StartRegion.IsOverlapPoint(canvasInfoProvider.DeviceToCanvasPoint(touch.Position)))
+                if (OnSkiaTouch == null && StartRegion.IsOverlapPoint(canvasInfoProvider.DeviceToCanvasPoint(touch.Position)))
                 {
-                    OnTouch = touch;
+                    OnSkiaTouch = skiaTouch;
                     Distance = 0;
                     Direction = 0;
                     startPos = touch.Position;
@@ -50,17 +74,17 @@ namespace RemoteX.SkiaComponent
             }
             else if (action == TouchMotionAction.Up)
             {
-                if (OnTouch == touch)
+                if (OnSkiaTouch == skiaTouch)
                 {
                     Distance = 0;
                     Direction = 0;
-                    OnTouch = null;
+                    OnSkiaTouch = null;
                     OnJoystickUp();
                 }
             }
             else if (action == TouchMotionAction.Move)
             {
-                if (OnTouch == touch)
+                if (OnSkiaTouch == skiaTouch)
                 {
                     SKPoint currentPos = touch.Position;
                     float distance = (currentPos - startPos).Magnitude();
@@ -70,6 +94,7 @@ namespace RemoteX.SkiaComponent
                     OnJoystickMove();
                 }
             }
+
         }
 
         protected abstract void OnJoystickPressed();
@@ -81,7 +106,7 @@ namespace RemoteX.SkiaComponent
         protected override void OnDestroy()
         {
             base.OnDestroy();
-            DependencyService.Get<IInputManager>().OnTouchAction -= handleTouchAction;
+            SkiaBehaviourEngine.GetSkiaInputManager().OnSkiaTouchAction -= handleSkiaTouchAction;
         }
 
     }

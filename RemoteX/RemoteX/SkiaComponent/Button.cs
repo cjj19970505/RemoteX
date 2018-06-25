@@ -8,31 +8,53 @@ using RemoteX.Input;
 
 namespace RemoteX.SkiaComponent
 {
-    public abstract class Button : SkiaObject
+    public abstract class Button : SkiaObject, ISkiaInputComponent
     {
 
         protected virtual IArea Area { get; set; }
-        protected List<ITouch> OnTouches;
-        private IInputManager inputManager;
+
+        public int InputHeightLevel
+        {
+            get
+            {
+                return 1;
+            }
+        }
+
+        public IArea FirstTouchArea
+        {
+            get
+            {
+                return Area;
+            }
+        }
+
+        //protected List<ITouch> OnTouches;
+        protected List<SkiaTouch> OnSkiaTouches;
+        //private IInputManager inputManager;
         protected override void Init()
         {
-            inputManager = DependencyService.Get<IInputManager>();
-            inputManager.OnTouchAction += handleTouchAction;
-            OnTouches = new List<ITouch>();
+            SkiaBehaviourEngine.GetSkiaInputManager().OnSkiaTouchAction += handleSkiaTouchAction;
+            OnSkiaTouches = new List<SkiaTouch>();
         }
-        private void handleTouchAction(ITouch touch, TouchMotionAction action)
+        private void handleSkiaTouchAction(SkiaTouch skiaTouch, TouchMotionAction action)
         {
+            if(skiaTouch.HeightLevel != InputHeightLevel)
+            {
+                return;
+            }
+            ITouch touch = skiaTouch.Touch;
             CanvasInfoProvider canvasInfoProvider = SkiaBehaviourEngine.CanvasInfoProvider as CanvasInfoProvider;
             if (action == TouchMotionAction.Down)
             {
                 if (Area.IsOverlapPoint(canvasInfoProvider.DeviceToCanvasPoint(touch.Position)))
                 {
                     bool firstTouch = false;
-                    if (OnTouches.Count == 0)
+                    if (OnSkiaTouches.Count == 0)
                     {
                         firstTouch = true;
                     }
-                    OnTouches.Add(touch);
+                    OnSkiaTouches.Add(skiaTouch);
                     if (firstTouch)
                     {
                         OnButtonPressed();
@@ -41,24 +63,24 @@ namespace RemoteX.SkiaComponent
             }
             else if (action == TouchMotionAction.Move)
             {
-                if (!OnTouches.Contains(touch) && Area.IsOverlapPoint(touch.Position))
+                if (!OnSkiaTouches.Contains(skiaTouch) && Area.IsOverlapPoint(touch.Position))
                 {
                     bool firstTouch = false;
-                    if (OnTouches.Count == 0)
+                    if (OnSkiaTouches.Count == 0)
                     {
                         firstTouch = true;
                     }
-                    OnTouches.Add(touch);
+                    OnSkiaTouches.Add(skiaTouch);
                     if (firstTouch)
                     {
                         OnButtonPressed();
                     }
 
                 }
-                else if (OnTouches.Contains(touch) && !Area.IsOverlapPoint(touch.Position))
+                else if (OnSkiaTouches.Contains(skiaTouch) && !Area.IsOverlapPoint(touch.Position))
                 {
-                    OnTouches.Remove(touch);
-                    if (OnTouches.Count == 0)
+                    OnSkiaTouches.Remove(skiaTouch);
+                    if (OnSkiaTouches.Count == 0)
                     {
                         OnButtonUp();
                     }
@@ -66,25 +88,23 @@ namespace RemoteX.SkiaComponent
             }
             else if (action == TouchMotionAction.Up)
             {
-                if (OnTouches.Contains(touch))
+                if (OnSkiaTouches.Contains(skiaTouch))
                 {
-                    OnTouches.Remove(touch);
-                    if (OnTouches.Count == 0)
+                    OnSkiaTouches.Remove(skiaTouch);
+                    if (OnSkiaTouches.Count == 0)
                     {
                         OnButtonUp();
                     }
                 }
             }
-
         }
-
         protected abstract void OnButtonPressed();
         protected abstract void OnButtonUp();
 
         protected override void OnDestroy()
         {
             base.OnDestroy();
-            inputManager.OnTouchAction -= handleTouchAction;
+            SkiaBehaviourEngine.GetSkiaInputManager().OnSkiaTouchAction -= handleSkiaTouchAction;
         }
 
 

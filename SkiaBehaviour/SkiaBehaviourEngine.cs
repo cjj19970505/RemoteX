@@ -9,6 +9,17 @@ namespace SkiaBehaviour
     {
         public ICanvasInfoProvider CanvasInfoProvider { get; private set; }
         public List<SkiaObject> skiaObjects;
+        public SkiaObject GetSkiaObject(int index)
+        {
+            return skiaObjects[index];
+        }
+        public int SkiaObjectCount
+        {
+            get
+            {
+                return skiaObjects.Count;
+            }
+        }
         public SkiaBehaviourEngine(ICanvasInfoProvider canvasInfoProvider)
         {
             CanvasInfoProvider = canvasInfoProvider;
