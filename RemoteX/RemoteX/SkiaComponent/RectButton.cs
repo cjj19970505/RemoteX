@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Text;
 using SkiaSharp;
 using SkiaBehaviour;
+using RemoteX;
+using RemoteX.Service;
+using Xamarin.Forms;
 
 namespace RemoteX.SkiaComponent
 {
@@ -23,6 +26,9 @@ namespace RemoteX.SkiaComponent
         protected override void OnButtonPressed()
         {
             blackFillPaint.Color = SKColors.Red;
+            IVibrator vibrator = DependencyService.Get<IVibrator>();
+            vibrator.Vibrate();
+            
         }
         protected override void OnButtonUp()
         {

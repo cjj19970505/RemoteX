@@ -1,0 +1,18 @@
+﻿<Window x:Class="Bluetooth_Mouse_Controller_Receiver.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Bluetooth_Mouse_Controller_Receiver"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid>
+        <Button x:Name="Button_BluetoothInitialize" Content="连接" HorizontalAlignment="Left" Margin="74,51,0,0" VerticalAlignment="Top" Width="213" Click="Button_BluetoothInitialize_Click" Height="54"/>
+        <TextBox x:Name="TextBox_SetMousePositionX" HorizontalAlignment="Left" Height="23" Margin="150,267,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="120"/>
+        <TextBox x:Name="TextBox_SetMousePositionY" HorizontalAlignment="Left" Height="23" Margin="150,217,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="120"/>
+        <TextBlock x:Name="TextBlock_Log" HorizontalAlignment="Left" Margin="386,102,0,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top"/>
+        <Button x:Name="Button_MoveCursor" Content="移动鼠标" HorizontalAlignment="Left" Margin="484,263,0,0" VerticalAlignment="Top" Width="75" Click="Button_MoveCursor_Click"/>
+        <TextBox x:Name="tbMouseRateX" HorizontalAlignment="Left" Height="23" Margin="544,102,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="120" TextChanged="tbMouseRateX_TextChanged"/>
+        <TextBox x:Name="tbMouseRateY" HorizontalAlignment="Left" Height="23" Margin="544,147,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="120" TextChanged="tbMouseRateY_TextChanged"/>
+    </Grid>
+</Window>
