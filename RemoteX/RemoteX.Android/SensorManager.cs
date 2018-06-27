@@ -74,23 +74,29 @@ namespace RemoteX.Droid
             {
                 case SensorType.Gyroscope:
                     return Android.Hardware.SensorType.Gyroscope;
+                case SensorType.Accelerometer:
+                    return Android.Hardware.SensorType.Accelerometer;
+                case SensorType.MagneticField:
+                    return Android.Hardware.SensorType.MagneticField;
             }
             return null;
         }
 
         /// <summary>
-        /// 将AndroidAPI项目的SensorType转换成RemoteX里的SensorType
+        /// 获取设备方向
         /// </summary>
-        /// <param name="droidSensorType"></param>
-        /// <returns>如果为null则转化不存在</returns>
-        private SensorType? droidSensorTypeToSensorType(Android.Hardware.SensorType droidSensorType)
+        /// <param name="accelerometerReading"></param>
+        /// <param name="magnetometerReading"></param>
+        /// <returns></returns>
+        public float[] GetOrientation(float[] accelerometerReading, float[] magnetometerReading)
         {
-            switch (droidSensorType)
-            {
-                case Android.Hardware.SensorType.Gyroscope:
-                    return SensorType.Gyroscope;
-            }
-            return null;
+            float[] rotationMatrix = new float[9];
+            float[] orientationAngles = new float[3];
+            Android.Hardware.SensorManager.GetRotationMatrix(rotationMatrix, null, accelerometerReading, magnetometerReading);
+            
+            
+            Android.Hardware.SensorManager.GetOrientation(rotationMatrix, orientationAngles);
+            return orientationAngles;
         }
 
 
@@ -138,6 +144,10 @@ namespace RemoteX.Droid
                 {
                     case Android.Hardware.SensorType.Gyroscope:
                         return SensorType.Gyroscope;
+                    case Android.Hardware.SensorType.Accelerometer:
+                        return SensorType.Accelerometer;
+                    case Android.Hardware.SensorType.MagneticField:
+                        return SensorType.MagneticField;
                 }
                 return null;
             }
@@ -159,9 +169,6 @@ namespace RemoteX.Droid
                 }
 
             }
-
-
-
             public void Activate()
             {
                 if (_Registered)
@@ -179,6 +186,5 @@ namespace RemoteX.Droid
                 }
             }
         }
-
     }
 }

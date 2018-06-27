@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using RemoteXDataLibary.Mathf;
 
 namespace RemoteX.Sensor
 {
-    public enum SensorType { Gyroscope}
+    public enum SensorType { Gyroscope, Accelerometer, MagneticField }
     
     public interface ISensorManager
     {
@@ -15,5 +16,7 @@ namespace RemoteX.Sensor
         /// <param name="sensorType"></param>
         /// <returns></returns>
         ISensor this[SensorType sensorType] { get; }
+
+        float[] GetOrientation(float[] accelerometerReading, float[] magnetometerReading);
     }
 }
