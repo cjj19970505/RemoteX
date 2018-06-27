@@ -8,11 +8,12 @@
         Title="MainWindow" Height="450" Width="800">
     <Grid>
         <Button x:Name="Button_BluetoothInitialize" Content="连接" HorizontalAlignment="Left" Margin="74,51,0,0" VerticalAlignment="Top" Width="213" Click="Button_BluetoothInitialize_Click" Height="54"/>
-        <TextBox x:Name="TextBox_SetMousePositionX" HorizontalAlignment="Left" Height="23" Margin="150,267,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="120"/>
-        <TextBox x:Name="TextBox_SetMousePositionY" HorizontalAlignment="Left" Height="23" Margin="150,217,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="120"/>
+        <TextBox x:Name="TextBox_SetMousePositionX" HorizontalAlignment="Left" Height="23" Margin="563,284,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="120"/>
+        <TextBox x:Name="TextBox_SetMousePositionY" HorizontalAlignment="Left" Height="23" Margin="524,224,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="120"/>
         <TextBlock x:Name="TextBlock_Log" HorizontalAlignment="Left" Margin="386,102,0,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top"/>
-        <Button x:Name="Button_MoveCursor" Content="移动鼠标" HorizontalAlignment="Left" Margin="484,263,0,0" VerticalAlignment="Top" Width="75" Click="Button_MoveCursor_Click"/>
+        <Button x:Name="Button_MoveCursor" Content="移动鼠标" HorizontalAlignment="Left" Margin="74,123,0,0" VerticalAlignment="Top" Width="75" Click="Button_MoveCursor_Click"/>
         <TextBox x:Name="tbMouseRateX" HorizontalAlignment="Left" Height="23" Margin="544,102,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="120" TextChanged="tbMouseRateX_TextChanged"/>
         <TextBox x:Name="tbMouseRateY" HorizontalAlignment="Left" Height="23" Margin="544,147,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="120" TextChanged="tbMouseRateY_TextChanged"/>
+        <Button x:Name="btn_StartDebugBackend" Content="启动调试后端" HorizontalAlignment="Left" Margin="74,156,0,0" VerticalAlignment="Top" Width="132" Height="48" Click="btn_StartDebugBackend_Click"/>
     </Grid>
 </Window>

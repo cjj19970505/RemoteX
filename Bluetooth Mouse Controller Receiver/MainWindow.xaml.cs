@@ -66,6 +66,7 @@ namespace Bluetooth_Mouse_Controller_Receiver
                 foreach (var data in datas)
                 {
                     controllerManager.addData(data);
+                    RemoteXDebugBackend.DebugBackend.Instance.Set(data);
                     Debug.WriteLine(data);
                 }
             }
@@ -105,6 +106,15 @@ namespace Bluetooth_Mouse_Controller_Receiver
                 }
 
             }
+        }
+
+        private async void btn_StartDebugBackend_Click(object sender, RoutedEventArgs e)
+        {
+            if (RemoteXDebugBackend.DebugBackend.Instance.Running)
+            {
+                return;
+            }
+            await RemoteXDebugBackend.DebugBackend.Instance.StartAsync(8081);
         }
     }
 }

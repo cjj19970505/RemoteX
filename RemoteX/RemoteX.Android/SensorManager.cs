@@ -30,11 +30,11 @@ namespace RemoteX.Droid
         /// 被获取过的Sensor列表
         /// 若同一个Sensor在多处被获取多次，则确保获取的Sensor都是同一个实例
         /// </summary>
-        private List<Sensor> _Sensors;
+        private List<SingleSensor> _Sensors;
         public SensorManager()
         {
             _DroidSensorManager = (Android.Hardware.SensorManager)Application.Context.GetSystemService(Context.SensorService);
-            _Sensors = new List<Sensor>();
+            _Sensors = new List<SingleSensor>();
         }
 
         public ISensor this[SensorType sensorType]
@@ -57,7 +57,7 @@ namespace RemoteX.Droid
                         return _Sensors[i];
                     }
                 }
-                Sensor sensor = new Sensor(this, droidSensor);
+                SingleSensor sensor = new SingleSensor(this, droidSensor);
                 _Sensors.Add(sensor);
                 return sensor;
             }
@@ -97,7 +97,7 @@ namespace RemoteX.Droid
         /// <summary>
         /// RemoteX种ISensor的具体实现
         /// </summary>
-        private class Sensor : Java.Lang.Object, ISensor, Android.Hardware.ISensorEventListener
+        private class SingleSensor : Java.Lang.Object, ISensor, Android.Hardware.ISensorEventListener
         {
             public SensorType SensorType
             {
@@ -123,7 +123,7 @@ namespace RemoteX.Droid
             /// </summary>
             private DateTime _LatestUpdatedDataDateTime;
 
-            public Sensor(SensorManager sensorManager, Android.Hardware.Sensor droidSensor)
+            public SingleSensor(SensorManager sensorManager, Android.Hardware.Sensor droidSensor)
             {
                 this.DroidSensor = droidSensor;
                 this._SensorManager = sensorManager;

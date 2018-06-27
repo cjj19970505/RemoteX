@@ -146,6 +146,10 @@
       <Project>{2981f4e2-c75c-4ffb-979e-b3e965c4d0d8}</Project>
       <Name>RemoteXDataLibary</Name>
     </ProjectReference>
+    <ProjectReference Include="..\RemoteXDebugBackend\RemoteXDebugBackend.csproj">
+      <Project>{118e7356-66d1-4096-8a39-c57e72e40af9}</Project>
+      <Name>RemoteXDebugBackend</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

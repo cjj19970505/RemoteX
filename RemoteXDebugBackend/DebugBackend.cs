@@ -1,5 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Net;
+using System.Text;
+using System.Threading.Tasks;
 using RemoteXDataLibary;
 /// <summary>
 /// 调试后端
@@ -12,10 +17,12 @@ namespace RemoteXDebugBackend
     public class DebugBackend
     {
         private static DebugBackend _Instance;
+        
         public static DebugBackend Instance
         {
             get
             {
+                
                 if(_Instance == null)
                 {
                     _Instance = new DebugBackend();
@@ -26,14 +33,25 @@ namespace RemoteXDebugBackend
 
         public bool Running { get; private set; }
 
-        private Dictionary<int, Data> latestData;
+        public event EventHandler OnServerStart;
+        public event EventHandler OnServerFailed;
+        public event EventHandler OnServerClosed;
         
-        public void Start()
+        /// <summary>
+        /// 储存最新的输入数据
+        /// </summary>
+        private Dictionary<int, Data> latestData;
+
+        public async Task StartAsync(int port)
         {
             latestData = new Dictionary<int, Data>();
+            Running = true;
+            Port = port;
+            await startServer();
         }
         public void Set(Data data)
         {
+            
             if (latestData.ContainsKey(data.dataType))
             {
                 latestData[data.dataType] = data;
@@ -44,6 +62,77 @@ namespace RemoteXDebugBackend
             }
         }
 
+        
+        public int Port { get; private set; }
+        private async Task startServer()
+        {
+            
+            HttpListener httpListener = new HttpListener();
+            httpListener.Prefixes.Add("http://*:" + Port + "/");
+            try
+            {
+                httpListener.Start();
+                HttpListenerResponse response = null;
+                System.Diagnostics.Debug.WriteLine("DEBUGBACKEND::Start Listening...");
+                OnServerStart?.Invoke(this, null);
+                while (true)
+                {
+                    try
+                    {
+                        //HttpListenerContext context = httpListener.GetContext();
+                        HttpListenerContext context = await httpListener.GetContextAsync();
+                        HttpListenerRequest request = context.Request;
+                        string[] segments = request.Url.Segments;
+                        int dataTypeInt = 0;
+                        foreach(string segment in segments)
+                        {
+                            Console.Write("(" + segment + ")");
+                        }
+                        if (segments[1] == "get/")
+                        {
+                            dataTypeInt = int.Parse(segments[2]);
+                            
+                        }
+
+                        Console.WriteLine();
+                        response = context.Response;
+                        byte[] responseBuffer = null;
+                        if (latestData.ContainsKey(dataTypeInt))
+                        {
+                            //responseBuffer = Data.encodeSensorData(latestData[dataTypeInt]);
+                            responseBuffer = Encoding.Default.GetBytes(latestData[dataTypeInt].ToString());
+                        }
+                        else
+                        {
+                            responseBuffer = Encoding.Default.GetBytes("null");
+                        }
+                        response.ContentLength64 = responseBuffer.Length;
+                        Stream output = response.OutputStream;
+                        output.Write(responseBuffer, 0, responseBuffer.Length);
+                    }
+                    catch(HttpListenerException ex)
+                    {
+                        Console.WriteLine("ERROR IN RESPONSE AND REQUEST: " + ex.Message);
+                    }
+                    finally
+                    {
+                        if(response != null)
+                        {
+                            response.Close();
+                        }
+                    }
+                }
+            }
+            catch(HttpListenerException ex)
+            {
+                Console.WriteLine("ERROR IN FUCKING CONNECTION: " + ex.Message);
+                OnServerFailed?.Invoke(this, null);
+            }
+            finally
+            {
+                httpListener.Close();
+            }
+        }
         
     }
 }

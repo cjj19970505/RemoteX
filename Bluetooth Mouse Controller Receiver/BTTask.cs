@@ -8,6 +8,7 @@ using Windows.Networking.Sockets;
 using System.Diagnostics;
 using Windows.Storage.Streams;
 using System.Threading;
+using RemoteXDebugBackend;
 
 namespace Bluetooth_Mouse_Controller_Receiver
 {
