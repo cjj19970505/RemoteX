@@ -23,4 +23,8 @@ namespace RemoteX.Sensor
         void Deactivate();
         
     }
+    public interface IVelocitySensor : ISensor
+    {
+        void Reset();
+    }
 }

@@ -31,12 +31,22 @@ namespace RemoteX.Controller
             ISensor magneticField = sensorManager[SensorType.MagneticField];
             magneticField.Activate();
             magneticField.OnSensorDataUpdated += _SensorDataHandler;
-
+            ISensor rotationVectorSensor = sensorManager[SensorType.RotationVector];
+            rotationVectorSensor.Activate();
+            rotationVectorSensor.OnSensorDataUpdated += _SensorDataHandler;
+            IVelocitySensor velocitySensor = sensorManager[SensorType.Velocity] as IVelocitySensor;
+            velocitySensor.Activate();
+            velocitySensor.OnSensorDataUpdated += _SensorDataHandler;
+            Button resetButton = new Button();
+            resetButton.Text = "RESET";
+            resetButton.Clicked += (object sender, EventArgs e) => { velocitySensor.Reset(); };
 
             ControllerContentView = new StackLayout
             {
                 Children = {
-                    new Label { Text = "Sensor Testttt" }
+                    new Label { Text = "Sensor Testttt" },
+                    resetButton
+
                 }
             };
         }
@@ -47,24 +57,24 @@ namespace RemoteX.Controller
             IConnection connection = _ConnectionManager.ControllerConnection;
             if (sensor.SensorType == SensorType.Gyroscope)
             {
-                
+
                 if (connection != null)
                 {
-                    connection.SendAsync(Data.encodeSensorData(new Data((int)DataType.SensorGyroscope, data)));
+                    //connection.SendAsync(Data.encodeSensorData(new Data((int)DataType.SensorGyroscope, data)));
                 }
             }
             if (sensor.SensorType == SensorType.Accelerometer || sensor.SensorType == SensorType.MagneticField)
             {
                 if (sensor.SensorType == SensorType.Accelerometer)
                 {
-                    if(latestAccelerometerData ==null)
+                    if (latestAccelerometerData == null)
                     {
                         latestAccelerometerData = new float[3];
                     }
                     latestAccelerometerData[0] = data[0];
                     latestAccelerometerData[1] = data[1];
                     latestAccelerometerData[2] = data[2];
-                    
+
                 }
                 else if (sensor.SensorType == SensorType.MagneticField)
                 {
@@ -79,10 +89,24 @@ namespace RemoteX.Controller
                 if (latestAccelerometerData != null && latestMagneticFieldData != null)
                 {
                     float[] orientation = DependencyService.Get<ISensorManager>().GetOrientation(latestAccelerometerData, latestMagneticFieldData);
-                    if(connection != null)
+                    if (connection != null)
                     {
-                        connection.SendAsync(Data.encodeSensorData(new Data((int)DataType.OrientationAngle, orientation)));
+                        //connection.SendAsync(Data.encodeSensorData(new Data((int)DataType.OrientationAngle, orientation)));
                     }
+                }
+            }
+            if (sensor.SensorType == SensorType.RotationVector)
+            {
+                if (connection != null)
+                {
+                    //connection.SendAsync(Data.encodeSensorData(new Data((int)DataType.SensorRotationVector, data)));
+                }
+            }
+            if (sensor.SensorType == SensorType.Velocity)
+            {
+                if (connection != null)
+                {
+                    connection.SendAsync(Data.encodeSensorData(new Data((int)DataType.Velocity, data)));
                 }
             }
 
@@ -95,12 +119,12 @@ namespace RemoteX.Controller
         private void printArray(float[] array)
         {
             string s = "";
-            for(int i = 0;i<array.Length;i++)
+            for (int i = 0; i < array.Length; i++)
             {
                 s += array[i];
-                if(i == array.Length-1)
+                if (i == array.Length - 1)
                 {
-                    
+
                 }
                 else
                 {

@@ -5,7 +5,7 @@ using RemoteXDataLibary.Mathf;
 
 namespace RemoteX.Sensor
 {
-    public enum SensorType { Gyroscope, Accelerometer, MagneticField }
+    public enum SensorType { Gyroscope, Accelerometer, MagneticField, RotationVector, Velocity }
     
     public interface ISensorManager
     {
