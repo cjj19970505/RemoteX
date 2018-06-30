@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\RemoteXDataLibary\RemoteXDataLibary.csproj" />
+    <PackageReference Include="SkiaSharp" Version="1.60.1" />
   </ItemGroup>
 
 </Project>

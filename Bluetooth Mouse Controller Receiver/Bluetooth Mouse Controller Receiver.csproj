@@ -142,8 +142,8 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\RemoteXDataLibary\RemoteXDataLibary.csproj">
-      <Project>{2981f4e2-c75c-4ffb-979e-b3e965c4d0d8}</Project>
+    <ProjectReference Include="..\RemoteXDataLibary\RemoteXDataLibary.csproj">
+      <Project>{02b0015b-c188-4622-ab6c-ac46b4403467}</Project>
       <Name>RemoteXDataLibary</Name>
     </ProjectReference>
     <ProjectReference Include="..\RemoteXDebugBackend\RemoteXDebugBackend.csproj">

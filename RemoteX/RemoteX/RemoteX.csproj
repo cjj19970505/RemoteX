@@ -41,7 +41,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\RemoteXDataLibary\RemoteXDataLibary.csproj" />
+    <ProjectReference Include="..\..\RemoteXDebugBackend\RemoteXDebugBackend.csproj" />
     <ProjectReference Include="..\..\SkiaBehaviour\SkiaBehaviour.csproj" />
   </ItemGroup>
 
