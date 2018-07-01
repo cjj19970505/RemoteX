@@ -11,6 +11,7 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using Java.Util;
+using RemoteX.Bluetooth;
 
 [assembly: Xamarin.Forms.Dependency(typeof(RemoteX.Droid.BluetoothManager))]
 namespace RemoteX.Droid
@@ -105,6 +106,19 @@ namespace RemoteX.Droid
             BluetoothClientConnection clientConnection = new BluetoothClientConnection(this, device, uuid);
             _BluetoothConnections.Add(clientConnection);
             return clientConnection;
+        }
+
+        public IBluetoothDevice GetBluetoothDevice(ulong macAddress)
+        {
+            byte[] addressBytesULong = BitConverter.GetBytes(macAddress);
+            byte[] addressBytes = new byte[6];
+            for(int i =0;i<addressBytes.Length;i++)
+            {
+                addressBytes[i] = addressBytesULong[5-i];
+            }
+            BluetoothDevice device = _BluetoothAdapter.GetRemoteDevice(addressBytes);
+            System.Diagnostics.Debug.WriteLine("FUCKADD" + device.Address);
+            return new BluetoothDeviceWrapper(device);
         }
 
         public RemoteX.Bluetooth.IBluetoothDevice[] PairedDevices

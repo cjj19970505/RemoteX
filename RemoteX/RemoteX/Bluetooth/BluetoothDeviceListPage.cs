@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Diagnostics;
 using Xamarin.Forms;
+using RemoteXDataLibary;
 
 namespace RemoteX.Bluetooth
 {
@@ -13,6 +14,7 @@ namespace RemoteX.Bluetooth
         IBluetoothManager bluetoothManager;
         ObservableCollection<IBluetoothDevice> bluetoothDeviceList;
         Button scanDevicesButton;
+        Button qrCodeConnectButton;
         public BluetoothDeviceListPage()
         {
 
@@ -23,8 +25,12 @@ namespace RemoteX.Bluetooth
             bluetoothDeviceListView.ItemSelected += onDeviceSelected;
             bluetoothDeviceListView.ItemsSource = bluetoothDeviceList;
             bluetoothDeviceListView.ItemTemplate = new DataTemplate(typeof(BluetoothDeviceCell));
-            scanDevicesButton = new Button();
 
+            qrCodeConnectButton = new Button();
+            qrCodeConnectButton.Text = "QRCode";
+            qrCodeConnectButton.Clicked += onQRCodeConnectClicked;
+
+            scanDevicesButton = new Button();
             scanDevicesButton.Clicked += (object sender, EventArgs e) =>
             {
                 resetDeviceList();
@@ -38,6 +44,7 @@ namespace RemoteX.Bluetooth
             Content = new StackLayout
             {
                 Children = {
+                    qrCodeConnectButton,
                     scanDevicesButton,
                     bluetoothDeviceListView
                 }
@@ -95,5 +102,40 @@ namespace RemoteX.Bluetooth
             bluetoothManager.onDevicesFound -= onDevicesFound;
             bluetoothManager.onDiscoveryFinished -= onDiscoveryFinished;
         }
+        private async void onQRCodeConnectClicked(object sender, EventArgs e)
+        {
+            var scanner = new ZXing.Mobile.MobileBarcodeScanner();
+            var scanResult = await scanner.Scan();
+            if(scanResult != null && scanResult.Text!="")
+            {
+                var connectInfo = Connection.DecodeBluetoothConnection(scanResult.Text);
+                Guid guid = connectInfo.Guid;
+                IBluetoothDevice bluetoothDevice = DependencyService.Get<IBluetoothManager>().GetBluetoothDevice(connectInfo.DeviceAddress);
+
+
+                IConnectionManager connectionManager = DependencyService.Get<IConnectionManager>();
+                IConnection currentConnection = connectionManager.ControllerConnection;
+                ConnectionEstablishState connectState = ConnectionEstablishState.failed;
+                IConnection connection = DependencyService.Get<IBluetoothManager>().CreateRfcommClientConnection(bluetoothDevice, guid);
+                if (connectionManager.ControllerConnection != null)
+                {
+                    bool result = await DisplayAlert("Connect", "Stop Current Connection ?", "Yes", "No");
+                    if (result)
+                    {
+                        if (currentConnection.ConnectionEstablishState == ConnectionEstablishState.Connecting)
+                        {
+                            currentConnection.AbortConnecting();
+                        }
+                    }
+                }
+                connectionManager.ControllerConnection = connection;
+                connectState = await connection.ConnectAsync();
+
+            }
+        }
+
+
+
+
     }
 }

@@ -45,5 +45,7 @@ namespace RemoteX.Bluetooth
         IConnection CreateRfcommClientConnection(IBluetoothDevice device, Guid guid);
 
         IBluetoothDevice[] PairedDevices { get; }
+
+        IBluetoothDevice GetBluetoothDevice(ulong macAddress);
     }
 }
