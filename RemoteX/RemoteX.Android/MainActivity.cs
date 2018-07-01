@@ -8,6 +8,7 @@ using Android.Widget;
 using Android.OS;
 using Android.Content;
 using Android.Bluetooth;
+using ZXing.Mobile;
 
 namespace RemoteX.Droid
 {
@@ -27,13 +28,23 @@ namespace RemoteX.Droid
             RequestWindowFeature(WindowFeatures.NoTitle);//设置无标题
             Window.SetFlags(WindowManagerFlags.Fullscreen, WindowManagerFlags.Fullscreen);//设置全屏
             RequestedOrientation = ScreenOrientation.Landscape;
-            
+
             base.OnCreate(bundle);
-            
+
+            //ZXing
+            ZXing.Net.Mobile.Forms.Android.Platform.Init();
+            MobileBarcodeScanner.Initialize(Application);
+
             global::Xamarin.Forms.Forms.Init(this, bundle);
             LoadApplication(new App());
 
 
+        }
+
+        public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Permission[] grantResults)
+        {
+            //base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+            global::ZXing.Net.Mobile.Android.PermissionsHandler.OnRequestPermissionsResult(requestCode, permissions, grantResults);
         }
 
         /// <summary>
@@ -43,7 +54,7 @@ namespace RemoteX.Droid
         {
             get
             {
-                if(_InputManager == null)
+                if (_InputManager == null)
                 {
                     _InputManager = Xamarin.Forms.DependencyService.Get<RemoteX.Input.IInputManager>() as InputManager;
                 }
@@ -59,11 +70,24 @@ namespace RemoteX.Droid
 
         public override bool OnKeyDown([GeneratedEnum] Keycode keyCode, KeyEvent e)
         {
-            if(keyCode == Keycode.Back)
+            if (keyCode == Keycode.Back)
             {
                 return false;
             }
             return base.OnKeyDown(keyCode, e);
+        }
+
+        public async void ScanQRCode()
+        {
+            // Initialize the scanner first so it can track the current context
+            MobileBarcodeScanner.Initialize(Application);
+
+            var scanner = new ZXing.Mobile.MobileBarcodeScanner();
+
+            var result = await scanner.Scan();
+
+            if (result != null)
+                System.Diagnostics.Debug.WriteLine("Scanned Barcode: " + result.Text);
         }
     }
 }

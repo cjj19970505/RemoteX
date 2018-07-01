@@ -9,6 +9,10 @@ using System.Diagnostics;
 using Windows.Storage.Streams;
 using System.Threading;
 using RemoteXDebugBackend;
+using System.Drawing;
+using ZXing;
+using ZXing.QrCode;
+using Windows.Devices.Bluetooth;
 
 namespace Bluetooth_Mouse_Controller_Receiver
 {
@@ -28,11 +32,26 @@ namespace Bluetooth_Mouse_Controller_Receiver
         public delegate void BTTaskHandler(BTTask btTask);
         public event MessageHandler onReceiveMessage;
         public event BTTaskHandler onConnectionEstablished;
-
+        public BluetoothAdapter _BluetoothAdapter;
         public BTTask(Guid taskId)
         {
             this._taskId = taskId;
             packMessageBuffer = new Queue<MessagePack>();
+            Task<BluetoothAdapter> t = BluetoothAdapter.GetDefaultAsync().AsTask();
+            while (!t.IsCompleted)
+            {
+                System.Diagnostics.Debug.WriteLine("NOT COMPLETED");
+            }
+            BluetoothAdapter bluetoothAdapter = t.Result;
+            if(bluetoothAdapter != null)
+            {
+                Debug.WriteLine("MAC::" + bluetoothAdapter.BluetoothAddress);
+                _BluetoothAdapter = bluetoothAdapter;
+            }
+            else
+            {
+                Debug.WriteLine("WTF");
+            }
             //_LastMessageProcessedTime = DateTime.Now;
         }
         public Guid taskId
@@ -267,6 +286,26 @@ namespace Bluetooth_Mouse_Controller_Receiver
                 }
             });
 
+        }
+
+        
+        public Bitmap QRCode
+        {
+            get
+            {
+                BarcodeWriter writer = new BarcodeWriter();
+                writer.Format = BarcodeFormat.QR_CODE;
+                QrCodeEncodingOptions options = new QrCodeEncodingOptions();
+                options.DisableECI = true;
+                options.CharacterSet = "UTF-8";
+                options.Width = 500;
+                options.Height = 500;
+                options.Margin = 1;
+                writer.Options = options;
+                string encodedConnection = RemoteXDataLibary.Connection.EncodeBluetoothConnection(_BluetoothAdapter.BluetoothAddress, uuid);
+                Bitmap map = writer.Write(encodedConnection);
+                return map;
+            }
         }
 
         class MessagePack

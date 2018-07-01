@@ -15,6 +15,7 @@ namespace RemoteX.MainPage
         public static IList<MasterItemGroup> All { private set; get; }
         static MasterItemGroup()
         {
+            
             List<MasterItemGroup> groups = new List<MasterItemGroup>
             {
                 new MasterItemGroup("Connection")
@@ -22,7 +23,9 @@ namespace RemoteX.MainPage
                     new MasterMenuItem("Bluetooth",typeof(Bluetooth.BluetoothDeviceListPage)),
                     new MasterMenuItem("WIFI P2P", typeof(ContentPage))
 
+
                 },
+                
                 new ControllerItemsGroup()
             };
             All = groups;

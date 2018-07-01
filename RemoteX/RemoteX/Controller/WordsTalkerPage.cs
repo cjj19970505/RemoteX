@@ -8,20 +8,39 @@ using RemoteX.Bluetooth;
 using System.Diagnostics;
 using RemoteXDataLibary;
 using RemoteX.Sensor;
+using ZXing.Mobile;
 
 namespace RemoteX.Controller
 {
-	public class WordsTalkerPage : ControllerPage
-	{
+    public class WordsTalkerPage : ControllerPage
+    {
         private Editor sendEditor;
-		public WordsTalkerPage ():base()
-		{
+        public WordsTalkerPage() : base()
+        {
             sendEditor = new Editor();
             Button sendButton = new Button()
             {
                 Text = "Send",
             };
             sendButton.Clicked += onSendBtnClicked;
+
+            Button scanQRCode = new Button();
+            sendButton.Clicked += async (sender, e) =>
+            {
+                try
+                {
+	                //MobileBarcodeScanner.Initialize (Application);
+                    var scanner = new ZXing.Mobile.MobileBarcodeScanner();
+                    var result = await scanner.Scan();
+
+                    if (result != null)
+                        Console.WriteLine("Scanned Barcode: " + result.Text);
+                }
+                catch (Exception exce)
+                {
+
+                }
+            };
 
             StackLayout senderLayout = new StackLayout()
             {
@@ -32,22 +51,23 @@ namespace RemoteX.Controller
                     sendButton
                 }
             };
-            Content = new StackLayout {
+            Content = new StackLayout
+            {
                 Orientation = StackOrientation.Vertical,
                 VerticalOptions = LayoutOptions.End,
                 Children = {
                     senderLayout
                 }
-			};
-            
-		}
+            };
+
+        }
 
         private async void onSendBtnClicked(object sender, EventArgs e)
         {
             string text = sendEditor.Text;
             IConnectionManager connectionManager = DependencyService.Get<IConnectionManager>();
             IConnection connection = connectionManager.ControllerConnection;
-            if(connection==null)
+            if (connection == null)
             {
                 Debug.WriteLine("No Connection");
                 return;
@@ -59,8 +79,10 @@ namespace RemoteX.Controller
             data = new Data((int)DataType.MouseRightUp, new float[] { 1.0f });
             Debug.WriteLine("SENDINGDATA::" + data);
             await connection.SendAsync(Data.encodeSensorData(data));
-            Debug.WriteLine("SUCCFULLY SENDED::"+data);
+            Debug.WriteLine("SUCCFULLY SENDED::" + data);
+
+
 
         }
-	}
+    }
 }

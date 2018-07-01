@@ -18,6 +18,9 @@ using Windows.Networking.Sockets;
 using Windows.Storage.Streams;
 using System.Diagnostics;
 using System.Threading;
+using System.IO;
+using System.Drawing;
+using System.Drawing.Imaging;
 
 namespace Bluetooth_Mouse_Controller_Receiver
 {
@@ -46,8 +49,27 @@ namespace Bluetooth_Mouse_Controller_Receiver
             btTask.startAdvertising();
             ControllerManager controllerManager = new ControllerManager();
             controllerManagers.Add(btTask.taskId, controllerManager);
-            
+            ImageSource is_QRCode = BitmapToBitmapImage(btTask.QRCode);
+            img_QRCode.Source = is_QRCode;
             //btTask.onReceiveMessage += Receive();
+        }
+        public static BitmapImage BitmapToBitmapImage(Bitmap bitmap)
+        {
+            using (MemoryStream stream = new MemoryStream())
+            {
+                bitmap.Save(stream, ImageFormat.Png); // 坑点：格式选Bmp时，不带透明度
+
+                stream.Position = 0;
+                BitmapImage result = new BitmapImage();
+                result.BeginInit();
+                // According to MSDN, "The default OnDemand cache option retains access to the stream until the image is needed."
+                // Force the bitmap to load right now so we can dispose the stream.
+                result.CacheOption = BitmapCacheOption.OnLoad;
+                result.StreamSource = stream;
+                result.EndInit();
+                result.Freeze();
+                return result;
+            }
         }
         private void onReceiveData(BTTask btTask, byte[] message)
         {
