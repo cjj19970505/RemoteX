@@ -117,7 +117,6 @@ namespace RemoteX.Droid
                 addressBytes[i] = addressBytesULong[5-i];
             }
             BluetoothDevice device = _BluetoothAdapter.GetRemoteDevice(addressBytes);
-            System.Diagnostics.Debug.WriteLine("FUCKADD" + device.Address);
             return new BluetoothDeviceWrapper(device);
         }
 

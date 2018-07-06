@@ -73,10 +73,10 @@ namespace Bluetooth_Mouse_Controller_Receiver
         }
         private void onReceiveData(BTTask btTask, byte[] message)
         {
-            RemoteXDataLibary.Data[] datas = null;
+            RemoteXDataLibary.RemoteXControlMessage[] datas = null;
             try
             {
-                datas = RemoteXDataLibary.Data.fromBytes(message);
+                datas = RemoteXDataLibary.RemoteXControlMessage.FromBytes(message);
             }
             catch(Exception exception)
             {

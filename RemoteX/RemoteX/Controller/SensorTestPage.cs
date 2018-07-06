@@ -60,7 +60,7 @@ namespace RemoteX.Controller
 
                 if (connection != null)
                 {
-                    //connection.SendAsync(Data.encodeSensorData(new Data((int)DataType.SensorGyroscope, data)));
+                    connection.SendAsync(new RemoteXControlMessage((int)DataType.SensorGyroscope, data).Bytes);
                 }
             }
             if (sensor.SensorType == SensorType.Accelerometer || sensor.SensorType == SensorType.MagneticField)
@@ -106,7 +106,7 @@ namespace RemoteX.Controller
             {
                 if (connection != null)
                 {
-                    connection.SendAsync(Data.encodeSensorData(new Data((int)DataType.Velocity, data)));
+                    //connection.SendAsync(Data.encodeSensorData(new Data((int)DataType.Velocity, data)));
                 }
             }
 

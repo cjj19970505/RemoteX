@@ -71,8 +71,8 @@ namespace RemoteX.Controller
             IConnection connection = connectionManager.ControllerConnection;
             if (connection != null)
             {
-                Data data = new Data((int)DataType.TouchMouseSpeed, new float[] { speed.x, speed.y });
-                connection.SendAsync(Data.encodeSensorData(data));
+                RemoteXControlMessage data = new RemoteXControlMessage((int)DataType.TouchMouseSpeed, new float[] { speed.x, speed.y });
+                connection.SendAsync(data.Bytes);
             }
             previousTime = currTime;
             return true;
@@ -107,8 +107,8 @@ namespace RemoteX.Controller
                 IConnection connection = controllerManager.ControllerConnection;
                 if(connection != null && connection.ConnectionEstablishState == ConnectionEstablishState.Succeed)
                 {
-                    Data data = new Data((int)DataType.TouchMouseSpeed, new float[] { speed.x, speed.y });
-                    await connection.SendAsync(Data.encodeSensorData(data));
+                    RemoteXControlMessage data = new RemoteXControlMessage((int)DataType.TouchMouseSpeed, new float[] { speed.x, speed.y });
+                    await connection.SendAsync(data.Bytes);
                 }
             }
             else if(action == TouchMotionAction.Up)

@@ -43,7 +43,7 @@ namespace RemoteX.Droid
             /// 用来衡量发送的两个消息的时间差距，主要要在接收端做延迟防抖动处理
             /// </summary>
             private DateTime _LastSendDateTime;
-            
+
             private BluetoothManager _BluetoothManager;
             public BluetoothClientConnection(BluetoothManager bluetoothManager, BluetoothDevice device, UUID guid)
             {
@@ -123,57 +123,28 @@ namespace RemoteX.Droid
             /// </summary>
             /// <param name="message"></param>
             /// <returns></returns>
-            private byte[] _PackMessage(byte[] message, int controlCode = 0)
+            private byte[] _PackMessage(int controlCode, byte[] message)
             {
-                TimeSpan timeSpan;
-                if (controlCode == 0)
-                {
-                    DateTime currDateTime = DateTime.Now;
-                    timeSpan = currDateTime - _LastSendDateTime;
-                    _LastSendDateTime = currDateTime;
-                }
-                else
-                {
-                    timeSpan = new TimeSpan(0, 0, 0, 0, -controlCode);
-                }
-                
+                byte[] controlCodeBytes = BitConverter.GetBytes(controlCode);
                 byte[] dataLengthBytes = BitConverter.GetBytes(message.Length);
-                byte[] timeMsg = BitConverter.GetBytes(timeSpan.TotalMilliseconds);
-                byte[] packedMsg = new byte[message.Length + timeMsg.Length + dataLengthBytes.Length];
-                dataLengthBytes.CopyTo(packedMsg, 0);
-                timeMsg.CopyTo(packedMsg, dataLengthBytes.Length);
-                message.CopyTo(packedMsg, dataLengthBytes.Length + timeMsg.Length);
+                byte[] packedMsg = new byte[controlCodeBytes.Length + dataLengthBytes.Length + message.Length];
+                controlCodeBytes.CopyTo(packedMsg, 0);
+                dataLengthBytes.CopyTo(packedMsg, controlCodeBytes.Length);
+                message.CopyTo(packedMsg, controlCodeBytes.Length + dataLengthBytes.Length);
                 return packedMsg;
             }
 
             public async Task SendAsync(byte[] message)
             {
-                byte[] packedMsg = _PackMessage(message);
+                await SendAsync(2, message);
+            }
+
+            private async Task SendAsync(int controlCode, byte[] message)
+            {
+                byte[] packedMsg = _PackMessage(controlCode, message);
                 await _OutputStream.WriteAsync(packedMsg, 0, packedMsg.Length);
             }
 
-            private async Task SendAsync(int controlCode)
-            {
-                try
-                {
-                    byte[] packedMsg = _PackMessage(new byte[] { 0 }, 4);
-                    await _OutputStream.WriteAsync(packedMsg, 0, packedMsg.Length);
-                }
-                catch(Exception e)
-                {
-                    if(e.Message == "Broken pipe")
-                    {
-                        _ReleaseAllConnectionResource();
-                        //this.ConnectionEstablishState = ConnectionEstablishState.Disconnect;
-                        //onConnectionEstalblishResult?.Invoke(this, ConnectionEstablishState.Disconnect);
-
-                        this.ConnectionEstablishState = ConnectionEstablishState.Connecting;
-                        ConnectAsync();
-                        onConnectionEstalblishResult?.Invoke(this, ConnectionEstablishState.Connecting);
-                    }
-                }
-            }
-            
             public async Task<ConnectionEstablishState> ConnectAsync()
             {
                 this.ConnectionEstablishState = ConnectionEstablishState.Connecting;
@@ -195,7 +166,7 @@ namespace RemoteX.Droid
                 {
                     this.ConnectionEstablishState = state;
                 }
-                if(this.ConnectionEstablishState == ConnectionEstablishState.Succeed)
+                if (this.ConnectionEstablishState == ConnectionEstablishState.Succeed)
                 {
                     Device.StartTimer(new TimeSpan(0, 0, 0, 0, 500), sendControlCodeTimerFunc);
                 }
@@ -205,10 +176,28 @@ namespace RemoteX.Droid
 
             private bool sendControlCodeTimerFunc()
             {
-                Task.Run(async () => { await SendAsync(4); });
+                Task.Run(async () =>
+                {
+                    try
+                    {
+                        await SendAsync(1, new byte[] { 0 });
+                    }
+                    catch (Exception e)
+                    {
+                        if (e.Message == "Broken pipe")
+                        {
+                            _ReleaseAllConnectionResource();
+                            this.ConnectionEstablishState = ConnectionEstablishState.Connecting;
+                            System.Diagnostics.Debug.WriteLine("BROKEN PIPE FUCK YOU ");
+                            ConnectAsync();
+                            onConnectionEstalblishResult?.Invoke(this, ConnectionEstablishState.Connecting);
+                        }
+                    }
+                });
+
                 return true;
             }
-            
+
             public void AbortConnecting()
             {
                 _AbortConnecting = true;
@@ -216,22 +205,22 @@ namespace RemoteX.Droid
 
             private void _ReleaseAllConnectionResource()
             {
-                
-                if(_InputStream != null)
+
+                if (_InputStream != null)
                 {
                     _InputStream.Close();
                 }
-                if(_OutputStream != null)
+                if (_OutputStream != null)
                 {
                     _OutputStream.Close();
                 }
-                if(_BluetoothSocket != null)
+                if (_BluetoothSocket != null)
                 {
                     _BluetoothSocket.Close();
                 }
                 ConnectionEstablishState = ConnectionEstablishState.Abort;
             }
         }
-    } 
-    
+    }
+
 }

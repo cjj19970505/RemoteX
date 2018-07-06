@@ -113,17 +113,14 @@ namespace Bluetooth_Mouse_Controller_Receiver
         }
         async void receive()
         {
-            //try
-            //{
             DataReader reader = new DataReader(_socket.InputStream);
             MessagePack[] messagePacks;
             while (true)
             {
 
                 reader.InputStreamOptions = InputStreamOptions.Partial;
-                byte[] dataBytes = new byte[0];
+                //byte[] dataBytes = new byte[0];
                 messagePacks = await getBytes(reader);
-
                 if (_socket == null)
                 {
                     Debug.WriteLine("接口关闭");
@@ -132,12 +129,7 @@ namespace Bluetooth_Mouse_Controller_Receiver
                 {
                     for (int i = 0; i < messagePacks.Length; i++)
                     {
-                        if (messagePacks[i].ControlCode > 0)
-                        {
-                            continue;
-                        }
                         packMessageBuffer.Enqueue(messagePacks[i]);
-                        //onReceiveMessage?.Invoke(this, messagePacks[i].Message);
 
                     }
                     messagePacks = null;
@@ -192,38 +184,33 @@ namespace Bluetooth_Mouse_Controller_Receiver
         {
             List<MessagePack> unpackedMessages = new List<MessagePack>();
             int currIndex = 0;
-
-            int msgLength;
-            double msgTImespanInMs;
-            byte[] message;
-
-
-            while (currIndex < packedMessages.Length)
+            while(currIndex < packedMessages.Length)
             {
+                byte[] msgControlCodeBytes = new byte[sizeof(int)];
+                for(int i = 0; i < sizeof(int); i++)
+                {
+                    msgControlCodeBytes[i] = packedMessages[i + currIndex];
+                }
+                currIndex += sizeof(int);
+                int controlCode = BitConverter.ToInt32(msgControlCodeBytes, 0);
+
                 byte[] msgLengthBytes = new byte[sizeof(int)];
                 for (int i = 0; i < sizeof(int); i++)
                 {
                     msgLengthBytes[i] = packedMessages[i + currIndex];
                 }
                 currIndex += sizeof(int);
-                msgLength = BitConverter.ToInt32(msgLengthBytes, 0);
-                byte[] msgTimespanByte = new byte[sizeof(double)];
-                for (int i = 0; i < sizeof(double); i++)
-                {
-                    msgTimespanByte[i] = packedMessages[i + currIndex];
-                }
-                msgTImespanInMs = BitConverter.ToDouble(msgTimespanByte, 0);
-                currIndex += sizeof(double);
-                message = new byte[msgLength];
-                for (int i = 0; i < msgLength; i++)
+                int msgLength = BitConverter.ToInt32(msgLengthBytes, 0);
+
+                byte[] message = new byte[msgLength];
+                for(int i = 0; i < msgLength; i++)
                 {
                     message[i] = packedMessages[currIndex + i];
                 }
                 currIndex += msgLength;
-                MessagePack msgPack = new MessagePack(message, msgTImespanInMs);
+                MessagePack msgPack = new MessagePack(controlCode, message);
                 unpackedMessages.Add(msgPack);
             }
-
             return unpackedMessages;
         }
 
@@ -235,8 +222,6 @@ namespace Bluetooth_Mouse_Controller_Receiver
         {
             await Task.Run(() =>
             {
-                MessagePack previousMessagePack = new MessagePack(new byte[0], 0);
-                previousMessagePack.ConsumeDateTime = DateTime.Now;
                 while (true)
                 {
                     MessagePack messagePack;
@@ -250,39 +235,12 @@ namespace Bluetooth_Mouse_Controller_Receiver
                         messagePack = packMessageBuffer.Dequeue();
 
                     }
-                    messagePack.ExpectedDequeueDateTime = previousMessagePack.ConsumeDateTime;
-                    messagePack.DequeueDateTime = DateTime.Now;
-                    bool needFix = false;
-                    
-                    TimeSpan timespanFromLastProcessedMessage = DateTime.Now - previousMessagePack.ConsumeDateTime;
-                    double initTimespan = timespanFromLastProcessedMessage.TotalMilliseconds;
-                    if ((previousMessagePack.ConsumeDateTime - previousMessagePack.ExpectedDequeueDateTime).TotalMilliseconds > previousMessagePack.TimeSpanInMs + 5)
-                    {
-                        needFix = false;
-                    }
-                    else if (timespanFromLastProcessedMessage.TotalMilliseconds < messagePack.TimeSpanInMs)
-                    {
-                        needFix = true;
-                    }
-
-                    while (needFix && timespanFromLastProcessedMessage.TotalMilliseconds < messagePack.TimeSpanInMs && messagePack.TimeSpanInMs < 30)
-                    {
-                        timespanFromLastProcessedMessage = DateTime.Now - previousMessagePack.ConsumeDateTime;
-                        if ((DateTime.Now - messagePack.GeneratedDateTime).TotalMilliseconds > 15)
-                        {
-                            break;
-                        }
-                    }
-                    
-
-                    messagePack.ConsumeDateTime = DateTime.Now;
-                    previousMessagePack = messagePack;
-
-                    Debug.WriteLine("[TIMESPAN: " + messagePack.TimeSpanInMs + "], [FIXEDTIMESPAN: " + (messagePack.ConsumeDateTime - messagePack.ExpectedDequeueDateTime).TotalMilliseconds + "], "
-                        + "[NEEDFIX: " + needFix + "], [PREPROCESSTIMESPAN: " + messagePack.PreprocessTimespanInMs + "], [RESTPACK: "+packMessageBuffer.Count+"]");
-
                     //我们假设这些下面这些Invoke都是不费时间的
-                    onReceiveMessage?.Invoke(this, messagePack.Message);
+                    Debug.WriteLine("ControlCode:" + messagePack.ControlCode);
+                    if(messagePack.ControlCode == 2)
+                    {
+                        onReceiveMessage?.Invoke(this, messagePack.Message);
+                    }
                 }
             });
 
@@ -308,6 +266,32 @@ namespace Bluetooth_Mouse_Controller_Receiver
             }
         }
 
+        class MessagePack
+        {
+            byte[] _Message;
+
+            public byte[] Message
+            {
+                get
+                {
+                    return _Message.ToArray();
+                }
+                set
+                {
+                    _Message = value.ToArray();
+                }
+            }
+
+            public int ControlCode { get; private set; }
+            public MessagePack(int controlCode, byte[] message)
+            {
+                this.ControlCode = controlCode;
+                this.Message = message;
+            }
+            
+        }
+
+        /*
         class MessagePack
         {
             byte[] _Message;
@@ -369,5 +353,6 @@ namespace Bluetooth_Mouse_Controller_Receiver
             }
 
         }
+        */
     }
 }

@@ -40,25 +40,28 @@ namespace RemoteXDebugBackend
         /// <summary>
         /// 储存最新的输入数据
         /// </summary>
-        private Dictionary<int, Data> latestData;
+        private Dictionary<int, RemoteXControlMessage> latestControlMessage;
 
         public async Task StartAsync(int port)
         {
-            latestData = new Dictionary<int, Data>();
+            latestControlMessage = new Dictionary<int, RemoteXControlMessage>();
             Running = true;
             Port = port;
             await startServer();
         }
-        public void Set(Data data)
+        public void Set(RemoteXControlMessage controlMessage)
         {
-            
-            if (latestData.ContainsKey(data.dataType))
+            if (!Running)
             {
-                latestData[data.dataType] = data;
+                return;
+            }
+            if (latestControlMessage.ContainsKey(controlMessage.DataType))
+            {
+                latestControlMessage[controlMessage.DataType] = controlMessage;
             }
             else
             {
-                latestData.Add(data.dataType, data);
+                latestControlMessage.Add(controlMessage.DataType, controlMessage);
             }
         }
 
@@ -97,10 +100,10 @@ namespace RemoteXDebugBackend
                         Console.WriteLine();
                         response = context.Response;
                         byte[] responseBuffer = null;
-                        if (latestData.ContainsKey(dataTypeInt))
+                        if (latestControlMessage.ContainsKey(dataTypeInt))
                         {
                             //responseBuffer = Data.encodeSensorData(latestData[dataTypeInt]);
-                            responseBuffer = Encoding.Default.GetBytes(latestData[dataTypeInt].ToString());
+                            responseBuffer = Encoding.Default.GetBytes(latestControlMessage[dataTypeInt].ToString());
                         }
                         else
                         {

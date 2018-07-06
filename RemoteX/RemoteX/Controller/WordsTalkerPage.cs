@@ -72,13 +72,13 @@ namespace RemoteX.Controller
                 Debug.WriteLine("No Connection");
                 return;
             }
-            Data data = new Data((int)DataType.MouseRightDown, new float[] { 1.0f });
+            RemoteXControlMessage data = new RemoteXControlMessage((int)DataType.MouseRightDown, new float[] { 1.0f });
             Debug.WriteLine("SENDINGDATA::" + data);
-            await connection.SendAsync(Data.encodeSensorData(data));
+            await connection.SendAsync(data.Bytes);
             Debug.WriteLine("SUCCFULLY SENDED::" + data);
-            data = new Data((int)DataType.MouseRightUp, new float[] { 1.0f });
+            data = new RemoteXControlMessage((int)DataType.MouseRightUp, new float[] { 1.0f });
             Debug.WriteLine("SENDINGDATA::" + data);
-            await connection.SendAsync(Data.encodeSensorData(data));
+            await connection.SendAsync(data.Bytes);
             Debug.WriteLine("SUCCFULLY SENDED::" + data);
 
 
