@@ -198,6 +198,21 @@ namespace RemoteX.Droid
                 return true;
             }
 
+            /// <summary>
+            /// 储存收到的完全未处理过的消息的队列
+            /// </summary>
+            private Queue<byte[]> receiveQueue;
+
+
+            /// <summary>
+            /// this will start receive
+            /// </summary>
+            /// <returns></returns>
+            private async void receiveAsync()
+            {
+                
+            }
+
             public void AbortConnecting()
             {
                 _AbortConnecting = true;

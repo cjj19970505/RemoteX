@@ -10,12 +10,14 @@ namespace RemoteX.MainPage
         
         public ControllerItemsGroup():base("Controller")
         {
+            this.Add(new MasterMenuItem("NextIdea Controller", typeof(NextIdeaController)));
             this.Add(new MasterMenuItem("Message Talker", typeof(WordsTalkerPage)));
             this.Add(new MasterMenuItem("SensorTestr", typeof(SensorTestPage)));
             this.Add(new MasterMenuItem("TouchTest", typeof(TouchMousePage)));
             this.Add(new MasterMenuItem("SkiaTest", typeof(SkiaTestController)));
             this.Add(new MasterMenuItem("SKiaController", typeof(SkiaController)));
             this.Add(new MasterMenuItem("KeyboardController", typeof(KeyboardController)));
+            
             //this.Add());
             // new Controller.SensorTestPage();
         }

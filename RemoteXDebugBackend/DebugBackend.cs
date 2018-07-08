@@ -42,11 +42,35 @@ namespace RemoteXDebugBackend
         /// </summary>
         private Dictionary<int, RemoteXControlMessage> latestControlMessage;
 
+        /// <summary>
+        /// 当被获取后这些数据就从后端删除
+        /// 避免在调试中出现按下按键弹不开的那种情况
+        /// </summary>
+        private Queue<RCMWithEnqueueTime> unfetchedControlMessageBuffer;
+        private Object unfetchedControlMessageBufferLock;
+        /// <summary>
+        /// 当超过这个时间就判超时
+        /// </summary>
+        public TimeSpan RemoveBufferTimeout
+        {
+            get
+            {
+                return new TimeSpan(0, 0, 0, 1, 0);
+            }
+        }
+
+        public DebugBackend()
+        {
+            unfetchedControlMessageBuffer = new Queue<RCMWithEnqueueTime>();
+            unfetchedControlMessageBufferLock = new object();
+        }
+
         public async Task StartAsync(int port)
         {
             latestControlMessage = new Dictionary<int, RemoteXControlMessage>();
             Running = true;
             Port = port;
+            //removeTimeoutBufferTask().Start();
             await startServer();
         }
         public void Set(RemoteXControlMessage controlMessage)
@@ -63,9 +87,15 @@ namespace RemoteXDebugBackend
             {
                 latestControlMessage.Add(controlMessage.DataType, controlMessage);
             }
-        }
 
-        
+            RCMWithEnqueueTime rcmWithEnqueueTime = new RCMWithEnqueueTime(DateTime.Now, controlMessage);
+            lock (unfetchedControlMessageBufferLock)
+            {
+                unfetchedControlMessageBuffer.Enqueue(rcmWithEnqueueTime);
+            }
+            
+
+        }
         public int Port { get; private set; }
         private async Task startServer()
         {
@@ -87,28 +117,47 @@ namespace RemoteXDebugBackend
                         HttpListenerRequest request = context.Request;
                         string[] segments = request.Url.Segments;
                         int dataTypeInt = 0;
+                        bool hasDataType = false;
                         foreach(string segment in segments)
                         {
                             Console.Write("(" + segment + ")");
                         }
                         if (segments[1] == "get/")
                         {
-                            dataTypeInt = int.Parse(segments[2]);
-                            
+                            hasDataType = int.TryParse(segments[2], out dataTypeInt);
                         }
-
-                        Console.WriteLine();
                         response = context.Response;
                         byte[] responseBuffer = null;
-                        if (latestControlMessage.ContainsKey(dataTypeInt))
+                        if (hasDataType)
                         {
-                            //responseBuffer = Data.encodeSensorData(latestData[dataTypeInt]);
-                            responseBuffer = Encoding.Default.GetBytes(latestControlMessage[dataTypeInt].ToString());
+                            if (latestControlMessage.ContainsKey(dataTypeInt))
+                            {
+                                responseBuffer = Encoding.Default.GetBytes(latestControlMessage[dataTypeInt].ToString());
+                            }
+                            else
+                            {
+                                responseBuffer = Encoding.Default.GetBytes("null");
+                            }
                         }
                         else
                         {
-                            responseBuffer = Encoding.Default.GetBytes("null");
+                            RCMWithEnqueueTime[] bufferArray;
+                            lock (unfetchedControlMessageBufferLock)
+                            {
+                                bufferArray = unfetchedControlMessageBuffer.ToArray();
+                                unfetchedControlMessageBuffer.Clear();
+                            }
+                            
+                            string s = "";
+                            foreach(var buffer in bufferArray)
+                            {
+                                s += buffer.RemoteXControlMessage.ToString();
+                                s += '/';
+                            }
+                            responseBuffer = Encoding.Default.GetBytes(s);
+                            
                         }
+                        
                         response.ContentLength64 = responseBuffer.Length;
                         Stream output = response.OutputStream;
                         output.Write(responseBuffer, 0, responseBuffer.Length);
@@ -134,6 +183,44 @@ namespace RemoteXDebugBackend
             finally
             {
                 httpListener.Close();
+            }
+        }
+
+        private Task removeTimeoutBufferTask()
+        {
+            return new Task(() =>
+            {
+                while (true)
+                {
+                    lock (unfetchedControlMessageBufferLock)
+                    {
+                        if (unfetchedControlMessageBuffer.Count > 0)
+                        {
+                            RCMWithEnqueueTime rcmWithEnqueueTime = unfetchedControlMessageBuffer.Peek();
+                            if ((DateTime.Now - rcmWithEnqueueTime.EnqueueDateTime) > RemoveBufferTimeout)
+                            {
+                                unfetchedControlMessageBuffer.Dequeue();
+                            }
+                        }
+                        
+                    }
+                }
+            });
+            
+        }
+
+        /// <summary>
+        /// 全称：RemoteX Control Message With EnqueueTime
+        /// </summary>
+        struct RCMWithEnqueueTime
+        {
+            public RemoteXControlMessage RemoteXControlMessage;
+            public DateTime EnqueueDateTime;
+
+            public RCMWithEnqueueTime(DateTime enqueueTime, RemoteXControlMessage controlMessage)
+            {
+                this.RemoteXControlMessage = controlMessage;
+                this.EnqueueDateTime = enqueueTime;
             }
         }
         

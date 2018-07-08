@@ -22,6 +22,8 @@ using System.IO;
 using System.Drawing;
 using System.Drawing.Imaging;
 
+using RemoteXDataLibary;
+
 namespace Bluetooth_Mouse_Controller_Receiver
 {
     /// <summary>
@@ -29,8 +31,9 @@ namespace Bluetooth_Mouse_Controller_Receiver
     /// </summary>
     public partial class MainWindow : Window
     {
-        
+
         ControllerManager controllerManager;
+        BTTask btTask;
         private Dictionary<Guid, ControllerManager> controllerManagers;
         public MainWindow()
         {
@@ -40,12 +43,12 @@ namespace Bluetooth_Mouse_Controller_Receiver
 
         //这个站且用来测试鼠标移动，以下就是他妈的移动方法。
         private void Button_BluetoothInitialize_Click(object sender, RoutedEventArgs e)
-        { 
+        {
             //Initialize();
             BTTaskManager btTaskManager = BTTaskManager.instance;
-            BTTask btTask = btTaskManager.newTask();
+            btTask = btTaskManager.newTask();
             btTask.onReceiveMessage += onReceiveData;
-            Debug.WriteLine("UI::"+Thread.CurrentThread.ManagedThreadId);
+            Debug.WriteLine("UI::" + Thread.CurrentThread.ManagedThreadId);
             btTask.startAdvertising();
             ControllerManager controllerManager = new ControllerManager();
             controllerManagers.Add(btTask.taskId, controllerManager);
@@ -78,7 +81,7 @@ namespace Bluetooth_Mouse_Controller_Receiver
             {
                 datas = RemoteXDataLibary.RemoteXControlMessage.FromBytes(message);
             }
-            catch(Exception exception)
+            catch (Exception exception)
             {
                 System.Diagnostics.Debug.WriteLine("XJ2::" + exception.Message);
             }
@@ -104,7 +107,7 @@ namespace Bluetooth_Mouse_Controller_Receiver
 
         private void tbMouseRateX_TextChanged(object sender, TextChangedEventArgs e)
         {
-            foreach(var pair in controllerManagers)
+            foreach (var pair in controllerManagers)
             {
                 var controllerManager = pair.Value;
                 float tryRate;
@@ -112,7 +115,7 @@ namespace Bluetooth_Mouse_Controller_Receiver
                 {
                     controllerManager.gyroscopeMouseManager.mouseSpeedFactor.x = tryRate;
                 }
-                
+
             }
         }
 
@@ -137,6 +140,31 @@ namespace Bluetooth_Mouse_Controller_Receiver
                 return;
             }
             await RemoteXDebugBackend.DebugBackend.Instance.StartAsync(8081);
+        }
+
+        private async void btnSendTestData_Click(object sender, RoutedEventArgs e)
+        {
+            DateTime currTime = DateTime.Now;
+            while (true)
+            {
+                if (btTask != null)
+                {
+                    if ((DateTime.Now - currTime).TotalMilliseconds > 200)
+                    {
+                        currTime = DateTime.Now;
+                        await btTask.Send(2, new RemoteXControlMessage(1, new float[] { 56, 23, 12, 1.23f }).Bytes);
+                        //await btTask.Send(1, new RemoteXControlMessage(2, new float[] { 56, 23, 12, 1.23f }).Bytes);
+                        //await btTask.Send(6, new RemoteXControlMessage(3, new float[] { 56, 23, 12, 1.23f }).Bytes);
+                        //await btTask.Send(0, new RemoteXControlMessage(4, new float[] { 56, 23, 12, 1.23f }).Bytes);
+                        //await btTask.Send(5, new RemoteXControlMessage(87, new float[] { 56, 23, 12, 1.23f }).Bytes);
+                        //await btTask.Send(0, new RemoteXControlMessage(5, new float[] { 56, 23, 12, 1.23f }).Bytes);
+                        await btTask.Send(8, new RemoteXControlMessage(6, new float[] { 56, 23, 12, 1.23f }).Bytes);
+                    }
+
+                }
+            }
+
+
         }
     }
 }

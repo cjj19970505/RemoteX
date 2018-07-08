@@ -16,5 +16,6 @@
         <TextBox x:Name="tbMouseRateY" HorizontalAlignment="Left" Height="23" Margin="544,147,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="120" TextChanged="tbMouseRateY_TextChanged"/>
         <Button x:Name="btn_StartDebugBackend" Content="启动调试后端" HorizontalAlignment="Left" Margin="74,156,0,0" VerticalAlignment="Top" Width="132" Height="48" Click="btn_StartDebugBackend_Click"/>
         <Image x:Name="img_QRCode" HorizontalAlignment="Left" Height="100" Margin="74,253,0,0" VerticalAlignment="Top" Width="100"/>
+        <Button x:Name="btnSendTestData" Content="发送测试数据" HorizontalAlignment="Left" Margin="238,178,0,0" VerticalAlignment="Top" Width="171" Height="43" Click="btnSendTestData_Click"/>
     </Grid>
 </Window>

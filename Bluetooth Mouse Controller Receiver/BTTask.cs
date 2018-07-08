@@ -33,6 +33,7 @@ namespace Bluetooth_Mouse_Controller_Receiver
         public event MessageHandler onReceiveMessage;
         public event BTTaskHandler onConnectionEstablished;
         public BluetoothAdapter _BluetoothAdapter;
+        private DataWriter sendtDataWriter;
         public BTTask(Guid taskId)
         {
             this._taskId = taskId;
@@ -81,6 +82,23 @@ namespace Bluetooth_Mouse_Controller_Receiver
             InitializeServiceSdpAttributes(_provider);
             _provider.StartAdvertising(listener, true);
         }
+        public async Task Send(int controlCode ,byte[] message)
+        {
+            byte[] packedBytes = _PackMessage(controlCode, message);
+            sendtDataWriter.WriteBytes(packedBytes);
+            await sendtDataWriter.StoreAsync();
+        }
+
+        private byte[] _PackMessage(int controlCode, byte[] message)
+        {
+            byte[] controlCodeBytes = BitConverter.GetBytes(controlCode);
+            byte[] dataLengthBytes = BitConverter.GetBytes(message.Length);
+            byte[] packedMsg = new byte[controlCodeBytes.Length + dataLengthBytes.Length + message.Length];
+            controlCodeBytes.CopyTo(packedMsg, 0);
+            dataLengthBytes.CopyTo(packedMsg, controlCodeBytes.Length);
+            message.CopyTo(packedMsg, controlCodeBytes.Length + dataLengthBytes.Length);
+            return packedMsg;
+        }
         private void InitializeServiceSdpAttributes(RfcommServiceProvider provider)
         {
             DataWriter writer = new DataWriter();
@@ -101,6 +119,7 @@ namespace Bluetooth_Mouse_Controller_Receiver
             //TextBlock_Log.Text = "成功";
             if (_socket != null)
             {
+                sendtDataWriter = new DataWriter(_socket.OutputStream);
                 System.Diagnostics.Debug.WriteLine("SUCCEES on Thread: " + Thread.CurrentThread.ManagedThreadId);
                 onConnectionEstablished?.Invoke(this);
             }
@@ -179,6 +198,8 @@ namespace Bluetooth_Mouse_Controller_Receiver
 
             return messagePacks;
         }
+
+        
 
         private static List<MessagePack> unpackMessages(byte[] packedMessages)
         {
