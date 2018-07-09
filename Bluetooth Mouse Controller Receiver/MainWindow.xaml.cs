@@ -139,7 +139,7 @@ namespace Bluetooth_Mouse_Controller_Receiver
             {
                 return;
             }
-            await RemoteXDebugBackend.DebugBackend.Instance.StartAsync(8081);
+            RemoteXDebugBackend.DebugBackend.Instance.StartBackend(8081);
         }
 
         private async void btnSendTestData_Click(object sender, RoutedEventArgs e)
@@ -149,15 +149,15 @@ namespace Bluetooth_Mouse_Controller_Receiver
             {
                 if (btTask != null)
                 {
-                    if ((DateTime.Now - currTime).TotalMilliseconds > 200)
+                    if ((DateTime.Now - currTime).TotalMilliseconds > 20)
                     {
                         currTime = DateTime.Now;
                         await btTask.Send(2, new RemoteXControlMessage(1, new float[] { 56, 23, 12, 1.23f }).Bytes);
-                        //await btTask.Send(1, new RemoteXControlMessage(2, new float[] { 56, 23, 12, 1.23f }).Bytes);
-                        //await btTask.Send(6, new RemoteXControlMessage(3, new float[] { 56, 23, 12, 1.23f }).Bytes);
-                        //await btTask.Send(0, new RemoteXControlMessage(4, new float[] { 56, 23, 12, 1.23f }).Bytes);
-                        //await btTask.Send(5, new RemoteXControlMessage(87, new float[] { 56, 23, 12, 1.23f }).Bytes);
-                        //await btTask.Send(0, new RemoteXControlMessage(5, new float[] { 56, 23, 12, 1.23f }).Bytes);
+                        await btTask.Send(1, new RemoteXControlMessage(2, new float[] { 56, 23, 12, 1.23f }).Bytes);
+                        await btTask.Send(6, new RemoteXControlMessage(3, new float[] { 56, 23, 12, 1.23f }).Bytes);
+                        await btTask.Send(0, new RemoteXControlMessage(4, new float[] { 56, 23, 12, 1.23f }).Bytes);
+                        await btTask.Send(5, new RemoteXControlMessage(87, new float[] { 56, 23, 12, 1.23f }).Bytes);
+                        await btTask.Send(0, new RemoteXControlMessage(5, new float[] { 56, 23, 12, 1.23f }).Bytes);
                         await btTask.Send(8, new RemoteXControlMessage(6, new float[] { 56, 23, 12, 1.23f }).Bytes);
                     }
 

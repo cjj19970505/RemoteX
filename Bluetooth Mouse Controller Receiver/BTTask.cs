@@ -256,8 +256,6 @@ namespace Bluetooth_Mouse_Controller_Receiver
                         messagePack = packMessageBuffer.Dequeue();
 
                     }
-                    //我们假设这些下面这些Invoke都是不费时间的
-                    Debug.WriteLine("ControlCode:" + messagePack.ControlCode);
                     if(messagePack.ControlCode == 2)
                     {
                         onReceiveMessage?.Invoke(this, messagePack.Message);

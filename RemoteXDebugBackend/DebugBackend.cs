@@ -64,15 +64,17 @@ namespace RemoteXDebugBackend
             unfetchedControlMessageBuffer = new Queue<RCMWithEnqueueTime>();
             unfetchedControlMessageBufferLock = new object();
         }
-
-        public async Task StartAsync(int port)
+        public void StartBackend(int port)
         {
             latestControlMessage = new Dictionary<int, RemoteXControlMessage>();
             Running = true;
             Port = port;
-            //removeTimeoutBufferTask().Start();
-            await startServer();
+            Task startServerTask = startServerAsync();
+            //Task removeTimeoutBufferTask = removeTimeoutBufferAsync();
         }
+
+        
+        
         public void Set(RemoteXControlMessage controlMessage)
         {
             if (!Running)
@@ -92,12 +94,20 @@ namespace RemoteXDebugBackend
             lock (unfetchedControlMessageBufferLock)
             {
                 unfetchedControlMessageBuffer.Enqueue(rcmWithEnqueueTime);
+                DateTime nowDateTime = DateTime.Now;
+                DateTime earliestBufferEnqueueTime = unfetchedControlMessageBuffer.Peek().EnqueueDateTime;
+                while((nowDateTime - earliestBufferEnqueueTime) > RemoveBufferTimeout && unfetchedControlMessageBuffer.Count>0)
+                {
+                    unfetchedControlMessageBuffer.Dequeue();
+                    System.Diagnostics.Debug.WriteLine("MESSAGE DELETED");
+                    earliestBufferEnqueueTime = unfetchedControlMessageBuffer.Peek().EnqueueDateTime;
+                }
             }
             
 
         }
         public int Port { get; private set; }
-        private async Task startServer()
+        private async Task startServerAsync()
         {
             
             HttpListener httpListener = new HttpListener();
@@ -186,9 +196,9 @@ namespace RemoteXDebugBackend
             }
         }
 
-        private Task removeTimeoutBufferTask()
+        private Task removeTimeoutBufferAsync()
         {
-            return new Task(() =>
+            return Task.Run(() =>
             {
                 while (true)
                 {
