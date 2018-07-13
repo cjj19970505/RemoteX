@@ -12,7 +12,7 @@ using RemoteXDataLibary;
 /// 所以搞出这个调试后端，将控制器的输入都储存到后端上
 /// Unity中使用Editor模式时，用WebRequest获取这些东西
 /// </summary>
-namespace RemoteXDebugBackend
+namespace RemoteX.DebugBackend
 {
     public class DebugBackend
     {

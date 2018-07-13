@@ -24,6 +24,8 @@ using System.Drawing.Imaging;
 
 using RemoteXDataLibary;
 using RemoteX.PC.Core;
+using RemoteX.Core;
+using RemoteX.DebugBackend;
 
 namespace Bluetooth_Mouse_Controller_Receiver
 {
@@ -35,10 +37,10 @@ namespace Bluetooth_Mouse_Controller_Receiver
 
         ControllerManager controllerManager;
         BTTask btTask;
-        private Dictionary<Guid, ControllerManager> controllerManagers;
+        private Dictionary<IConnection, ControllerManager> controllerManagers;
         public MainWindow()
         {
-            controllerManagers = new Dictionary<Guid, ControllerManager>();
+            controllerManagers = new Dictionary<IConnection, ControllerManager>();
             InitializeComponent();
         }
 
@@ -52,16 +54,51 @@ namespace Bluetooth_Mouse_Controller_Receiver
             Debug.WriteLine("UI::" + Thread.CurrentThread.ManagedThreadId);
             btTask.startAdvertising();
             ControllerManager controllerManager = new ControllerManager();
-            controllerManagers.Add(btTask.taskId, controllerManager);
+            
             ImageSource is_QRCode = BitmapToBitmapImage(btTask.QRCode);
-            img_QRCode.Source = is_QRCode;*/
+            img_QRCode.Source = is_QRCode;
+            controllerManager = new ControllerManager();*/
+
+            ControllerManager controllerManager = new ControllerManager();
             BluetoothManager bluetoothManager = BluetoothManager.Instance;
             var bluetoothServerConnection = bluetoothManager.CreateRfcommServerConnection(Guid.Parse("14c5449a-6267-4c7e-bd10-63dd79740e5" + 0));
-            
+            bluetoothServerConnection.OnConnectionEstalblishResult += OnConnectionEstalblishResult;
+            bluetoothServerConnection.onReceiveMessage += _OnReceiveMessage;
+            bluetoothServerConnection.StartServer();
+            controllerManagers.Add(bluetoothServerConnection, controllerManager);
 
 
 
         }
+
+        private void OnConnectionEstalblishResult(IConnection connection, ConnectionEstablishState connectionEstablishState)
+        {
+
+        }
+
+        private void _OnReceiveMessage(IConnection connection, byte[] message)
+        {
+            RemoteXDataLibary.RemoteXControlMessage[] datas = null;
+            try
+            {
+                datas = RemoteXDataLibary.RemoteXControlMessage.FromBytes(message);
+            }
+            catch (Exception exception)
+            {
+                System.Diagnostics.Debug.WriteLine("XJ2::" + exception.Message);
+            }
+            ControllerManager controllerManager = controllerManagers[connection];
+            if (datas != null)
+            {
+                foreach (var data in datas)
+                {
+                    controllerManager.addData(data);
+                    DebugBackend.Instance.Set(data);
+                    Debug.WriteLine(data);
+                }
+            }
+        }
+
         public static BitmapImage BitmapToBitmapImage(Bitmap bitmap)
         {
             using (MemoryStream stream = new MemoryStream())
@@ -80,6 +117,7 @@ namespace Bluetooth_Mouse_Controller_Receiver
                 return result;
             }
         }
+        /*
         private void onReceiveData(BTTask btTask, byte[] message)
         {
             RemoteXDataLibary.RemoteXControlMessage[] datas = null;
@@ -101,7 +139,7 @@ namespace Bluetooth_Mouse_Controller_Receiver
                     Debug.WriteLine(data);
                 }
             }
-        }
+        }*/
         private void Button_MoveCursor_Click(object sender, RoutedEventArgs e)
         {
             System.Drawing.Point point = new System.Drawing.Point();
@@ -141,11 +179,11 @@ namespace Bluetooth_Mouse_Controller_Receiver
 
         private async void btn_StartDebugBackend_Click(object sender, RoutedEventArgs e)
         {
-            if (RemoteXDebugBackend.DebugBackend.Instance.Running)
+            if (RemoteX.DebugBackend.DebugBackend.Instance.Running)
             {
                 return;
             }
-            RemoteXDebugBackend.DebugBackend.Instance.StartBackend(8081);
+            RemoteX.DebugBackend.DebugBackend.Instance.StartBackend(8081);
         }
 
         private async void btnSendTestData_Click(object sender, RoutedEventArgs e)

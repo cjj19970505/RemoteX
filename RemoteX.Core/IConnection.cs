@@ -46,6 +46,7 @@ namespace RemoteX.Core
     public interface IServerConnection : IConnection
     {
         event ConnectionHandler OnConnectionEstalblishResult;
+        void StartServer();
     }
 
 

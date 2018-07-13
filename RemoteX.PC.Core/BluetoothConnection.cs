@@ -29,26 +29,50 @@ namespace RemoteX.PC.Core
             public ConnectionEstablishState ConnectionEstablishState { get; protected set; }
 
             public event MessageHandler onReceiveMessage;
-            public event ConnectionHandler onConnectionEstalblishResult;
 
-            public Task SendAsync(byte[] message)
+            protected BluetoothManager BluetoothManager { get; private set; }
+
+            private Task _HandleMessageBufferTask;
+
+            public BluetoothConnection(BluetoothManager bluetoothManager)
             {
-                throw new NotImplementedException();
+                this.BluetoothManager = bluetoothManager;
             }
 
+            public async Task SendAsync(byte[] message)
+            {
+                await SendAsync(2, message);
+            }
+
+            private async Task SendAsync(int controlCode, byte[] message)
+            {
+                byte[] packedBytes = _PackMessage(controlCode, message);
+                SendDataWriter.WriteBytes(packedBytes);
+                await SendDataWriter.StoreAsync();
+            }
+            private byte[] _PackMessage(int controlCode, byte[] message)
+            {
+                byte[] controlCodeBytes = BitConverter.GetBytes(controlCode);
+                byte[] dataLengthBytes = BitConverter.GetBytes(message.Length);
+                byte[] packedMsg = new byte[controlCodeBytes.Length + dataLengthBytes.Length + message.Length];
+                controlCodeBytes.CopyTo(packedMsg, 0);
+                dataLengthBytes.CopyTo(packedMsg, controlCodeBytes.Length);
+                message.CopyTo(packedMsg, controlCodeBytes.Length + dataLengthBytes.Length);
+                return packedMsg;
+            }
             protected async Task ReceiveAsync()
             {
                 DataReader reader = new DataReader(Socket.InputStream);
                 packMessageBuffer = new Queue<MessagePack>();
+                _HandleMessageBufferTask = _HandlePackMessageBufferAsync();
                 MessagePack[] messagePacks;
                 while (true)
                 {
                     reader.InputStreamOptions = InputStreamOptions.Partial;
-                    //byte[] dataBytes = new byte[0];
                     messagePacks = await _GetBytes(reader);
                     if (Socket == null)
                     {
-                        Debug.WriteLine("接口关闭");
+                        Debug.WriteLine("Bluetooth Connection Error:Socket Closed");
                         ConnectionEstablishState = ConnectionEstablishState.Disconnect;
                         Disconnect();
                         break;
@@ -63,6 +87,35 @@ namespace RemoteX.PC.Core
                         messagePacks = null;
                     }
                 }
+            }
+
+            /// <summary>
+            /// 处理MessageBuffer
+            /// </summary>
+            private Task _HandlePackMessageBufferAsync()
+            {
+                return Task.Run(() =>
+                {
+                    while (true)
+                    {
+                        MessagePack messagePack;
+                        lock (packMessageBuffer)
+                        {
+
+                            if (packMessageBuffer.Count <= 0)
+                            {
+                                continue;
+                            }
+                            messagePack = packMessageBuffer.Dequeue();
+
+                        }
+                        if (messagePack.ControlCode == 2)
+                        {
+                            onReceiveMessage?.Invoke(this, messagePack.Message);
+                        }
+                    }
+                });
+
             }
 
             private async Task<MessagePack[]> _GetBytes(DataReader reader)

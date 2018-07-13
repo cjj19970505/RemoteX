@@ -25,14 +25,18 @@ namespace RemoteX.PC.Core
 
             public event ConnectionHandler OnConnectionEstalblishResult;
 
-            public BluetoothServerConnection(Guid uuid)
+            private Task _ReceiveTask;
+
+            public BluetoothServerConnection(BluetoothManager bluetoothManager ,Guid uuid):base(bluetoothManager)
             {
                 this.Uuid = uuid;
+                
             }
 
             public async void StartAdvertisingAsync()
             {
                 ConnectionEstablishState = ConnectionEstablishState.Connecting;
+                BluetoothManager._ConnectedConnections.Add(this);
                 RfcommServiceId myId = RfcommServiceId.FromUuid(Uuid);
                 _Provider = await RfcommServiceProvider.CreateAsync(myId);
                 StreamSocketListener listener = new StreamSocketListener();
@@ -59,13 +63,13 @@ namespace RemoteX.PC.Core
                 _Provider.StopAdvertising();
                 Socket = args.Socket;
                 System.Diagnostics.Debug.WriteLine("OnConnect");
-                //TextBlock_Log.Text = "成功";
                 if (Socket != null)
                 {
                     SendDataWriter = new DataWriter(Socket.OutputStream);
                     System.Diagnostics.Debug.WriteLine("SUCCEES on Thread: " + Thread.CurrentThread.ManagedThreadId);
                     ConnectionEstablishState = ConnectionEstablishState.Succeed;
                     OnConnectionEstalblishResult?.Invoke(this, ConnectionEstablishState);
+                    
                 }
                 else
                 {
@@ -73,8 +77,14 @@ namespace RemoteX.PC.Core
                     OnConnectionEstalblishResult?.Invoke(this, ConnectionEstablishState);
                     System.Diagnostics.Debug.WriteLine("FUCK NO");
                 }
+                _ReceiveTask = ReceiveAsync();
                 //_HandlePackMessageBuffer();
                 //receive();
+            }
+
+            public void StartServer()
+            {
+                StartAdvertisingAsync();
             }
         }
     }

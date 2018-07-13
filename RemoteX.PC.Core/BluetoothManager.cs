@@ -7,11 +7,6 @@ namespace RemoteX.PC.Core
     public partial class BluetoothManager
     {
         private static BluetoothManager _BluetoothManager;
-        private BluetoothManager()
-        {
-
-        }
-
         public static BluetoothManager Instance
         {
             get
@@ -24,9 +19,16 @@ namespace RemoteX.PC.Core
             }
         }
 
+        private List<BluetoothConnection> _ConnectedConnections;
+
+        private BluetoothManager()
+        {
+            _ConnectedConnections = new List<BluetoothConnection>();
+        }
+
         public IServerConnection CreateRfcommServerConnection(Guid guid)
         {
-            BluetoothServerConnection bluetoothServerConnection = new BluetoothServerConnection(guid);
+            BluetoothServerConnection bluetoothServerConnection = new BluetoothServerConnection(this, guid);
             return bluetoothServerConnection;
         }
     }

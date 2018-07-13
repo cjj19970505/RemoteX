@@ -1,18 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Windows.Devices.Bluetooth.Rfcomm;
 using Windows.Networking.Sockets;
 using System.Diagnostics;
 using Windows.Storage.Streams;
 using System.Threading;
-using RemoteXDebugBackend;
 using System.Drawing;
 using ZXing;
 using ZXing.QrCode;
 using Windows.Devices.Bluetooth;
+using RemoteX.DebugBackend;
 
 namespace Bluetooth_Mouse_Controller_Receiver
 {
