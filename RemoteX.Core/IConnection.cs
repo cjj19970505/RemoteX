@@ -47,6 +47,11 @@ namespace RemoteX.Core
     {
         event ConnectionHandler OnConnectionEstalblishResult;
         void StartServer();
+
+        /// <summary>
+        /// 可以通过这串代码直接连接到这个Server
+        /// </summary>
+        string ConnectCode { get; }
     }
 
 

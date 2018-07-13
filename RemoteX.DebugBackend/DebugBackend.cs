@@ -5,7 +5,7 @@ using System.IO;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using RemoteXDataLibary;
+using RemoteX.Data;
 /// <summary>
 /// 调试后端
 /// 因为Unity项目在Editorm模式中没办法使用win32中程序通信间的办法

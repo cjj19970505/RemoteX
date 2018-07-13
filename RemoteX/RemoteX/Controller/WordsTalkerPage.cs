@@ -6,7 +6,7 @@ using System.Text;
 using Xamarin.Forms;
 using RemoteX.Bluetooth;
 using System.Diagnostics;
-using RemoteXDataLibary;
+using RemoteX.Data;
 using RemoteX.Sensor;
 using ZXing.Mobile;
 

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Diagnostics;
 using Xamarin.Forms;
-using RemoteXDataLibary;
+using RemoteX.Data;
 
 namespace RemoteX.Bluetooth
 {

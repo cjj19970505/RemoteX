@@ -7,9 +7,9 @@ using Xamarin.Forms;
 using RemoteX.Input;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using RemoteXDataLibary.Mathf;
+using RemoteX.Data.Mathf;
 using RemoteX.Bluetooth;
-using RemoteXDataLibary;
+using RemoteX.Data;
 
 namespace RemoteX.Controller
 {

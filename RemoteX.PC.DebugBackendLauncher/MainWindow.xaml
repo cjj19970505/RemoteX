@@ -1,0 +1,22 @@
+﻿<Window x:Class="RemoteX.PC.DebugBackendLauncher.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:RemoteX.PC.DebugBackendLauncher"
+        mc:Ignorable="d"
+        Title="RemoteX" Height="450" Width="237.983">
+    <Grid HorizontalAlignment="Left" Width="228">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="39*"/>
+            <ColumnDefinition Width="37*"/>
+        </Grid.ColumnDefinitions>
+        <Image x:Name="img_QR" HorizontalAlignment="Left" Height="208" Margin="10,10,0,0" VerticalAlignment="Top" Width="208" Grid.ColumnSpan="2"/>
+        <TextBlock x:Name="tb_ConnectionState" HorizontalAlignment="Left" Margin="80,257,0,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top" Grid.ColumnSpan="2" Width="138"/>
+        <Label Content="连接状态：" HorizontalAlignment="Left" Margin="10,252,0,0" VerticalAlignment="Top"/>
+        <Label Content="端口：" HorizontalAlignment="Left" Margin="10,222,0,0" VerticalAlignment="Top"/>
+        <TextBlock x:Name="tb_Port" HorizontalAlignment="Left" Margin="52,227,0,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top" Grid.ColumnSpan="2" Width="166"/>
+        <TextBox x:Name="tbox_ReceivedData" Grid.ColumnSpan="2" HorizontalAlignment="Left" Height="127" Margin="10,282,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="208"/>
+
+    </Grid>
+</Window>

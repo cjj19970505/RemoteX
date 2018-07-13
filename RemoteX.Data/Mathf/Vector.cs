@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using SkiaSharp;
-namespace RemoteXDataLibary.Mathf
+namespace RemoteX.Data.Mathf
 {
     public struct Vector2
     {

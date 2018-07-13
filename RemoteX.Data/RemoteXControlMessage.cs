@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace RemoteXDataLibary
+namespace RemoteX.Data
 {
     public enum DataType
     {

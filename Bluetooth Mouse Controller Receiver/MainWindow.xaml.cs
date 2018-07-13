@@ -22,7 +22,7 @@ using System.IO;
 using System.Drawing;
 using System.Drawing.Imaging;
 
-using RemoteXDataLibary;
+using RemoteX.Data;
 using RemoteX.PC.Core;
 using RemoteX.Core;
 using RemoteX.DebugBackend;
@@ -78,10 +78,10 @@ namespace Bluetooth_Mouse_Controller_Receiver
 
         private void _OnReceiveMessage(IConnection connection, byte[] message)
         {
-            RemoteXDataLibary.RemoteXControlMessage[] datas = null;
+            RemoteXControlMessage[] datas = null;
             try
             {
-                datas = RemoteXDataLibary.RemoteXControlMessage.FromBytes(message);
+                datas = RemoteXControlMessage.FromBytes(message);
             }
             catch (Exception exception)
             {

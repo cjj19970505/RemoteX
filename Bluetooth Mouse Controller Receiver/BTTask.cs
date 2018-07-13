@@ -278,7 +278,7 @@ namespace Bluetooth_Mouse_Controller_Receiver
                 options.Height = 500;
                 options.Margin = 1;
                 writer.Options = options;
-                string encodedConnection = RemoteXDataLibary.Connection.EncodeBluetoothConnection(_BluetoothAdapter.BluetoothAddress, uuid);
+                string encodedConnection = RemoteX.Data.Connection.EncodeBluetoothConnection(_BluetoothAdapter.BluetoothAddress, uuid);
                 Bitmap map = writer.Write(encodedConnection);
                 return map;
             }

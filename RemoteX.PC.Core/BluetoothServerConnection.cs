@@ -21,6 +21,14 @@ namespace RemoteX.PC.Core
         {
             public Guid Uuid { get; private set; }
 
+            public string ConnectCode
+            {
+                get
+                {
+                    return RemoteX.Data.Connection.EncodeBluetoothConnection(BluetoothManager._BluetoothAdapter.BluetoothAddress, Uuid);
+                }
+            }
+
             private RfcommServiceProvider _Provider;
 
             public event ConnectionHandler OnConnectionEstalblishResult;
@@ -36,6 +44,7 @@ namespace RemoteX.PC.Core
             public async void StartAdvertisingAsync()
             {
                 ConnectionEstablishState = ConnectionEstablishState.Connecting;
+                OnConnectionEstalblishResult(this, ConnectionEstablishState);
                 BluetoothManager._ConnectedConnections.Add(this);
                 RfcommServiceId myId = RfcommServiceId.FromUuid(Uuid);
                 _Provider = await RfcommServiceProvider.CreateAsync(myId);

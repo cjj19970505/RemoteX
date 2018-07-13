@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 
 using Xamarin.Forms;
-using RemoteXDataLibary.Mathf;
+using RemoteX.Data.Mathf;
 
 namespace RemoteX.UI
 {

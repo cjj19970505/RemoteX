@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
-using RemoteXDataLibary;
+using RemoteX.Data;
 
 namespace Bluetooth_Mouse_Controller_Receiver
 {
@@ -142,7 +142,7 @@ namespace Bluetooth_Mouse_Controller_Receiver
             Vector3 lastMousePointer = Vector3.zero;
             int averDataCount = 11;
 
-            public void processData(RemoteXDataLibary.RemoteXControlMessage data)
+            public void processData(RemoteXControlMessage data)
             {
                 Quaternion rot = new Quaternion(data.Values[0], data.Values[1], data.Values[2], data.Values[3]);
                 Vector3 readyPointer = mouseBoundary.quaternionToVector(rot);
@@ -192,7 +192,7 @@ namespace Bluetooth_Mouse_Controller_Receiver
             ///
             /// </summary>
             /// <param name="delta">这个是手机中传过来的移动速度</param>
-            public void ProcessData(RemoteXDataLibary.RemoteXControlMessage data)
+            public void ProcessData(RemoteXControlMessage data)
             {
 
                 System.Drawing.Point point = new System.Drawing.Point((int)data.Values[0], (int)data.Values[1]);
@@ -204,7 +204,7 @@ namespace Bluetooth_Mouse_Controller_Receiver
         public class GyroscopeMouseManager
         {
             public Vector2 mouseSpeedFactor = new Vector2(10, 10);
-            public void processData(RemoteXDataLibary.RemoteXControlMessage data)
+            public void processData(RemoteXControlMessage data)
             {
                 Vector3 gyroData = new Vector3(data.Values[0], data.Values[1], data.Values[2]);
                 MoveCursor moveCursor = new MoveCursor(false);
@@ -217,32 +217,32 @@ namespace Bluetooth_Mouse_Controller_Receiver
 
         public class MouseButtonManager
         {
-            public void processData(RemoteXDataLibary.RemoteXControlMessage data)
+            public void processData(RemoteXControlMessage data)
             {
                 MoveCursor moveCursor = new MoveCursor(false);
-                if (data.DataType == (int)RemoteXDataLibary.DataType.MouseLeftUp)
+                if (data.DataType == (int)DataType.MouseLeftUp)
                 {
                     moveCursor.LeftUp();
                 }
-                if(data.DataType == (int)RemoteXDataLibary.DataType.MouseLeftDown)
+                if(data.DataType == (int)DataType.MouseLeftDown)
                 {
                     moveCursor.LeftDown();
                 }
-                if(data.DataType == (int)RemoteXDataLibary.DataType.MouseRightUp)
+                if(data.DataType == (int)DataType.MouseRightUp)
                 {
                     moveCursor.RightUp();
                 }
-                if (data.DataType == (int)RemoteXDataLibary.DataType.MouseRightDown)
+                if (data.DataType == (int)DataType.MouseRightDown)
                 {
                     moveCursor.RightDown();
                     //moveCursor.scrollVerticle();
                     //moveCursor.MouseWheel(120);
                 }
-                if(data.DataType == (int)RemoteXDataLibary.DataType.MouseScrollVerticle)
+                if(data.DataType == (int)DataType.MouseScrollVerticle)
                 {
                     moveCursor.scrollVerticle(data.Values[0]*2500);
                 }
-                if (data.DataType == (int)RemoteXDataLibary.DataType.MouseScrollHorizontal)
+                if (data.DataType == (int)DataType.MouseScrollHorizontal)
                 {
                     moveCursor.scrollHorizontal(data.Values[0] * 2500);
                 }
@@ -251,7 +251,7 @@ namespace Bluetooth_Mouse_Controller_Receiver
 
         public class KeyboardController
         {
-            public void processData(RemoteXDataLibary.RemoteXControlMessage data)
+            public void processData(RemoteXControlMessage data)
             {
                 ushort keyCode = dataTypeToKeyCode(data.DataType);
                 PressKeyboard pressKeyboard = new PressKeyboard();
@@ -274,7 +274,7 @@ namespace Bluetooth_Mouse_Controller_Receiver
         public class GunController
         {
             public Vector2 mouseSpeedFactor = new Vector2(10, 10);
-            public void processData(RemoteXDataLibary.RemoteXControlMessage data)
+            public void processData(RemoteXControlMessage data)
             {
                 Vector3 gyroData = new Vector3(data.Values[0], data.Values[1], data.Values[2]);
                 MoveCursor moveCursor = new MoveCursor(false);
@@ -299,9 +299,9 @@ namespace Bluetooth_Mouse_Controller_Receiver
             touchMouseManager = new TouchMouseManager();
         }
 
-        public void addData(RemoteXDataLibary.RemoteXControlMessage data)
+        public void addData(RemoteXControlMessage data)
         {
-            if(data.DataType == (int)(RemoteXDataLibary.DataType.SetMouseBoundary))
+            if(data.DataType == (int)(DataType.SetMouseBoundary))
             {
                 Quaternion leftUp = new Quaternion(data.Values[0], data.Values[1], data.Values[2], data.Values[3]);
                 Quaternion rightUp = new Quaternion(data.Values[4], data.Values[5], data.Values[6], data.Values[7]);
@@ -309,11 +309,11 @@ namespace Bluetooth_Mouse_Controller_Receiver
                 Quaternion leftDown = new Quaternion(data.Values[12], data.Values[13], data.Values[14], data.Values[15]);
                 this.mouseBoundary = new MouseBoundary(leftUp, rightUp, rightDown, leftDown);
             }
-            if(data.DataType == (int)RemoteXDataLibary.DataType.MouseRotationVector)
+            if(data.DataType == (int)DataType.MouseRotationVector)
             {
                 mouseSimulateManager.processData(data);
             }
-            if(data.DataType == (int)RemoteXDataLibary.DataType.SensorGyroscope)
+            if(data.DataType == (int)DataType.SensorGyroscope)
             {
                 gyroscopeMouseManager.processData(data);
             }
@@ -325,7 +325,7 @@ namespace Bluetooth_Mouse_Controller_Receiver
             {
                 keyboardController.processData(data);
             }
-            if(data.DataType == (int)RemoteXDataLibary.DataType.TouchMouseSpeed)
+            if(data.DataType == (int)DataType.TouchMouseSpeed)
             {
                 touchMouseManager.ProcessData(data);
             }

@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\RemoteX.Core\RemoteX.Core.csproj" />
+    <ProjectReference Include="..\RemoteX.Data\RemoteX.Data.csproj" />
   </ItemGroup>
 
   <ItemGroup>
