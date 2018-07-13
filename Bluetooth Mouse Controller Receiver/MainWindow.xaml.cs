@@ -23,6 +23,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 
 using RemoteXDataLibary;
+using RemoteX.PC.Core;
 
 namespace Bluetooth_Mouse_Controller_Receiver
 {
@@ -44,7 +45,7 @@ namespace Bluetooth_Mouse_Controller_Receiver
         //这个站且用来测试鼠标移动，以下就是他妈的移动方法。
         private void Button_BluetoothInitialize_Click(object sender, RoutedEventArgs e)
         {
-            //Initialize();
+            /*
             BTTaskManager btTaskManager = BTTaskManager.instance;
             btTask = btTaskManager.newTask();
             btTask.onReceiveMessage += onReceiveData;
@@ -53,8 +54,13 @@ namespace Bluetooth_Mouse_Controller_Receiver
             ControllerManager controllerManager = new ControllerManager();
             controllerManagers.Add(btTask.taskId, controllerManager);
             ImageSource is_QRCode = BitmapToBitmapImage(btTask.QRCode);
-            img_QRCode.Source = is_QRCode;
-            //btTask.onReceiveMessage += Receive();
+            img_QRCode.Source = is_QRCode;*/
+            BluetoothManager bluetoothManager = BluetoothManager.Instance;
+            var bluetoothServerConnection = bluetoothManager.CreateRfcommServerConnection(Guid.Parse("14c5449a-6267-4c7e-bd10-63dd79740e5" + 0));
+            
+
+
+
         }
         public static BitmapImage BitmapToBitmapImage(Bitmap bitmap)
         {

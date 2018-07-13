@@ -149,6 +149,14 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\RemoteX.Core\RemoteX.Core.csproj">
+      <Project>{2a58342e-4836-4bbb-85b3-efdaacb310cd}</Project>
+      <Name>RemoteX.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RemoteX.PC.Core\RemoteX.PC.Core.csproj">
+      <Project>{8a26fc2e-6c86-4708-9dda-12335d2311d6}</Project>
+      <Name>RemoteX.PC.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\RemoteXDataLibary\RemoteXDataLibary.csproj">
       <Project>{02b0015b-c188-4622-ab6c-ac46b4403467}</Project>
       <Name>RemoteXDataLibary</Name>
