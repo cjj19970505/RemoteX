@@ -63,6 +63,7 @@ namespace RemoteX.PC.DebugBackendLauncher
 
         private void OnDebugServerStart(object sender, EventArgs e)
         {
+            DebugBackend.DebugBackend.Instance.ServerInfoQRCode = (ConnectionManager.Instance.ControllerConnection as IServerConnection).GetQRCode();
             this.Dispatcher.Invoke(() =>
             {
                 tb_Port.Text = DebugBackend.DebugBackend.Instance.Port.ToString();

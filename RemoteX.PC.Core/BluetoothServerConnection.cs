@@ -76,19 +76,16 @@ namespace RemoteX.PC.Core
                 {
                     SendDataWriter = new DataWriter(Socket.OutputStream);
                     System.Diagnostics.Debug.WriteLine("SUCCEES on Thread: " + Thread.CurrentThread.ManagedThreadId);
-                    ConnectionEstablishState = ConnectionEstablishState.Succeed;
+                    ConnectionEstablishState = ConnectionEstablishState.Succeeded;
                     OnConnectionEstalblishResult?.Invoke(this, ConnectionEstablishState);
                     
                 }
                 else
                 {
-                    ConnectionEstablishState = ConnectionEstablishState.failed;
+                    ConnectionEstablishState = ConnectionEstablishState.Failed;
                     OnConnectionEstalblishResult?.Invoke(this, ConnectionEstablishState);
-                    System.Diagnostics.Debug.WriteLine("FUCK NO");
                 }
                 _ReceiveTask = ReceiveAsync();
-                //_HandlePackMessageBuffer();
-                //receive();
             }
 
             public void StartServer()

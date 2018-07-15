@@ -73,7 +73,7 @@ namespace RemoteX.PC.Core
                     if (Socket == null)
                     {
                         Debug.WriteLine("Bluetooth Connection Error:Socket Closed");
-                        ConnectionEstablishState = ConnectionEstablishState.Disconnect;
+                        ConnectionEstablishState = ConnectionEstablishState.Disconnected;
                         Disconnect();
                         break;
                     }

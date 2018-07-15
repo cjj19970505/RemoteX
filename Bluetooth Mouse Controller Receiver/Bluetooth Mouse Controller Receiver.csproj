@@ -158,7 +158,7 @@
       <Name>RemoteX.Data</Name>
     </ProjectReference>
     <ProjectReference Include="..\RemoteX.DebugBackend\RemoteX.DebugBackend.csproj">
-      <Project>{8ca44478-e6a4-49c0-8181-93e3d4f75a6a}</Project>
+      <Project>{daa71d91-a581-4ae0-bb27-d269de6a3d37}</Project>
       <Name>RemoteX.DebugBackend</Name>
     </ProjectReference>
     <ProjectReference Include="..\RemoteX.PC.Core\RemoteX.PC.Core.csproj">

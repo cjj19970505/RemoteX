@@ -6,8 +6,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using RemoteX.Data;
-using System.Drawing;
-using System.Drawing.Imaging;
+using System.Drawing.Bitmap;
 /// <summary>
 /// 调试后端
 /// 因为Unity项目在Editorm模式中没办法使用win32中程序通信间的办法
@@ -19,13 +18,13 @@ namespace RemoteX.DebugBackend
     public class DebugBackend
     {
         private static DebugBackend _Instance;
-
+        
         public static DebugBackend Instance
         {
             get
             {
-
-                if (_Instance == null)
+                
+                if(_Instance == null)
                 {
                     _Instance = new DebugBackend();
                 }
@@ -38,7 +37,7 @@ namespace RemoteX.DebugBackend
         public event EventHandler OnServerStart;
         public event EventHandler OnServerFailed;
         public event EventHandler OnServerClosed;
-
+        
         /// <summary>
         /// 储存最新的输入数据
         /// </summary>
@@ -75,8 +74,8 @@ namespace RemoteX.DebugBackend
             //Task removeTimeoutBufferTask = removeTimeoutBufferAsync();
         }
 
-
-
+        
+        
         public void Set(RemoteXControlMessage controlMessage)
         {
             if (!Running)
@@ -98,7 +97,7 @@ namespace RemoteX.DebugBackend
                 unfetchedControlMessageBuffer.Enqueue(rcmWithEnqueueTime);
                 DateTime nowDateTime = DateTime.Now;
                 DateTime earliestBufferEnqueueTime = unfetchedControlMessageBuffer.Peek().EnqueueDateTime;
-                while ((nowDateTime - earliestBufferEnqueueTime) > RemoveBufferTimeout && unfetchedControlMessageBuffer.Count > 0)
+                while((nowDateTime - earliestBufferEnqueueTime) > RemoveBufferTimeout && unfetchedControlMessageBuffer.Count>0)
                 {
                     unfetchedControlMessageBuffer.Dequeue();
                     earliestBufferEnqueueTime = unfetchedControlMessageBuffer.Peek().EnqueueDateTime;
@@ -106,12 +105,15 @@ namespace RemoteX.DebugBackend
             }
         }
 
-        public Bitmap ServerInfoQRCode { set; get; }
+        public Bitmap ServerInfoQRCode
+        {
+
+        }
 
         public int Port { get; private set; }
         private async Task startServerAsync()
         {
-
+            
             HttpListener httpListener = new HttpListener();
             httpListener.Prefixes.Add("http://*:" + Port + "/");
             try
@@ -130,7 +132,7 @@ namespace RemoteX.DebugBackend
                         string[] segments = request.Url.Segments;
                         int dataTypeInt = 0;
                         bool hasDataType = false;
-                        foreach (string segment in segments)
+                        foreach(string segment in segments)
                         {
                             Console.Write("(" + segment + ")");
                         }
@@ -173,28 +175,27 @@ namespace RemoteX.DebugBackend
                                 Stream output = response.OutputStream;
                                 output.Write(responseBuffer, 0, responseBuffer.Length);
                             }
-                            else if (segments[2].ToLower() == "serverqrcode.png")
+                            else if(segments[2].ToLower() == "serverqrcode.png")
                             {
                                 response.ContentType = "image/png";
-                                ServerInfoQRCode.Save(response.OutputStream, ImageFormat.Png);
                             }
                         }
-
+                        
                     }
-                    catch (HttpListenerException ex)
+                    catch(HttpListenerException ex)
                     {
                         Console.WriteLine("ERROR IN RESPONSE AND REQUEST: " + ex.Message);
                     }
                     finally
                     {
-                        if (response != null)
+                        if(response != null)
                         {
                             response.Close();
                         }
                     }
                 }
             }
-            catch (HttpListenerException ex)
+            catch(HttpListenerException ex)
             {
                 Console.WriteLine("ERROR IN FUCKING CONNECTION: " + ex.Message);
                 OnServerFailed?.Invoke(this, null);
@@ -221,11 +222,11 @@ namespace RemoteX.DebugBackend
                                 unfetchedControlMessageBuffer.Dequeue();
                             }
                         }
-
+                        
                     }
                 }
             });
-
+            
         }
 
         /// <summary>
@@ -242,6 +243,6 @@ namespace RemoteX.DebugBackend
                 this.EnqueueDateTime = enqueueTime;
             }
         }
-
+        
     }
 }

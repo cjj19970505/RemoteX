@@ -10,7 +10,7 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using RemoteX.Sensor;
-using RemoteXDataLibary.Mathf;
+using RemoteX.Data.Mathf;
 
 [assembly: Xamarin.Forms.Dependency(typeof(RemoteX.Droid.SensorManager))]
 namespace RemoteX.Droid

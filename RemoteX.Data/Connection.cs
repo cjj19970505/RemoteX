@@ -29,7 +29,7 @@ namespace RemoteX.Data
             string sMac = arrMacAndUuid[0].Remove(0, 4);
             string sGuid = arrMacAndUuid[1].Remove(0, 5);
             ulong mac = ulong.Parse(sMac);
-            Guid guid = Guid.Parse(sGuid);
+            Guid guid = new Guid(sGuid);
             BluetoothConnectionInfo info = new BluetoothConnectionInfo()
             {
                 DeviceAddress = mac,

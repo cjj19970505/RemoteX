@@ -89,7 +89,7 @@ namespace RemoteX.PC.Core
         {
             get
             {
-                if (_ControllerConnection != null && (_ControllerConnection.ConnectionEstablishState == ConnectionEstablishState.Abort || _ControllerConnection.ConnectionEstablishState == ConnectionEstablishState.Disconnect))
+                if (_ControllerConnection != null && (_ControllerConnection.ConnectionEstablishState == ConnectionEstablishState.Abort || _ControllerConnection.ConnectionEstablishState == ConnectionEstablishState.Disconnected))
                 {
                     ControllerConnection = null;
                 }

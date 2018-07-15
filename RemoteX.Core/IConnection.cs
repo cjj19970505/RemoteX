@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 namespace RemoteX.Core
 {
     public enum ConnectionType { Bluetooth, UDP, TCP};
-    public enum ConnectionEstablishState { NoEstablishment ,Succeed, failed, Connecting, Abort, Disconnect}
+    public enum ConnectionEstablishState { Created = 0 ,Succeeded = 2, Failed = 6, Connecting = 1, Abort = 4, Disconnected = 5, Cancelled = 3}
     public delegate void MessageHandler(IConnection connection ,byte[] message);
     public delegate void ConnectionHandler(IConnection connection, ConnectionEstablishState connectionEstablishState);
     /// <summary>
