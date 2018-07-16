@@ -24,6 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="SkiaComponent\Extensions.cs~RFacf58fa.TMP" />
     <None Remove="UI\Icon\InfoIcon.png" />
     <None Remove="UI\Icon\JoystickButton_Up.png" />
     <None Remove="UI\Icon\RedWarning.png" />

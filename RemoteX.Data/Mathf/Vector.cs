@@ -55,7 +55,7 @@ namespace RemoteX.Data.Mathf
         {
             return "(" + x + ", " + y + ")";
         }
-
+        /*
         static public implicit operator SKPoint(Vector2 v)
         {
             return new SKPoint(v.x, v.y);
@@ -65,6 +65,7 @@ namespace RemoteX.Data.Mathf
         {
             return new Vector2(value.X, value.Y);
         }
+        */
 
     }
 

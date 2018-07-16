@@ -47,7 +47,7 @@ namespace RemoteX.SkiaComponent
             CanvasInfoProvider canvasInfoProvider = SkiaBehaviourEngine.CanvasInfoProvider as CanvasInfoProvider;
             if (action == TouchMotionAction.Down)
             {
-                if (Area.IsOverlapPoint(canvasInfoProvider.DeviceToCanvasPoint(touch.Position)))
+                if (Area.IsOverlapPoint(canvasInfoProvider.DeviceToCanvasPoint(touch.Position.ToSKPoint())))
                 {
                     bool firstTouch = false;
                     if (OnSkiaTouches.Count == 0)
@@ -63,7 +63,7 @@ namespace RemoteX.SkiaComponent
             }
             else if (action == TouchMotionAction.Move)
             {
-                if (!OnSkiaTouches.Contains(skiaTouch) && Area.IsOverlapPoint(touch.Position))
+                if (!OnSkiaTouches.Contains(skiaTouch) && Area.IsOverlapPoint(touch.Position.ToSKPoint()))
                 {
                     bool firstTouch = false;
                     if (OnSkiaTouches.Count == 0)
@@ -77,7 +77,7 @@ namespace RemoteX.SkiaComponent
                     }
 
                 }
-                else if (OnSkiaTouches.Contains(skiaTouch) && !Area.IsOverlapPoint(touch.Position))
+                else if (OnSkiaTouches.Contains(skiaTouch) && !Area.IsOverlapPoint(touch.Position.ToSKPoint()))
                 {
                     OnSkiaTouches.Remove(skiaTouch);
                     if (OnSkiaTouches.Count == 0)

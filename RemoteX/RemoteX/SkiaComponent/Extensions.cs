@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using SkiaBehaviour;
+using RemoteX.Data.Mathf;
 
 namespace RemoteX.SkiaComponent
 {
@@ -29,6 +30,16 @@ namespace RemoteX.SkiaComponent
                 }
             }
             return null;
+        }
+
+        public static SKPoint ToSKPoint(this Vector2 self)
+        {
+            return new SKPoint(self.x, self.y);
+        }
+
+        public static Vector2 ToVector2(this SKPoint self)
+        {
+            return new Vector2(self.X, self.Y);
         }
     }
 }

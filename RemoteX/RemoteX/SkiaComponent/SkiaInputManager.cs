@@ -32,7 +32,7 @@ namespace RemoteX.SkiaComponent
             if (action == TouchMotionAction.Down)
             {
                 int heightLevel = 0;
-                ISkiaInputComponent skiaInputComponent = getSkiaInputComponent(canvasInfoProvider.DeviceToCanvasPoint(touch.Position));
+                ISkiaInputComponent skiaInputComponent = getSkiaInputComponent(canvasInfoProvider.DeviceToCanvasPoint(touch.Position.ToSKPoint()));
                 if (skiaInputComponent != null)
                 {
                     heightLevel = skiaInputComponent.InputHeightLevel;

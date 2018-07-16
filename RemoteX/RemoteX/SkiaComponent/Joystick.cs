@@ -63,12 +63,12 @@ namespace RemoteX.SkiaComponent
             CanvasInfoProvider canvasInfoProvider = SkiaBehaviourEngine.CanvasInfoProvider as CanvasInfoProvider;
             if (action == TouchMotionAction.Down)
             {
-                if (OnSkiaTouch == null && StartRegion.IsOverlapPoint(canvasInfoProvider.DeviceToCanvasPoint(touch.Position)))
+                if (OnSkiaTouch == null && StartRegion.IsOverlapPoint(canvasInfoProvider.DeviceToCanvasPoint(touch.Position.ToSKPoint())))
                 {
                     OnSkiaTouch = skiaTouch;
                     Distance = 0;
                     Direction = 0;
-                    startPos = touch.Position;
+                    startPos = touch.Position.ToSKPoint();
                     OnJoystickPressed();
                 }
             }
@@ -86,7 +86,7 @@ namespace RemoteX.SkiaComponent
             {
                 if (OnSkiaTouch == skiaTouch)
                 {
-                    SKPoint currentPos = touch.Position;
+                    SKPoint currentPos = touch.Position.ToSKPoint();
                     float distance = (currentPos - startPos).Magnitude();
                     float degree = (float)(Math.Atan2((currentPos - startPos).Y, (currentPos - startPos).X) * (180 / Math.PI));
                     this.Distance = distance;
