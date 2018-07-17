@@ -9,7 +9,7 @@ using Windows.Storage.Streams;
 using RemoteX.Core;
 using System.Threading.Tasks;
 
-namespace RemoteX.PC.Core
+namespace RemoteX.UWP.Core
 {
     partial class BluetoothManager
     {

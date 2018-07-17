@@ -8,7 +8,7 @@ using Windows.Storage.Streams;
 using System.Diagnostics;
 using System.Linq;
 
-namespace RemoteX.PC.Core
+namespace RemoteX.UWP.Core
 {
     partial class BluetoothManager
     {

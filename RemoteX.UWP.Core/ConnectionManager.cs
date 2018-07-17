@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace RemoteX.PC.Core
+namespace RemoteX.UWP.Core
 {
     public class ConnectionManager : IConnectionManager
     {

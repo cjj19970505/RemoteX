@@ -6,7 +6,7 @@ using Windows.Devices.Bluetooth;
 using System.Diagnostics;
 using System.Threading.Tasks;
 
-namespace RemoteX.PC.Core
+namespace RemoteX.UWP.Core
 {
     public partial class BluetoothManager
     {
