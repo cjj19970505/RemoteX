@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{A90A3952-A7B8-404C-8ADA-645FC1D63B8B}</ProjectGuid>
+    <ProjectGuid>{1C9CAE89-1E2E-4E2A-A61C-E6E66CFB2AA5}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>RemoteX.UnityPlugin.UWP</RootNamespace>
-    <AssemblyName>RemoteX.UnityPlugin.UWP</AssemblyName>
+    <RootNamespace>RemoteX.UnityPlugin.UWPCompatData</RootNamespace>
+    <AssemblyName>RemoteX.UnityPlugin.UWPCompatData</AssemblyName>
     <DefaultLanguage>zh-CN</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion Condition=" '$(TargetPlatformVersion)' == '' ">10.0.17134.0</TargetPlatformVersion>
@@ -106,27 +106,22 @@
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="BluetoothConnection.cs" />
-    <Compile Include="BluetoothManager.cs" />
-    <Compile Include="BluetoothServerConnection.cs" />
-    <Compile Include="ConnectionManager.cs" />
+    <Compile Include="..\RemoteX.Data\Connection.cs">
+      <Link>Connection.cs</Link>
+    </Compile>
+    <Compile Include="..\RemoteX.Data\RemoteXControlMessage.cs">
+      <Link>RemoteXControlMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\RemoteX.Data\RemoteXTransferProtocol.cs">
+      <Link>RemoteXTransferProtocol.cs</Link>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Properties\RemoteX.UnityPlugin.UWP.rd.xml" />
+    <EmbeddedResource Include="Properties\RemoteX.UnityPlugin.UWPCompatData.rd.xml" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
       <Version>5.0.0</Version>
     </PackageReference>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\RemoteX.UnityPlugin.UWPCompatCore\RemoteX.UnityPlugin.UWPCompatCore.csproj">
-      <Project>{ec4033ea-646f-4221-a928-5f4fcbee4c37}</Project>
-      <Name>RemoteX.UnityPlugin.UWPCompatCore</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\RemoteX.UnityPlugin.UWPCompatData\RemoteX.UnityPlugin.UWPCompatData.csproj">
-      <Project>{1c9cae89-1e2e-4e2a-a61c-e6e66cfb2aa5}</Project>
-      <Name>RemoteX.UnityPlugin.UWPCompatData</Name>
-    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
