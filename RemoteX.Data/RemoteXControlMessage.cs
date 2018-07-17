@@ -147,7 +147,7 @@ namespace RemoteX.Data
             sType = sType.Remove(0, 5);
             sType = sType.Trim();
             int type = int.Parse(sType);
-            Console.WriteLine(sType);
+            System.Diagnostics.Debug.WriteLine(sType);
             string sDataOnly = sTypeAndData[1].Remove(0, 7);
             sDataOnly = sDataOnly.Replace(" ", "");
             string[] sFloatDatas = sDataOnly.Split(',');
