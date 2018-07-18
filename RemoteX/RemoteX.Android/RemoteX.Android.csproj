@@ -77,6 +77,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SensorManager.cs" />
     <Compile Include="VibratorWrapper.cs" />
+    <Compile Include="WifiDirectClientConnection.cs" />
+    <Compile Include="WifiDirectManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
