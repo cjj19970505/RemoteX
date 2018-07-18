@@ -10,6 +10,7 @@ using System.ComponentModel;
 using RemoteX.Data.Mathf;
 using RemoteX.Bluetooth;
 using RemoteX.Data;
+using RemoteX.Core;
 
 namespace RemoteX.Controller
 {
@@ -105,7 +106,7 @@ namespace RemoteX.Controller
                 previousTouchPos = touch.Position;
                 IConnectionManager controllerManager = DependencyService.Get<IConnectionManager>();
                 IConnection connection = controllerManager.ControllerConnection;
-                if(connection != null && connection.ConnectionEstablishState == ConnectionEstablishState.Succeed)
+                if(connection != null && connection.ConnectionEstablishState == ConnectionEstablishState.Succeeded)
                 {
                     RemoteXControlMessage data = new RemoteXControlMessage((int)DataType.TouchMouseSpeed, new float[] { speed.x, speed.y });
                     await connection.SendAsync(data.Bytes);

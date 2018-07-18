@@ -11,6 +11,7 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using RemoteX.WifiDirect;
+using RemoteX.Core;
 [assembly: Xamarin.Forms.Dependency(typeof(RemoteX.Droid.WifiDirectManager))]
 namespace RemoteX.Droid
 {
@@ -29,7 +30,6 @@ namespace RemoteX.Droid
             _StateChangedReceiver = new Receiver(this);
             _PeersChangeFilter = new Receiver(this);
             _DiscoverPeersListener = new RequsetPeersListener(this);
-            _ConnectStateListener = new ConnectStateListener(this);
 
             _DroidWifiP2pManager = (WifiP2pManager)Application.Context.GetSystemService(Context.WifiP2pService);
             _Channel = _DroidWifiP2pManager.Initialize(Application.Context, Application.Context.MainLooper, null);
@@ -56,8 +56,7 @@ namespace RemoteX.Droid
 
         public void CreateClientConnection(IWifiDirectDevice targetDevice)
         {
-            WifiP2pConfig config = new WifiP2pConfig();
-            config.DeviceAddress = (targetDevice as WifiDirectDevice).DroidDevice.DeviceAddress;
+             new WifiClientDirectConnection(this, targetDevice);
         }
 
         public void SearchForPeers()

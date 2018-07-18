@@ -12,6 +12,7 @@ using Android.Views;
 using Android.Widget;
 using Java.Util;
 using RemoteX.Bluetooth;
+using RemoteX.Core;
 
 [assembly: Xamarin.Forms.Dependency(typeof(RemoteX.Droid.BluetoothManager))]
 namespace RemoteX.Droid
@@ -95,7 +96,7 @@ namespace RemoteX.Droid
             _BluetoothAdapter.StartDiscovery();
         }
 
-        public IConnection CreateRfcommClientConnection(RemoteX.Bluetooth.IBluetoothDevice deviceWrapper, Guid guid)
+        public IClientConnection CreateRfcommClientConnection(RemoteX.Bluetooth.IBluetoothDevice deviceWrapper, Guid guid)
         {
             UUID uuid = UUID.FromString(guid.ToString());
             if(!(deviceWrapper is BluetoothDeviceWrapper))

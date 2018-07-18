@@ -101,6 +101,10 @@
     </AndroidResource>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\RemoteX.Core\RemoteX.Core.csproj">
+      <Project>{2a58342e-4836-4bbb-85b3-efdaacb310cd}</Project>
+      <Name>RemoteX.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\RemoteX.Data\RemoteX.Data.csproj">
       <Project>{87c30186-7988-4e6b-91de-7df3c1b02536}</Project>
       <Name>RemoteX.Data</Name>

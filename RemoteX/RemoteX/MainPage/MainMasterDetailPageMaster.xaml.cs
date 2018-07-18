@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
+using RemoteX.Core;
 
 namespace RemoteX.MainPage
 {

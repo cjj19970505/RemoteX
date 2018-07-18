@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using RemoteX.Core;
 
 namespace RemoteX.Bluetooth
 {
@@ -42,7 +43,7 @@ namespace RemoteX.Bluetooth
         /// 创建蓝牙的客户端连接
         /// </summary>
         /// <returns></returns>
-        IConnection CreateRfcommClientConnection(IBluetoothDevice device, Guid guid);
+        IClientConnection CreateRfcommClientConnection(IBluetoothDevice device, Guid guid);
 
         IBluetoothDevice[] PairedDevices { get; }
 

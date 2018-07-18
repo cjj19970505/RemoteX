@@ -6,6 +6,7 @@ using System.Diagnostics;
 using Xamarin.Forms;
 using RemoteX.Sensor;
 using RemoteX.Data;
+using RemoteX.Core;
 
 namespace RemoteX.Controller
 {

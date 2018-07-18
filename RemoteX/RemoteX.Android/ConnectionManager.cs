@@ -10,6 +10,7 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using RemoteX;
+using RemoteX.Core;
 
 [assembly: Xamarin.Forms.Dependency(typeof(RemoteX.Droid.ConnectionManager))]
 namespace RemoteX.Droid
@@ -28,7 +29,7 @@ namespace RemoteX.Droid
                 _OnControllerConnectionEstablishResult += value;
                 if (_ControllerConnection != null)
                 {
-                    _ControllerConnection.onConnectionEstalblishResult += value;
+                    _ControllerConnection.OnConnectionEstalblishResult += value;
                 }
 
             }
@@ -37,7 +38,7 @@ namespace RemoteX.Droid
                 _OnControllerConnectionEstablishResult -= value;
                 if (_ControllerConnection != null)
                 {
-                    _ControllerConnection.onConnectionEstalblishResult -= value;
+                    _ControllerConnection.OnConnectionEstalblishResult -= value;
                 }
 
             }
@@ -65,7 +66,7 @@ namespace RemoteX.Droid
         {
             get
             {
-                if(_ControllerConnection!=null && (_ControllerConnection.ConnectionEstablishState == ConnectionEstablishState.Abort || _ControllerConnection.ConnectionEstablishState == ConnectionEstablishState.Disconnect))
+                if(_ControllerConnection!=null && (_ControllerConnection.ConnectionEstablishState == ConnectionEstablishState.Abort || _ControllerConnection.ConnectionEstablishState == ConnectionEstablishState.Disconnected))
                 {
                     ControllerConnection = null;
                 }
@@ -75,14 +76,14 @@ namespace RemoteX.Droid
             {
                 if (_ControllerConnection != null)
                 {
-                    _ControllerConnection.onConnectionEstalblishResult -= _OnControllerConnectionEstablishResult;
+                    _ControllerConnection.OnConnectionEstalblishResult -= _OnControllerConnectionEstablishResult;
                     _ControllerConnection.onReceiveMessage -= _OnControllerConnectionReceiveMessage;
 
                 }
                 _ControllerConnection = value;
                 if (_ControllerConnection != null)
                 {
-                    _ControllerConnection.onConnectionEstalblishResult += _OnControllerConnectionEstablishResult;
+                    _ControllerConnection.OnConnectionEstalblishResult += _OnControllerConnectionEstablishResult;
                     _ControllerConnection.onReceiveMessage += _OnControllerConnectionReceiveMessage;
                 }
             }

@@ -13,14 +13,17 @@ using Android.Widget;
 using RemoteX.WifiDirect;
 using RemoteX;
 using System.Threading.Tasks;
+using RemoteX.Core;
 
 namespace RemoteX.Droid
 {
     public partial class WifiDirectManager
     {
-        class WifiClientDirectConnection:IConnection
+        class WifiClientDirectConnection:IClientConnection
         {
             private ConnectStateListener _ConnectStateListener;
+            private WifiDirectManager _WifiDirectManager;
+            public IWifiDirectDevice WifiDirectDevice { get; private set; }
 
             public ConnectionType connectionType
             {
@@ -30,20 +33,46 @@ namespace RemoteX.Droid
                 }
             }
 
-            public ConnectionEstablishState ConnectionEstablishState => throw new NotImplementedException();
+            public ConnectionEstablishState ConnectionEstablishState { get; private set; }
 
             public event MessageHandler onReceiveMessage;
-            public event ConnectionHandler onConnectionEstalblishResult;
+            public event ConnectionHandler OnConnectionEstalblishResult;
+
+            
+
+            public WifiClientDirectConnection(WifiDirectManager wifiDirectManager, IWifiDirectDevice wifiDirectDevice)
+            {
+                _WifiDirectManager = wifiDirectManager;
+                this.WifiDirectDevice = wifiDirectDevice;
+                _ConnectStateListener = new ConnectStateListener(this);
+            }
 
             public void AbortConnecting()
             {
                 throw new NotImplementedException();
             }
-
-            public Task<ConnectionEstablishState> ConnectAsync()
+            private bool _ConnectingSucceeded = false;
+            public async Task<ConnectionEstablishState> ConnectAsync()
             {
-                throw new NotImplementedException();
+                WifiP2pConfig config = new WifiP2pConfig();
+                config.DeviceAddress = (WifiDirectDevice as WifiDirectDevice).DroidDevice.DeviceAddress;
+                WifiP2pManager droidWifiP2pManager = _WifiDirectManager._DroidWifiP2pManager;
+                droidWifiP2pManager.Connect(_WifiDirectManager._Channel, config, _ConnectStateListener);
+                while(!_ConnectingSucceeded)
+                {
+                    
+                }
+                if (_ConnectingSucceeded)
+                {
+                    ConnectionEstablishState = ConnectionEstablishState.Succeeded;
+                }
+                OnConnectionEstalblishResult?.Invoke(this, ConnectionEstablishState);
+                
+                return ConnectionEstablishState;
+                
             }
+
+            
 
             public Task SendAsync(byte[] message)
             {
@@ -52,10 +81,10 @@ namespace RemoteX.Droid
 
             private class ConnectStateListener : Java.Lang.Object, WifiP2pManager.IActionListener
             {
-                private WifiDirectManager _WifiDirectManager;
-                public ConnectStateListener(WifiDirectManager wifiDirectManager)
+                private WifiClientDirectConnection _Connection;
+                public ConnectStateListener(WifiClientDirectConnection connection)
                 {
-                    _WifiDirectManager = wifiDirectManager;
+                    _Connection = connection;
                 }
                 public void OnFailure([GeneratedEnum] WifiP2pFailureReason reason)
                 {
@@ -64,6 +93,7 @@ namespace RemoteX.Droid
 
                 public void OnSuccess()
                 {
+                    _Connection._ConnectingSucceeded = true;
                     Toast.MakeText(Application.Context, "Connect Failed", ToastLength.Short).Show();
                 }
             }

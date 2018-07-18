@@ -16,12 +16,13 @@ using Java.IO;
 using Java.Util;
 using RemoteX;
 using Xamarin.Forms;
+using RemoteX.Core;
 
 namespace RemoteX.Droid
 {
     partial class BluetoothManager
     {
-        class BluetoothClientConnection : RemoteX.Bluetooth.IBluetoothConnection
+        class BluetoothClientConnection : RemoteX.Bluetooth.IBluetoothClientConnection
         {
             private static string TAG = "BluetoothConnection";
             private BluetoothDevice _Device;
@@ -33,7 +34,7 @@ namespace RemoteX.Droid
             protected BluetoothSocket _BluetoothSocket;
 
             public event MessageHandler onReceiveMessage;
-            public event ConnectionHandler onConnectionEstalblishResult;
+            public event ConnectionHandler OnConnectionEstalblishResult;
             public ConnectionEstablishState ConnectionEstablishState { get; private set; }
 
             private bool _AbortConnecting = false;
@@ -50,7 +51,7 @@ namespace RemoteX.Droid
                 this._BluetoothManager = bluetoothManager;
                 this._Device = device;
                 this._SdpUuid = guid;
-                this.ConnectionEstablishState = ConnectionEstablishState.NoEstablishment;
+                this.ConnectionEstablishState = ConnectionEstablishState.Created;
             }
             public ConnectionType connectionType
             {
@@ -63,7 +64,7 @@ namespace RemoteX.Droid
             {
                 if (_Device == null)
                 {
-                    return ConnectionEstablishState.failed;
+                    return ConnectionEstablishState.Failed;
                 }
                 BluetoothSocket tmp = null;
                 if (_BluetoothAdapter == null)
@@ -76,7 +77,7 @@ namespace RemoteX.Droid
                 }
                 catch (Java.IO.IOException e)
                 {
-                    return ConnectionEstablishState.failed;
+                    return ConnectionEstablishState.Failed;
                 }
                 _BluetoothSocket = tmp;
                 _BluetoothAdapter.CancelDiscovery();
@@ -93,9 +94,9 @@ namespace RemoteX.Droid
                     }
                     catch (Java.IO.IOException socketCloseException)
                     {
-                        return ConnectionEstablishState.failed;
+                        return ConnectionEstablishState.Failed;
                     }
-                    return ConnectionEstablishState.failed;
+                    return ConnectionEstablishState.Failed;
                 }
                 try
                 {
@@ -110,12 +111,12 @@ namespace RemoteX.Droid
                     }
                     catch (Java.IO.IOException socketCloseException)
                     {
-                        return ConnectionEstablishState.failed;
+                        return ConnectionEstablishState.Failed;
                     }
-                    return ConnectionEstablishState.failed;
+                    return ConnectionEstablishState.Failed;
                 }
                 _LastSendDateTime = DateTime.Now;
-                return ConnectionEstablishState.Succeed;
+                return ConnectionEstablishState.Succeeded;
             }
 
             /// <summary>
@@ -149,13 +150,13 @@ namespace RemoteX.Droid
             {
                 this.ConnectionEstablishState = ConnectionEstablishState.Connecting;
                 _BluetoothManager._BluetoothConnections.Add(this);
-                onConnectionEstalblishResult?.Invoke(this, this.ConnectionEstablishState);
+                OnConnectionEstalblishResult?.Invoke(this, this.ConnectionEstablishState);
                 ConnectionEstablishState state;
                 do
                 {
                     state = await establishConnectionAsync();
                 }
-                while (state == ConnectionEstablishState.failed && !_AbortConnecting);
+                while (state == ConnectionEstablishState.Failed && !_AbortConnecting);
                 if (_AbortConnecting)
                 {
                     _BluetoothManager._BluetoothConnections.Remove(this);
@@ -166,11 +167,11 @@ namespace RemoteX.Droid
                 {
                     this.ConnectionEstablishState = state;
                 }
-                if (this.ConnectionEstablishState == ConnectionEstablishState.Succeed)
+                if (this.ConnectionEstablishState == ConnectionEstablishState.Succeeded)
                 {
                     Device.StartTimer(new TimeSpan(0, 0, 0, 0, 500), sendControlCodeTimerFunc);
                 }
-                this.onConnectionEstalblishResult?.Invoke(this, this.ConnectionEstablishState);
+                this.OnConnectionEstalblishResult?.Invoke(this, this.ConnectionEstablishState);
                 return state;
             }
 
@@ -190,7 +191,7 @@ namespace RemoteX.Droid
                             this.ConnectionEstablishState = ConnectionEstablishState.Connecting;
                             System.Diagnostics.Debug.WriteLine("BROKEN PIPE FUCK YOU ");
                             ConnectAsync();
-                            onConnectionEstalblishResult?.Invoke(this, ConnectionEstablishState.Connecting);
+                            OnConnectionEstalblishResult?.Invoke(this, ConnectionEstablishState.Connecting);
                         }
                     }
                 });

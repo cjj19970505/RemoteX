@@ -9,6 +9,7 @@ using System.Diagnostics;
 using RemoteX.Data;
 using RemoteX.Sensor;
 using ZXing.Mobile;
+using RemoteX.Core;
 
 namespace RemoteX.Controller
 {

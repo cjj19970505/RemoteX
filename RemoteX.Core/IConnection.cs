@@ -20,6 +20,7 @@ namespace RemoteX.Core
         /// </summary>
         ConnectionType connectionType { get; }
         ConnectionEstablishState ConnectionEstablishState { get; }
+        event ConnectionHandler OnConnectionEstalblishResult;
         event MessageHandler onReceiveMessage;
         
         Task SendAsync(byte[] message);
@@ -28,8 +29,6 @@ namespace RemoteX.Core
 
     public interface IClientConnection:IConnection
     {
-
-        event ConnectionHandler OnConnectionEstalblishResult;
         /// <summary>
         /// 建立连接（务必实现异步）
         /// 仅在连接成功时返回，否则一直阻塞
@@ -45,7 +44,7 @@ namespace RemoteX.Core
 
     public interface IServerConnection : IConnection
     {
-        event ConnectionHandler OnConnectionEstalblishResult;
+        
         void StartServer();
 
         /// <summary>

@@ -6,6 +6,7 @@ using System.Text;
 using System.Diagnostics;
 using Xamarin.Forms;
 using RemoteX.Data;
+using RemoteX.Core;
 
 namespace RemoteX.Bluetooth
 {
@@ -114,9 +115,9 @@ namespace RemoteX.Bluetooth
 
 
                 IConnectionManager connectionManager = DependencyService.Get<IConnectionManager>();
-                IConnection currentConnection = connectionManager.ControllerConnection;
-                ConnectionEstablishState connectState = ConnectionEstablishState.failed;
-                IConnection connection = DependencyService.Get<IBluetoothManager>().CreateRfcommClientConnection(bluetoothDevice, guid);
+                IClientConnection currentConnection = connectionManager.ControllerConnection as IClientConnection;
+                ConnectionEstablishState connectState = ConnectionEstablishState.Failed;
+                IClientConnection connection = DependencyService.Get<IBluetoothManager>().CreateRfcommClientConnection(bluetoothDevice, guid);
                 if (connectionManager.ControllerConnection != null)
                 {
                     bool result = await DisplayAlert("Connect", "Stop Current Connection ?", "Yes", "No");

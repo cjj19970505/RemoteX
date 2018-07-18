@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Xamarin.Forms;
 using RemoteX.UI;
 using System.Diagnostics;
+using RemoteX.Core;
 
 namespace RemoteX.Controller
 {
@@ -44,7 +45,7 @@ namespace RemoteX.Controller
             _ConnectionStateSnackBar = new SnackBar();
             _ConnectionManager = DependencyService.Get<IConnectionManager>();
             
-            if (_ConnectionManager.ControllerConnection == null || _ConnectionManager.ControllerConnection.ConnectionEstablishState == ConnectionEstablishState.NoEstablishment)
+            if (_ConnectionManager.ControllerConnection == null || _ConnectionManager.ControllerConnection.ConnectionEstablishState == ConnectionEstablishState.Created)
             {
                 _ConnectionStateSnackBar.BarType = BarType.Error;
             }
@@ -52,7 +53,7 @@ namespace RemoteX.Controller
             {
                 _ConnectionStateSnackBar.BarType = BarType.Warning;
             }
-            else if(_ConnectionManager.ControllerConnection.ConnectionEstablishState == ConnectionEstablishState.Succeed)
+            else if(_ConnectionManager.ControllerConnection.ConnectionEstablishState == ConnectionEstablishState.Succeeded)
             {
                 _ConnectionStateSnackBar.IsVisible = false;
             }
@@ -74,12 +75,12 @@ namespace RemoteX.Controller
 
         private void _OnConnectionResult(IConnection connection, ConnectionEstablishState connectionEstablishState)
         {
-            if (connectionEstablishState == ConnectionEstablishState.Succeed)
+            if (connectionEstablishState == ConnectionEstablishState.Succeeded)
             {
                 _ConnectionStateSnackBar.BarType = BarType.Succeed;
                 //_ConnectionStateSnackBar.FadeTo(0, 1000);
             }
-            if(connectionEstablishState == ConnectionEstablishState.Disconnect)
+            if(connectionEstablishState == ConnectionEstablishState.Disconnected)
             {
                 _ConnectionStateSnackBar.BarType = BarType.Error;
             }
