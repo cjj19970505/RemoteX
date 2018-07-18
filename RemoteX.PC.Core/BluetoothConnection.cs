@@ -29,6 +29,7 @@ namespace RemoteX.PC.Core
             public ConnectionEstablishState ConnectionEstablishState { get; protected set; }
 
             public event MessageHandler onReceiveMessage;
+            public event ConnectionHandler OnConnectionEstalblishResult;
 
             protected BluetoothManager BluetoothManager { get; private set; }
 

@@ -72,7 +72,7 @@ namespace RemoteX.Droid
         {
             if (keyCode == Keycode.Back)
             {
-                return false;
+                //return false;
             }
             return base.OnKeyDown(keyCode, e);
         }

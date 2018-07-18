@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-
+using RemoteX.Core;
 namespace RemoteX.WifiDirect
 {
     public delegate void WifiDirectPeersSearchHandler(IWifiDirectManager wifiDirectManager, IWifiDirectDevice[] devices);
@@ -9,6 +9,6 @@ namespace RemoteX.WifiDirect
     {
         event WifiDirectPeersSearchHandler OnPeersFound;
         void SearchForPeers();
-        void CreateClientConnection(IWifiDirectDevice targetDevice);
+        IClientConnection CreateClientConnection(IWifiDirectDevice targetDevice);
     }
 }

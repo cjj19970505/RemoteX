@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 
 using Xamarin.Forms;
+using RemoteX.Core;
 
 namespace RemoteX.WifiDirect
 {
@@ -13,7 +14,8 @@ namespace RemoteX.WifiDirect
         IWifiDirectManager _WifiDirectManager;
         ObservableCollection<IWifiDirectDevice> _WifiDirectDeviceList;
         Button _ScanDevicesButton;
-
+        Button _ConnectButton;
+        IWifiDirectDevice _SelectedDevice;
         public WifiDirectDeviceListPage ()
 		{
             _WifiDirectManager = DependencyService.Get<IWifiDirectManager>();
@@ -32,25 +34,51 @@ namespace RemoteX.WifiDirect
                 _WifiDirectManager.SearchForPeers();
 
             };
+            _ConnectButton = new Button()
+            {
+                Text = "Connect"
+            };
+            _ConnectButton.Clicked += _OnConnectButtonClicked;
             Content = new StackLayout
             {
                 Children =
                 {
                     _ScanDevicesButton,
-                    wifiDirectDeviceListView
+                    wifiDirectDeviceListView,
+                    _ConnectButton
                 }
             };
 
 
         }
+
+        private async void _OnConnectButtonClicked(object sender, EventArgs e)
+        {
+            if(_SelectedDevice != null)
+            {
+                IClientConnection connection = _WifiDirectManager.CreateClientConnection(_SelectedDevice);
+                await connection.ConnectAsync();
+            }
+        }
+
         private void resetDeviceList()
         {
             _WifiDirectDeviceList.Clear();
         }
 
-        private void _OnDeviceSelected(object sender, SelectedItemChangedEventArgs e)
+        private async void _OnDeviceSelected(object sender, SelectedItemChangedEventArgs e)
         {
-            throw new NotImplementedException();
+
+            if (e.SelectedItem == null)
+            {
+                return;
+            }
+            /*
+            IBluetoothDevice device = e.SelectedItem as IBluetoothDevice;
+            await Navigation.PushAsync(new BluetoothDeviceInfoPage(device));*/
+            IWifiDirectDevice device = e.SelectedItem as IWifiDirectDevice;
+            _SelectedDevice = device;
+            
         }
 
         private void _OnPeersFound(IWifiDirectManager wifiDirectManager, IWifiDirectDevice[] devices)

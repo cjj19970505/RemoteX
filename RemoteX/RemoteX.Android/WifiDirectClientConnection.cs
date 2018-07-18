@@ -54,25 +54,29 @@ namespace RemoteX.Droid
             private bool _ConnectingSucceeded = false;
             public async Task<ConnectionEstablishState> ConnectAsync()
             {
-                WifiP2pConfig config = new WifiP2pConfig();
-                config.DeviceAddress = (WifiDirectDevice as WifiDirectDevice).DroidDevice.DeviceAddress;
-                WifiP2pManager droidWifiP2pManager = _WifiDirectManager._DroidWifiP2pManager;
-                droidWifiP2pManager.Connect(_WifiDirectManager._Channel, config, _ConnectStateListener);
-                while(!_ConnectingSucceeded)
+                await Task.Run(() =>
                 {
-                    
-                }
-                if (_ConnectingSucceeded)
-                {
-                    ConnectionEstablishState = ConnectionEstablishState.Succeeded;
-                }
-                OnConnectionEstalblishResult?.Invoke(this, ConnectionEstablishState);
-                
+                    WifiP2pConfig config = new WifiP2pConfig();
+                    config.DeviceAddress = (WifiDirectDevice as WifiDirectDevice).DroidDevice.DeviceAddress;
+                    WifiP2pManager droidWifiP2pManager = _WifiDirectManager._DroidWifiP2pManager;
+                    droidWifiP2pManager.Connect(_WifiDirectManager._Channel, config, _ConnectStateListener);
+                    while (!_ConnectingSucceeded)
+                    {
+                        System.Diagnostics.Debug.WriteLine("HERE1");
+                    }
+                    while(_WifiDirectManager._LatestWifiP2pInfo == null)
+                    {
+                        //System.Diagnostics.Debug.WriteLine("HERE2");
+                    }
+                    if (_ConnectingSucceeded)
+                    {
+                        ConnectionEstablishState = ConnectionEstablishState.Succeeded;
+                    }
+                    OnConnectionEstalblishResult?.Invoke(this, ConnectionEstablishState);
+                });
+                Toast.MakeText(Application.Context, "Connect Succeed", ToastLength.Short).Show();
                 return ConnectionEstablishState;
-                
             }
-
-            
 
             public Task SendAsync(byte[] message)
             {
@@ -88,15 +92,17 @@ namespace RemoteX.Droid
                 }
                 public void OnFailure([GeneratedEnum] WifiP2pFailureReason reason)
                 {
-                    Toast.MakeText(Application.Context, "Connect Success", ToastLength.Short).Show();
+                    Toast.MakeText(Application.Context, "Connect Failed", ToastLength.Short).Show();
                 }
 
                 public void OnSuccess()
                 {
                     _Connection._ConnectingSucceeded = true;
-                    Toast.MakeText(Application.Context, "Connect Failed", ToastLength.Short).Show();
+                    
                 }
             }
+
+            
         }
     }
     
