@@ -64,6 +64,7 @@ namespace RemoteX.WifiDirect
         private void resetDeviceList()
         {
             _WifiDirectDeviceList.Clear();
+            _WifiDirectDeviceList.Add(_WifiDirectManager.GetDevice("c6:9d:ed:9e:3b:86"));
         }
 
         private async void _OnDeviceSelected(object sender, SelectedItemChangedEventArgs e)

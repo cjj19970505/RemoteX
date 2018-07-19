@@ -10,5 +10,6 @@ namespace RemoteX.WifiDirect
         event WifiDirectPeersSearchHandler OnPeersFound;
         void SearchForPeers();
         IClientConnection CreateClientConnection(IWifiDirectDevice targetDevice);
+        IWifiDirectDevice GetDevice(string address);
     }
 }
