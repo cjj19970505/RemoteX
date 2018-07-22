@@ -32,14 +32,23 @@ namespace RemoteX.PC.DebugBackendLauncher
             ConnectionManager.Instance.onControllerConnectionReceiveMessage += OnControllerConnectionReceiveMessage;
             DebugBackend.DebugBackend.Instance.OnServerFailed += OnDebugServerFailed;
             DebugBackend.DebugBackend.Instance.OnServerStart += OnDebugServerStart;
-
+            DebugBackend.DebugBackend.Instance.OnReceiveSendRequest += OnReceiveSendRequest;
             BluetoothManager bluetoothManager = BluetoothManager.Instance;
             var bluetoothServerConnection = bluetoothManager.CreateRfcommServerConnection(Guid.Parse("14c5449a-6267-4c7e-bd10-63dd79740e5" + 0));
             ConnectionManager.Instance.ControllerConnection = bluetoothServerConnection;
             bluetoothServerConnection.StartServer();
             DebugBackend.DebugBackend.Instance.StartBackend(8081);
             img_QR.Source = bluetoothServerConnection.GetQRCode().ToBitmapImage();
+            tb_Mac.Text = bluetoothServerConnection.ConnectCode;
            
+        }
+
+        private async void OnReceiveSendRequest(object sender, RemoteXControlMessage e)
+        {
+            if(ConnectionManager.Instance.ControllerConnection != null && ConnectionManager.Instance.ControllerConnection.ConnectionEstablishState == ConnectionEstablishState.Succeeded)
+            {
+                await ConnectionManager.Instance.ControllerConnection.SendAsync(e.Bytes);
+            }
         }
 
         private void OnControllerConnectionReceiveMessage(IConnection connection, byte[] message)
@@ -90,10 +99,20 @@ namespace RemoteX.PC.DebugBackendLauncher
             
         }
 
-        
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                ulong targetMac = ulong.Parse(tbox_TargetMac.Text);
+                
+            }
+            finally
+            {
+                //var bluetoothServerConnection = BluetoothManager.Instance.CreateRfcommServerConnection(Guid.Parse("14c5449a-6267-4c7e-bd10-63dd79740e5" + 0));
+                //ConnectionManager.Instance.ControllerConnection = bluetoothServerConnection;
+            }
+            
 
-
-
-
+        }
     }
 }

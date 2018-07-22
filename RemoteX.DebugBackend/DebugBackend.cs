@@ -39,6 +39,8 @@ namespace RemoteX.DebugBackend
         public event EventHandler OnServerFailed;
         public event EventHandler OnServerClosed;
 
+        public event EventHandler<RemoteXControlMessage> OnReceiveSendRequest;
+
         /// <summary>
         /// 储存最新的输入数据
         /// </summary>
@@ -135,50 +137,74 @@ namespace RemoteX.DebugBackend
                             Console.Write("(" + segment + ")");
                         }
                         response = context.Response;
-                        if (segments[1] == "get/")
+                        
+                        if(request.HttpMethod == "GET")
                         {
-                            hasDataType = int.TryParse(segments[2], out dataTypeInt);
-                            byte[] responseBuffer = null;
-                            if (hasDataType)
+                            if (segments[1] == "get/")
                             {
-                                if (latestControlMessage.ContainsKey(dataTypeInt))
+                                hasDataType = int.TryParse(segments[2], out dataTypeInt);
+                                byte[] responseBuffer = null;
+                                if (hasDataType)
                                 {
-                                    responseBuffer = Encoding.Default.GetBytes(latestControlMessage[dataTypeInt].ToString());
+                                    if (latestControlMessage.ContainsKey(dataTypeInt))
+                                    {
+                                        responseBuffer = Encoding.Default.GetBytes(latestControlMessage[dataTypeInt].ToString());
+                                    }
+                                    else
+                                    {
+                                        responseBuffer = Encoding.Default.GetBytes("null");
+                                    }
+                                    response.ContentLength64 = responseBuffer.Length;
+                                    Stream output = response.OutputStream;
+                                    output.Write(responseBuffer, 0, responseBuffer.Length);
                                 }
-                                else
+                                else if (segments[2].ToLower() == "buffer")
                                 {
-                                    responseBuffer = Encoding.Default.GetBytes("null");
-                                }
-                                response.ContentLength64 = responseBuffer.Length;
-                                Stream output = response.OutputStream;
-                                output.Write(responseBuffer, 0, responseBuffer.Length);
-                            }
-                            else if (segments[2].ToLower() == "buffer")
-                            {
-                                RCMWithEnqueueTime[] bufferArray;
-                                lock (unfetchedControlMessageBufferLock)
-                                {
-                                    bufferArray = unfetchedControlMessageBuffer.ToArray();
-                                    unfetchedControlMessageBuffer.Clear();
-                                }
+                                    RCMWithEnqueueTime[] bufferArray;
+                                    lock (unfetchedControlMessageBufferLock)
+                                    {
+                                        bufferArray = unfetchedControlMessageBuffer.ToArray();
+                                        unfetchedControlMessageBuffer.Clear();
+                                    }
 
-                                string s = "";
-                                foreach (var buffer in bufferArray)
-                                {
-                                    s += buffer.RemoteXControlMessage.ToString();
-                                    s += '/';
+                                    string s = "";
+                                    foreach (var buffer in bufferArray)
+                                    {
+                                        s += buffer.RemoteXControlMessage.ToString();
+                                        s += '/';
+                                    }
+                                    responseBuffer = Encoding.Default.GetBytes(s);
+                                    response.ContentLength64 = responseBuffer.Length;
+                                    Stream output = response.OutputStream;
+                                    output.Write(responseBuffer, 0, responseBuffer.Length);
                                 }
-                                responseBuffer = Encoding.Default.GetBytes(s);
-                                response.ContentLength64 = responseBuffer.Length;
-                                Stream output = response.OutputStream;
-                                output.Write(responseBuffer, 0, responseBuffer.Length);
+                                else if (segments[2].ToLower() == "serverqrcode.png")
+                                {
+                                    response.ContentType = "image/png";
+                                    ServerInfoQRCode.Save(response.OutputStream, ImageFormat.Png);
+                                }
                             }
-                            else if (segments[2].ToLower() == "serverqrcode.png")
+                            else
                             {
-                                response.ContentType = "image/png";
-                                ServerInfoQRCode.Save(response.OutputStream, ImageFormat.Png);
+                                System.Diagnostics.Debug.WriteLine(segments[1]);
                             }
                         }
+                        else if(request.HttpMethod == "POST")
+                        {
+                            StreamReader streamReader = new StreamReader(request.InputStream);
+                            string s = await streamReader.ReadToEndAsync();
+                            s = s.Replace("%20", " ");
+                            s = s.Replace("%3a", ":");
+                            s = s.Replace("%7c", "|");
+                            s = s.Replace("%2c", ",");
+                            string[] sArray = s.Split('=');
+                            RemoteXControlMessage remoteXControlMessage = RemoteXControlMessage.FromString(sArray[1]);
+                            OnReceiveSendRequest(this, remoteXControlMessage);
+                        }
+                        
+
+
+
 
                     }
                     catch (HttpListenerException ex)
