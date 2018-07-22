@@ -67,6 +67,11 @@ namespace RemoteX.Droid
             return connection;
         }
 
+        public IWifiDirectDevice GetDevice(string address)
+        {
+            return new WifiDirectDevice(address);
+        }
+
         public void SearchForPeers()
         {
             
@@ -99,7 +104,6 @@ namespace RemoteX.Droid
                 else if(action == WifiP2pManager.WifiP2pConnectionChangedAction)
                 {
                     NetworkInfo networkInfo = intent.GetParcelableExtra(WifiP2pManager.ExtraNetworkInfo) as NetworkInfo;
-                    System.Diagnostics.Debug.WriteLine("SDFSDFHERE");
                     if (networkInfo.IsConnected)
                     {
                         WifiP2pActionListener connectionInfoListener = new WifiP2pActionListener(_WifiDirectManager);
@@ -121,7 +125,7 @@ namespace RemoteX.Droid
             public void OnConnectionInfoAvailable(WifiP2pInfo info)
             {
                 _WifiDirectManager._LatestWifiP2pInfo = info;
-                System.Diagnostics.Debug.WriteLine("SDFSDFHERE"+info==null);
+                System.Diagnostics.Debug.WriteLine("SDFSDFHERE"+(info==null));
             }
 
             public void OnFailure([GeneratedEnum] WifiP2pFailureReason reason)
@@ -156,11 +160,15 @@ namespace RemoteX.Droid
         private class WifiDirectDevice : IWifiDirectDevice
         {
             public WifiP2pDevice DroidDevice { get; set; }
-
+            public string _Address;
             public string Address
             {
                 get
                 {
+                    if(DroidDevice == null)
+                    {
+                        return _Address;
+                    } 
                     return DroidDevice.DeviceAddress;
                 }
             }
@@ -169,6 +177,10 @@ namespace RemoteX.Droid
             {
                 get
                 {
+                    if(DroidDevice == null)
+                    {
+                        return "";
+                    }
                     return DroidDevice.DeviceName;
                 }
             }
@@ -177,6 +189,11 @@ namespace RemoteX.Droid
             {
                 DroidDevice = droidDevice;
 
+            }
+
+            public WifiDirectDevice(string address)
+            {
+                _Address = address;
             }
 
             public override string ToString()

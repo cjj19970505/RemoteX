@@ -57,14 +57,16 @@ namespace RemoteX.Droid
                 await Task.Run(() =>
                 {
                     WifiP2pConfig config = new WifiP2pConfig();
-                    config.DeviceAddress = (WifiDirectDevice as WifiDirectDevice).DroidDevice.DeviceAddress;
+                    config.DeviceAddress = (WifiDirectDevice as WifiDirectDevice).Address;
                     WifiP2pManager droidWifiP2pManager = _WifiDirectManager._DroidWifiP2pManager;
                     droidWifiP2pManager.Connect(_WifiDirectManager._Channel, config, _ConnectStateListener);
                     while (!_ConnectingSucceeded)
                     {
                         System.Diagnostics.Debug.WriteLine("HERE1");
                     }
-                    while(_WifiDirectManager._LatestWifiP2pInfo == null)
+                    WifiP2pActionListener connectionInfoListener = new WifiP2pActionListener(_WifiDirectManager);
+                    _WifiDirectManager._DroidWifiP2pManager.RequestConnectionInfo(_WifiDirectManager._Channel, connectionInfoListener);
+                    while (_WifiDirectManager._LatestWifiP2pInfo == null)
                     {
                         //System.Diagnostics.Debug.WriteLine("HERE2");
                     }
