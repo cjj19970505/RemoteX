@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Threading;
 using Windows.Devices.Bluetooth;
 using Windows.Devices.Bluetooth.Rfcomm;
 using Windows.Networking.Sockets;
 using Windows.Storage.Streams;
 using RemoteX.Core;
 using System.Threading.Tasks;
+using System.Timers;
+using Windows.UI.Xaml;
+using System.Threading;
 
 namespace RemoteX.PC.Core
 {
@@ -35,16 +37,43 @@ namespace RemoteX.PC.Core
 
             private Task _ReceiveTask;
 
+            private System.Timers.Timer _SendDetectorTimer;
+
+            
+
             public BluetoothServerConnection(BluetoothManager bluetoothManager ,Guid uuid):base(bluetoothManager)
             {
                 this.Uuid = uuid;
+                _SendDetectorTimer = new System.Timers.Timer();
+                _SendDetectorTimer.Interval = 500;
+                _SendDetectorTimer.Elapsed += OnSendDetectorTimerElapsed;
                 
+            }
+
+            private async void OnSendDetectorTimerElapsed(object sender, ElapsedEventArgs e)
+            {
+                try
+                {
+                    await SendAsync(1, new byte[1] { 0 });
+                }
+                catch(Exception exception)
+                {
+                    
+                    _OnConnectionFailed();
+                    //System.Diagnostics.Process.GetCurrentProcess().
+                }
+            }
+
+            private void _OnConnectionFailed()
+            {
+                _SendDetectorTimer.Stop();
+                StartAdvertisingAsync();
             }
 
             public async void StartAdvertisingAsync()
             {
                 ConnectionEstablishState = ConnectionEstablishState.Connecting;
-                OnConnectionEstalblishResult(this, ConnectionEstablishState);
+                OnConnectionEstalblishResult?.Invoke(this, ConnectionEstablishState);
                 BluetoothManager._ConnectedConnections.Add(this);
                 RfcommServiceId myId = RfcommServiceId.FromUuid(Uuid);
                 _Provider = await RfcommServiceProvider.CreateAsync(myId);
@@ -77,6 +106,7 @@ namespace RemoteX.PC.Core
                     SendDataWriter = new DataWriter(Socket.OutputStream);
                     System.Diagnostics.Debug.WriteLine("SUCCEES on Thread: " + Thread.CurrentThread.ManagedThreadId);
                     ConnectionEstablishState = ConnectionEstablishState.Succeeded;
+                    _SendDetectorTimer.Start();
                     OnConnectionEstalblishResult?.Invoke(this, ConnectionEstablishState);
                     
                 }

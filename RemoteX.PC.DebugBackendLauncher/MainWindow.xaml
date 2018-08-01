@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:RemoteX.PC.DebugBackendLauncher"
         mc:Ignorable="d"
-        Title="RemoteX" Height="552" Width="237.983">
+        Title="RemoteX" Height="552" Width="480.983">
     <Grid HorizontalAlignment="Left" Width="228">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="39*"/>
@@ -21,8 +21,26 @@
         <TextBlock x:Name="tb_Mac" HorizontalAlignment="Left" Margin="52,274,0,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top" Grid.ColumnSpan="2" Width="166"/>
         <TextBox x:Name="tbox_TargetMac" Grid.ColumnSpan="2" HorizontalAlignment="Left" Height="23" Margin="52,241,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
         <Label Content="目标：" HorizontalAlignment="Left" Margin="10,239,0,0" VerticalAlignment="Top"/>
-        <TextBlock Grid.Column="1" HorizontalAlignment="Left" Margin="207,324,-104,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top"/>
         <Button Content="连接" Grid.Column="1" HorizontalAlignment="Left" Margin="65,242,0,0" VerticalAlignment="Top" Width="36" Click="Button_Click"/>
+        <StackPanel Grid.Column="1" Margin="121,10,-195,288">
+            <StackPanel Orientation="Horizontal" Height="25">
+                <Label Content="DataType" Width="65"/>
+                <TextBox x:Name="tbox_DataType" TextWrapping="Wrap" Text="15" Width="54"/>
+
+            </StackPanel>
+            <StackPanel Margin="0,0,65,0" Orientation="Vertical" Height="141">
+                <Label Content="Data（一行一个）" HorizontalAlignment="Left" VerticalAlignment="Top" Width="103"/>
+
+                <TextBox x:Name="tbox_DataValue" HorizontalAlignment="Left" Height="116" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="1.0" AcceptsReturn="True"/>
+            </StackPanel>
+            <Button x:Name="btn_Send" Content="发送" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Click="btn_Send_Click"/>
+            <Label x:Name="label_SendState" Content="No Message"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Margin="121,359,-195,69" Grid.Column="1">
+            <Label Content="蓝牙状态：" Width="65"/>
+            <Label x:Name="label_BTState" Content="未启动"/>
+
+        </StackPanel>
 
     </Grid>
 </Window>

@@ -15,7 +15,7 @@ namespace RemoteX.UWP.Core
         {
             get
             {
-                if(_BluetoothManager == null)
+                if (_BluetoothManager == null)
                 {
                     _BluetoothManager = new BluetoothManager();
                 }

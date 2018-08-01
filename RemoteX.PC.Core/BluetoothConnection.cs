@@ -7,6 +7,7 @@ using Windows.Networking.Sockets;
 using Windows.Storage.Streams;
 using System.Diagnostics;
 using System.Linq;
+using System.Timers;
 
 namespace RemoteX.PC.Core
 {
@@ -45,12 +46,13 @@ namespace RemoteX.PC.Core
                 await SendAsync(2, message);
             }
 
-            private async Task SendAsync(int controlCode, byte[] message)
+            protected async Task SendAsync(int controlCode, byte[] message)
             {
                 byte[] packedBytes = _PackMessage(controlCode, message);
                 SendDataWriter.WriteBytes(packedBytes);
                 await SendDataWriter.StoreAsync();
             }
+
             private byte[] _PackMessage(int controlCode, byte[] message)
             {
                 byte[] controlCodeBytes = BitConverter.GetBytes(controlCode);

@@ -52,6 +52,7 @@ namespace RemoteX.Droid
                 throw new NotImplementedException();
             }
             private bool _ConnectingSucceeded = false;
+            private bool _ReconnectMark = false;
             public async Task<ConnectionEstablishState> ConnectAsync()
             {
                 await Task.Run(() =>
@@ -62,13 +63,29 @@ namespace RemoteX.Droid
                     droidWifiP2pManager.Connect(_WifiDirectManager._Channel, config, _ConnectStateListener);
                     while (!_ConnectingSucceeded)
                     {
-                        System.Diagnostics.Debug.WriteLine("HERE1");
+                        if(_ReconnectMark)
+                        {
+                            _ReconnectMark = false;
+                            droidWifiP2pManager.Connect(_WifiDirectManager._Channel, config, _ConnectStateListener);
+                        }
                     }
                     WifiP2pActionListener connectionInfoListener = new WifiP2pActionListener(_WifiDirectManager);
                     _WifiDirectManager._DroidWifiP2pManager.RequestConnectionInfo(_WifiDirectManager._Channel, connectionInfoListener);
                     while (_WifiDirectManager._LatestWifiP2pInfo == null)
                     {
-                        //System.Diagnostics.Debug.WriteLine("HERE2");
+                        System.Diagnostics.Debug.WriteLine("HERE2");
+                    }
+                    WifiP2pInfo preInfo = null;
+                    while (_WifiDirectManager._LatestWifiP2pInfo.GroupOwnerAddress==null)
+                    {
+                        if(preInfo != _WifiDirectManager._LatestWifiP2pInfo)
+                        {
+                            preInfo = _WifiDirectManager._LatestWifiP2pInfo;
+                            _WifiDirectManager._DroidWifiP2pManager.RequestConnectionInfo(_WifiDirectManager._Channel, connectionInfoListener);
+                            System.Diagnostics.Debug.WriteLine("CHANGE");
+                        }
+                        System.Diagnostics.Debug.WriteLine("HERE3");
+                        
                     }
                     if (_ConnectingSucceeded)
                     {
@@ -76,7 +93,17 @@ namespace RemoteX.Droid
                     }
                     OnConnectionEstalblishResult?.Invoke(this, ConnectionEstablishState);
                 });
-                Toast.MakeText(Application.Context, "Connect Succeed", ToastLength.Short).Show();
+                try
+                {
+                    System.Diagnostics.Debug.WriteLine("Connect Succeed " + _WifiDirectManager._LatestWifiP2pInfo.GroupOwnerAddress.HostAddress);
+                }
+                catch(Exception e)
+                {
+                    var fuck = _WifiDirectManager._LatestWifiP2pInfo;
+
+                }
+                
+
                 return ConnectionEstablishState;
             }
 
@@ -91,16 +118,18 @@ namespace RemoteX.Droid
                 public ConnectStateListener(WifiClientDirectConnection connection)
                 {
                     _Connection = connection;
+
                 }
                 public void OnFailure([GeneratedEnum] WifiP2pFailureReason reason)
                 {
-                    Toast.MakeText(Application.Context, "Connect Failed", ToastLength.Short).Show();
+                    System.Diagnostics.Debug.WriteLine("Connect Failed " + reason);
+                    _Connection._ReconnectMark = true;
                 }
 
                 public void OnSuccess()
                 {
                     _Connection._ConnectingSucceeded = true;
-                    
+                    _Connection._ReconnectMark = false;
                 }
             }
 

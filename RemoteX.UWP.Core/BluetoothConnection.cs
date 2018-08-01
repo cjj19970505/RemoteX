@@ -29,6 +29,7 @@ namespace RemoteX.UWP.Core
             public ConnectionEstablishState ConnectionEstablishState { get; protected set; }
 
             public event MessageHandler onReceiveMessage;
+            public event ConnectionHandler OnConnectionEstalblishResult;
 
             protected BluetoothManager BluetoothManager { get; private set; }
 
@@ -50,6 +51,7 @@ namespace RemoteX.UWP.Core
                 SendDataWriter.WriteBytes(packedBytes);
                 await SendDataWriter.StoreAsync();
             }
+
             private byte[] _PackMessage(int controlCode, byte[] message)
             {
                 byte[] controlCodeBytes = BitConverter.GetBytes(controlCode);

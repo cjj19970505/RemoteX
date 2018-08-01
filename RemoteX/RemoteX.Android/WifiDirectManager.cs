@@ -55,6 +55,7 @@ namespace RemoteX.Droid
             Application.Context.RegisterReceiver(_WifiP2pActonListener, stateChangedFilter);
             Application.Context.RegisterReceiver(_WifiP2pActonListener, connectionChangedFilter);
             Application.Context.RegisterReceiver(_WifiP2pActonListener, peersChangedFilter);
+
             //Application.Context.RegisterReceiver()
 
         }
@@ -97,6 +98,7 @@ namespace RemoteX.Droid
                 else if (action == WifiP2pManager.WifiP2pPeersChangedAction)
                 {
                     Toast.MakeText(Application.Context, "Found Over", ToastLength.Short).Show();
+                    System.Diagnostics.Debug.WriteLine("FOUND OVER");
                     //mManager.requestPeers(mChannel, myPeerListListener);
                     _WifiDirectManager._DroidWifiP2pManager.RequestPeers(_WifiDirectManager._Channel, _WifiDirectManager._DiscoverPeersListener);
                     Application.Context.UnregisterReceiver(_WifiDirectManager._WifiP2pActonListener);
@@ -106,15 +108,15 @@ namespace RemoteX.Droid
                     NetworkInfo networkInfo = intent.GetParcelableExtra(WifiP2pManager.ExtraNetworkInfo) as NetworkInfo;
                     if (networkInfo.IsConnected)
                     {
-                        WifiP2pActionListener connectionInfoListener = new WifiP2pActionListener(_WifiDirectManager);
-                        _WifiDirectManager._DroidWifiP2pManager.RequestConnectionInfo(_WifiDirectManager._Channel, connectionInfoListener);
-                        
+                        //WifiP2pActionListener connectionInfoListener = new WifiP2pActionListener(_WifiDirectManager);
+                        //_WifiDirectManager._DroidWifiP2pManager.RequestConnectionInfo(_WifiDirectManager._Channel, connectionInfoListener);
+
                     }
                 }
             }
         }
 
-        private class WifiP2pActionListener : Java.Lang.Object, WifiP2pManager.IActionListener, WifiP2pManager.IPeerListListener, WifiP2pManager.IConnectionInfoListener
+        private class WifiP2pActionListener : Java.Lang.Object, WifiP2pManager.IActionListener, WifiP2pManager.IPeerListListener, WifiP2pManager.IConnectionInfoListener, WifiP2pManager.IChannelListener
         {
             WifiDirectManager _WifiDirectManager;
             public WifiP2pActionListener(WifiDirectManager wifiDirectManager)
@@ -122,18 +124,18 @@ namespace RemoteX.Droid
                 this._WifiDirectManager = wifiDirectManager;
             }
 
-            public void OnConnectionInfoAvailable(WifiP2pInfo info)
+            void IChannelListener.OnChannelDisconnected()
+            {
+                System.Diagnostics.Debug.WriteLine("OnChannelDisconnected");
+            }
+
+            void IConnectionInfoListener.OnConnectionInfoAvailable(WifiP2pInfo info)
             {
                 _WifiDirectManager._LatestWifiP2pInfo = info;
                 System.Diagnostics.Debug.WriteLine("SDFSDFHERE"+(info==null));
             }
 
-            public void OnFailure([GeneratedEnum] WifiP2pFailureReason reason)
-            {
-                throw new NotImplementedException();
-            }
-
-            public void OnPeersAvailable(WifiP2pDeviceList peers)
+            void IPeerListListener.OnPeersAvailable(WifiP2pDeviceList peers)
             {
                 var droidDeviceList = peers.DeviceList;
                 List<WifiDirectDevice> devices = new List<WifiDirectDevice>();
@@ -142,6 +144,7 @@ namespace RemoteX.Droid
                     WifiDirectDevice wifiDirectDevice = new WifiDirectDevice(device);
                     devices.Add(wifiDirectDevice);
                 }
+                System.Diagnostics.Debug.WriteLine("(FOUND PEERS "+devices.Count+")");
                 if (devices.Count > 0)
                 {
                     _WifiDirectManager.OnPeersFound?.Invoke(_WifiDirectManager, devices.ToArray());
@@ -149,7 +152,12 @@ namespace RemoteX.Droid
 
             }
 
-            public void OnSuccess()
+            void IActionListener.OnFailure(WifiP2pFailureReason reason)
+            {
+                System.Diagnostics.Debug.WriteLine("PEERS FOUND FAILED " + reason);
+            }
+
+            void IActionListener.OnSuccess()
             {
                 Toast.MakeText(Application.Context, "Found Someting", ToastLength.Short).Show();
             }

@@ -17,7 +17,7 @@ namespace RemoteX.UWP.Core
         private const byte SERVICE_VERSION_ATTRIBUTE_TYPE = 0x0A;
         private const uint SERVICE_VERSION = 200;
 
-        class BluetoothServerConnection:BluetoothConnection, IServerConnection
+        class BluetoothServerConnection : BluetoothConnection, IServerConnection
         {
             public Guid Uuid { get; private set; }
 
@@ -35,10 +35,10 @@ namespace RemoteX.UWP.Core
 
             private Task _ReceiveTask;
 
-            public BluetoothServerConnection(BluetoothManager bluetoothManager ,Guid uuid):base(bluetoothManager)
+            public BluetoothServerConnection(BluetoothManager bluetoothManager, Guid uuid) : base(bluetoothManager)
             {
                 this.Uuid = uuid;
-                
+
             }
 
             public async void StartAdvertisingAsync()
@@ -75,9 +75,10 @@ namespace RemoteX.UWP.Core
                 if (Socket != null)
                 {
                     SendDataWriter = new DataWriter(Socket.OutputStream);
+                    System.Diagnostics.Debug.WriteLine("SUCCEES on Thread: " + Thread.CurrentThread.ManagedThreadId);
                     ConnectionEstablishState = ConnectionEstablishState.Succeeded;
                     OnConnectionEstalblishResult?.Invoke(this, ConnectionEstablishState);
-                    
+
                 }
                 else
                 {
@@ -93,5 +94,5 @@ namespace RemoteX.UWP.Core
             }
         }
     }
-    
+
 }

@@ -12,7 +12,7 @@ namespace RemoteX.UWP.Core
         {
             get
             {
-                if(_Instance == null)
+                if (_Instance == null)
                 {
                     _Instance = new ConnectionManager();
                 }
@@ -30,11 +30,11 @@ namespace RemoteX.UWP.Core
                 _OnControllerConnectionEstablishResult += value;
                 if (_ControllerConnection != null)
                 {
-                    if(_ControllerConnection is IServerConnection)
+                    if (_ControllerConnection is IServerConnection)
                     {
                         (_ControllerConnection as IServerConnection).OnConnectionEstalblishResult += value;
                     }
-                    else if(_ControllerConnection is IClientConnection)
+                    else if (_ControllerConnection is IClientConnection)
                     {
                         (_ControllerConnection as IClientConnection).OnConnectionEstalblishResult += value;
                     }
@@ -64,13 +64,13 @@ namespace RemoteX.UWP.Core
         {
             add
             {
-                
+
                 _OnControllerConnectionReceiveMessage += value;
-                if(_ControllerConnection != null)
+                if (_ControllerConnection != null)
                 {
                     _ControllerConnection.onReceiveMessage += value;
                 }
-                
+
             }
             remove
             {

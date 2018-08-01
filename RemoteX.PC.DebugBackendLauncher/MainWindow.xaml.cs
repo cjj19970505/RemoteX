@@ -16,6 +16,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using RemoteX.DebugBackend;
 using RemoteX.Data;
+using Windows.System;
 
 namespace RemoteX.PC.DebugBackendLauncher
 {
@@ -36,12 +37,41 @@ namespace RemoteX.PC.DebugBackendLauncher
             BluetoothManager bluetoothManager = BluetoothManager.Instance;
             var bluetoothServerConnection = bluetoothManager.CreateRfcommServerConnection(Guid.Parse("14c5449a-6267-4c7e-bd10-63dd79740e5" + 0));
             ConnectionManager.Instance.ControllerConnection = bluetoothServerConnection;
-            bluetoothServerConnection.StartServer();
+            try
+            {
+                bluetoothServerConnection.StartServer();
+            }
+            catch(Exception e)
+            {
+
+            }
+            
+
             DebugBackend.DebugBackend.Instance.StartBackend(8081);
             img_QR.Source = bluetoothServerConnection.GetQRCode().ToBitmapImage();
             tb_Mac.Text = bluetoothServerConnection.ConnectCode;
-           
+            
+
         }
+        /*
+        private Task StartServerTask()
+        {
+            return Task.Run(() =>
+            {
+                while (true)
+                {
+                    try
+                    {
+                        BluetoothManager bluetoothManager = BluetoothManager.Instance;
+                        bluetoothServerConnection.StartServer();
+                    }
+                    catch (Exception e)
+                    {
+
+                    }
+                }
+            });
+        }*/
 
         private async void OnReceiveSendRequest(object sender, RemoteXControlMessage e)
         {
@@ -113,6 +143,32 @@ namespace RemoteX.PC.DebugBackendLauncher
             }
             
 
+        }
+
+        private async void btn_Send_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                int dataType = int.Parse(tbox_DataType.Text);
+                string sDataValues = tbox_DataValue.Text;
+                string[] dataValuesStringArray = sDataValues.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+                List<float> valueList = new List<float>();
+                foreach (var sData in dataValuesStringArray)
+                {
+                    valueList.Add(float.Parse(sData));
+                }
+                RemoteXControlMessage remoteXControlMessage = new RemoteXControlMessage(dataType, valueList.ToArray());
+                System.Diagnostics.Debug.WriteLine(remoteXControlMessage);
+                if(ConnectionManager.Instance.ControllerConnection != null && ConnectionManager.Instance.ControllerConnection.ConnectionEstablishState == ConnectionEstablishState.Succeeded)
+                {
+                    await ConnectionManager.Instance.ControllerConnection.SendAsync(remoteXControlMessage.Bytes);
+                    label_SendState.Content = "Successful";
+                }
+            }
+            catch (Exception exception)
+            {
+                label_SendState.Content = "Failed";
+            }
         }
     }
 }
