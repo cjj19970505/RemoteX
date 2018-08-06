@@ -22,5 +22,6 @@ namespace RemoteX.Core
         IConnection ControllerConnection { get; set; }
         event ConnectionHandler onControllerConnectionEstalblishResult;
         event MessageHandler onControllerConnectionReceiveMessage;
+        IClientConnection CreateClientConnection(IConnectionInfo connectionInfo);
     }
 }

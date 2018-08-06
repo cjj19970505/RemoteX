@@ -68,7 +68,7 @@ namespace RemoteX.PC.Core
                 _OnControllerConnectionReceiveMessage += value;
                 if(_ControllerConnection != null)
                 {
-                    _ControllerConnection.onReceiveMessage += value;
+                    _ControllerConnection.OnReceiveMessage += value;
                 }
                 
             }
@@ -77,7 +77,7 @@ namespace RemoteX.PC.Core
                 _OnControllerConnectionReceiveMessage -= value;
                 if (_ControllerConnection != null)
                 {
-                    _ControllerConnection.onReceiveMessage -= value;
+                    _ControllerConnection.OnReceiveMessage -= value;
                 }
             }
         }
@@ -102,12 +102,12 @@ namespace RemoteX.PC.Core
                     if (_ControllerConnection is IServerConnection)
                     {
                         (_ControllerConnection as IServerConnection).OnConnectionEstalblishResult -= _OnControllerConnectionEstablishResult;
-                        (_ControllerConnection as IServerConnection).onReceiveMessage -= _OnControllerConnectionReceiveMessage;
+                        (_ControllerConnection as IServerConnection).OnReceiveMessage -= _OnControllerConnectionReceiveMessage;
                     }
                     else if (_ControllerConnection is IClientConnection)
                     {
                         (_ControllerConnection as IClientConnection).OnConnectionEstalblishResult -= _OnControllerConnectionEstablishResult;
-                        (_ControllerConnection as IClientConnection).onReceiveMessage -= _OnControllerConnectionReceiveMessage;
+                        (_ControllerConnection as IClientConnection).OnReceiveMessage -= _OnControllerConnectionReceiveMessage;
                     }
                 }
                 _ControllerConnection = value;
@@ -116,15 +116,20 @@ namespace RemoteX.PC.Core
                     if (_ControllerConnection is IServerConnection)
                     {
                         (_ControllerConnection as IServerConnection).OnConnectionEstalblishResult += _OnControllerConnectionEstablishResult;
-                        (_ControllerConnection as IServerConnection).onReceiveMessage += _OnControllerConnectionReceiveMessage;
+                        (_ControllerConnection as IServerConnection).OnReceiveMessage += _OnControllerConnectionReceiveMessage;
                     }
                     else if (_ControllerConnection is IClientConnection)
                     {
                         (_ControllerConnection as IClientConnection).OnConnectionEstalblishResult += _OnControllerConnectionEstablishResult;
-                        (_ControllerConnection as IClientConnection).onReceiveMessage += _OnControllerConnectionReceiveMessage;
+                        (_ControllerConnection as IClientConnection).OnReceiveMessage += _OnControllerConnectionReceiveMessage;
                     }
                 }
             }
+        }
+
+        public IClientConnection CreateClientConnection(IConnectionInfo connectionInfo)
+        {
+            throw new NotImplementedException();
         }
     }
 }

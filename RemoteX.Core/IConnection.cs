@@ -16,15 +16,17 @@ namespace RemoteX.Core
     public interface IConnection
     {
         /// <summary>
-        /// 
+        /// 描述连接类型
         /// </summary>
-        ConnectionType connectionType { get; }
+        ConnectionType ConnectionType { get; }
         ConnectionEstablishState ConnectionEstablishState { get; }
         event ConnectionHandler OnConnectionEstalblishResult;
-        event MessageHandler onReceiveMessage;
+        event MessageHandler OnReceiveMessage;
         
         Task SendAsync(byte[] message);
-        
+        void Send(byte[] message);
+        void Cancel();
+
     }
 
     public interface IClientConnection:IConnection
@@ -34,6 +36,7 @@ namespace RemoteX.Core
         /// 仅在连接成功时返回，否则一直阻塞
         /// </summary>
         Task<ConnectionEstablishState> ConnectAsync();
+        void Connect();
 
         /// <summary>
         /// 若迟迟没有返回连接成功的结果，可以调用这个中止连接

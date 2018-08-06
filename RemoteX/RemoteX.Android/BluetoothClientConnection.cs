@@ -24,7 +24,6 @@ namespace RemoteX.Droid
     {
         class BluetoothClientConnection : RemoteX.Bluetooth.IBluetoothClientConnection
         {
-            private static string TAG = "BluetoothConnection";
             private BluetoothDevice _Device;
             private UUID _SdpUuid;
             private BluetoothAdapter _BluetoothAdapter;
@@ -33,7 +32,7 @@ namespace RemoteX.Droid
             protected Stream _OutputStream;
             protected BluetoothSocket _BluetoothSocket;
 
-            public event MessageHandler onReceiveMessage;
+            public event MessageHandler OnReceiveMessage;
             public event ConnectionHandler OnConnectionEstalblishResult;
             public ConnectionEstablishState ConnectionEstablishState { get; private set; }
 
@@ -53,7 +52,7 @@ namespace RemoteX.Droid
                 this._SdpUuid = guid;
                 this.ConnectionEstablishState = ConnectionEstablishState.Created;
             }
-            public ConnectionType connectionType
+            public ConnectionType ConnectionType
             {
                 get
                 {
@@ -75,7 +74,7 @@ namespace RemoteX.Droid
                 {
                     tmp = _Device.CreateInsecureRfcommSocketToServiceRecord(_SdpUuid);
                 }
-                catch (Java.IO.IOException e)
+                catch (Java.IO.IOException)
                 {
                     return ConnectionEstablishState.Failed;
                 }
@@ -86,13 +85,13 @@ namespace RemoteX.Droid
                     await _BluetoothSocket.ConnectAsync();
                     System.Diagnostics.Debug.WriteLine("BLUETOOTH::SUCCESSFUL ");
                 }
-                catch (Exception connectionException)
+                catch (Exception)
                 {
                     try
                     {
                         _BluetoothSocket.Close();
                     }
-                    catch (Java.IO.IOException socketCloseException)
+                    catch (Java.IO.IOException)
                     {
                         return ConnectionEstablishState.Failed;
                     }
@@ -103,13 +102,13 @@ namespace RemoteX.Droid
                     _InputStream = _BluetoothSocket.InputStream;
                     _OutputStream = _BluetoothSocket.OutputStream;
                 }
-                catch (Java.IO.IOException streamException)
+                catch (Java.IO.IOException)
                 {
                     try
                     {
                         _BluetoothSocket.Close();
                     }
-                    catch (Java.IO.IOException socketCloseException)
+                    catch (Java.IO.IOException)
                     {
                         return ConnectionEstablishState.Failed;
                     }
@@ -190,28 +189,13 @@ namespace RemoteX.Droid
                             _ReleaseAllConnectionResource();
                             this.ConnectionEstablishState = ConnectionEstablishState.Connecting;
                             System.Diagnostics.Debug.WriteLine("BROKEN PIPE FUCK YOU ");
-                            ConnectAsync();
+                            Task connectTask = ConnectAsync();
                             OnConnectionEstalblishResult?.Invoke(this, ConnectionEstablishState.Connecting);
                         }
                     }
                 });
 
                 return true;
-            }
-
-            /// <summary>
-            /// 储存收到的完全未处理过的消息的队列
-            /// </summary>
-            private Queue<byte[]> receiveQueue;
-
-
-            /// <summary>
-            /// this will start receive
-            /// </summary>
-            /// <returns></returns>
-            private async void receiveAsync()
-            {
-                
             }
 
             public void AbortConnecting()
@@ -235,6 +219,26 @@ namespace RemoteX.Droid
                     _BluetoothSocket.Close();
                 }
                 ConnectionEstablishState = ConnectionEstablishState.Abort;
+            }
+
+            public void Cancel()
+            {
+                throw new NotImplementedException();
+            }
+
+            public void Abort()
+            {
+                throw new NotImplementedException();
+            }
+
+            public void Connect()
+            {
+                Task connectTask = ConnectAsync();
+            }
+
+            public void Send(byte[] message)
+            {
+                Task sendTask = SendAsync(message);
             }
         }
     }

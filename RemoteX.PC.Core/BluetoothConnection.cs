@@ -7,7 +7,7 @@ using Windows.Networking.Sockets;
 using Windows.Storage.Streams;
 using System.Diagnostics;
 using System.Linq;
-using System.Timers;
+using Windows.Foundation.Metadata;
 
 namespace RemoteX.PC.Core
 {
@@ -19,7 +19,7 @@ namespace RemoteX.PC.Core
             protected DataWriter SendDataWriter;
             Queue<MessagePack> packMessageBuffer;
 
-            public ConnectionType connectionType
+            public ConnectionType ConnectionType
             {
                 get
                 {
@@ -29,7 +29,7 @@ namespace RemoteX.PC.Core
 
             public ConnectionEstablishState ConnectionEstablishState { get; protected set; }
 
-            public event MessageHandler onReceiveMessage;
+            public event MessageHandler OnReceiveMessage;
             public event ConnectionHandler OnConnectionEstalblishResult;
 
             protected BluetoothManager BluetoothManager { get; private set; }
@@ -114,7 +114,7 @@ namespace RemoteX.PC.Core
                         }
                         if (messagePack.ControlCode == 2)
                         {
-                            onReceiveMessage?.Invoke(this, messagePack.Message);
+                            OnReceiveMessage?.Invoke(this, messagePack.Message);
                         }
                     }
                 });
@@ -199,6 +199,23 @@ namespace RemoteX.PC.Core
             }
 
             protected virtual void Disconnect() { }
+
+            
+            public void Cancel()
+            {
+                throw new NotImplementedException();
+            }
+
+            [Deprecated("未来要被IClientConnection中的AbortConnecting取代", DeprecationType.Deprecate, 1)]
+            public void Abort()
+            {
+                throw new NotImplementedException();
+            }
+
+            public void Send(byte[] message)
+            {
+                Task sendTask = SendAsync(message);
+            }
 
             class MessagePack
             {

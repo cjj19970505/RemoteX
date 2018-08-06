@@ -25,7 +25,7 @@ namespace RemoteX.Droid
             private WifiDirectManager _WifiDirectManager;
             public IWifiDirectDevice WifiDirectDevice { get; private set; }
 
-            public ConnectionType connectionType
+            public ConnectionType ConnectionType
             {
                 get
                 {
@@ -35,7 +35,7 @@ namespace RemoteX.Droid
 
             public ConnectionEstablishState ConnectionEstablishState { get; private set; }
 
-            public event MessageHandler onReceiveMessage;
+            public event MessageHandler OnReceiveMessage;
             public event ConnectionHandler OnConnectionEstalblishResult;
 
             
@@ -97,7 +97,7 @@ namespace RemoteX.Droid
                 {
                     System.Diagnostics.Debug.WriteLine("Connect Succeed " + _WifiDirectManager._LatestWifiP2pInfo.GroupOwnerAddress.HostAddress);
                 }
-                catch(Exception e)
+                catch(Exception)
                 {
                     var fuck = _WifiDirectManager._LatestWifiP2pInfo;
 
@@ -108,6 +108,26 @@ namespace RemoteX.Droid
             }
 
             public Task SendAsync(byte[] message)
+            {
+                throw new NotImplementedException();
+            }
+
+            public void Cancel()
+            {
+                throw new NotImplementedException();
+            }
+
+            public void Abort()
+            {
+                throw new NotImplementedException();
+            }
+
+            public void Connect()
+            {
+                throw new NotImplementedException();
+            }
+
+            public void Send(byte[] message)
             {
                 throw new NotImplementedException();
             }

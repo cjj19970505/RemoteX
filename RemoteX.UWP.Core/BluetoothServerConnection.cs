@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Threading;
 using Windows.Devices.Bluetooth;
 using Windows.Devices.Bluetooth.Rfcomm;
 using Windows.Networking.Sockets;
 using Windows.Storage.Streams;
 using RemoteX.Core;
 using System.Threading.Tasks;
+using Windows.UI.Xaml;
+using System.Threading;
 
 namespace RemoteX.UWP.Core
 {
@@ -17,7 +18,7 @@ namespace RemoteX.UWP.Core
         private const byte SERVICE_VERSION_ATTRIBUTE_TYPE = 0x0A;
         private const uint SERVICE_VERSION = 200;
 
-        class BluetoothServerConnection : BluetoothConnection, IServerConnection
+        class BluetoothServerConnection:BluetoothConnection, IServerConnection
         {
             public Guid Uuid { get; private set; }
 
@@ -25,7 +26,7 @@ namespace RemoteX.UWP.Core
             {
                 get
                 {
-                    return RemoteX.Data.Connection.EncodeBluetoothConnection(BluetoothManager._BluetoothAdapter.BluetoothAddress, Uuid);
+                    return Connection.EncodeBluetoothConnection(BluetoothManager._BluetoothAdapter.BluetoothAddress, Uuid);
                 }
             }
 
@@ -35,16 +36,52 @@ namespace RemoteX.UWP.Core
 
             private Task _ReceiveTask;
 
-            public BluetoothServerConnection(BluetoothManager bluetoothManager, Guid uuid) : base(bluetoothManager)
+            private Timer _SendDetectorTimer;
+
+            private Timer _StartAdvertisingTimer;
+
+            public BluetoothServerConnection(BluetoothManager bluetoothManager ,Guid uuid):base(bluetoothManager)
             {
                 this.Uuid = uuid;
+            }
 
+            private void _StartAdvertisingTimerCallback(object state)
+            {
+                if(ConnectionEstablishState != ConnectionEstablishState.Succeeded)
+                {
+                    StartAdvertisingAsync();
+                }
+                else
+                {
+                    _StartAdvertisingTimer.Dispose();
+                }
+                
+            }
+
+            private async void _SendDetectorTimerCallback(object state)
+            {
+                try
+                {
+                    await SendAsync(1, new byte[1] { 0 });
+                }
+                catch (Exception)
+                {
+
+                    _OnConnectionFailed();
+                }
+            }
+
+            private void _OnConnectionFailed()
+            {
+                _SendDetectorTimer.Dispose();
+                StartServer();
             }
 
             public async void StartAdvertisingAsync()
             {
+                System.Diagnostics.Debug.WriteLine("Start Advertising");
                 ConnectionEstablishState = ConnectionEstablishState.Connecting;
-                OnConnectionEstalblishResult(this, ConnectionEstablishState);
+                OnConnectionEstalblishResult?.Invoke(this, ConnectionEstablishState);
                 BluetoothManager._ConnectedConnections.Add(this);
                 RfcommServiceId myId = RfcommServiceId.FromUuid(Uuid);
                 _Provider = await RfcommServiceProvider.CreateAsync(myId);
@@ -75,10 +112,10 @@ namespace RemoteX.UWP.Core
                 if (Socket != null)
                 {
                     SendDataWriter = new DataWriter(Socket.OutputStream);
-                    System.Diagnostics.Debug.WriteLine("SUCCEES on Thread: " + Thread.CurrentThread.ManagedThreadId);
                     ConnectionEstablishState = ConnectionEstablishState.Succeeded;
+                    _SendDetectorTimer = new Timer(new TimerCallback(_SendDetectorTimerCallback), null, 0, 500);
                     OnConnectionEstalblishResult?.Invoke(this, ConnectionEstablishState);
-
+                    
                 }
                 else
                 {
@@ -90,9 +127,10 @@ namespace RemoteX.UWP.Core
 
             public void StartServer()
             {
-                StartAdvertisingAsync();
+                _StartAdvertisingTimer = new Timer(_StartAdvertisingTimerCallback, null, 0, 5000);
+
             }
         }
     }
-
+    
 }

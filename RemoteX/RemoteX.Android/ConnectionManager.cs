@@ -50,12 +50,12 @@ namespace RemoteX.Droid
             add
             {
                 _OnControllerConnectionReceiveMessage += value;
-                _ControllerConnection.onReceiveMessage += value;
+                _ControllerConnection.OnReceiveMessage += value;
             }
             remove
             {
                 _OnControllerConnectionReceiveMessage -= value;
-                _ControllerConnection.onReceiveMessage -= value;
+                _ControllerConnection.OnReceiveMessage -= value;
             }
         }
         public ConnectionManager()
@@ -77,16 +77,21 @@ namespace RemoteX.Droid
                 if (_ControllerConnection != null)
                 {
                     _ControllerConnection.OnConnectionEstalblishResult -= _OnControllerConnectionEstablishResult;
-                    _ControllerConnection.onReceiveMessage -= _OnControllerConnectionReceiveMessage;
+                    _ControllerConnection.OnReceiveMessage -= _OnControllerConnectionReceiveMessage;
 
                 }
                 _ControllerConnection = value;
                 if (_ControllerConnection != null)
                 {
                     _ControllerConnection.OnConnectionEstalblishResult += _OnControllerConnectionEstablishResult;
-                    _ControllerConnection.onReceiveMessage += _OnControllerConnectionReceiveMessage;
+                    _ControllerConnection.OnReceiveMessage += _OnControllerConnectionReceiveMessage;
                 }
             }
+        }
+
+        public IClientConnection CreateClientConnection(IConnectionInfo connectionInfo)
+        {
+            throw new NotImplementedException();
         }
     }
 }

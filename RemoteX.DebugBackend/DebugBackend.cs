@@ -132,10 +132,6 @@ namespace RemoteX.DebugBackend
                         string[] segments = request.Url.Segments;
                         int dataTypeInt = 0;
                         bool hasDataType = false;
-                        foreach (string segment in segments)
-                        {
-                            Console.Write("(" + segment + ")");
-                        }
                         response = context.Response;
                         
                         if(request.HttpMethod == "GET")
@@ -186,7 +182,6 @@ namespace RemoteX.DebugBackend
                             }
                             else
                             {
-                                System.Diagnostics.Debug.WriteLine(segments[1]);
                             }
                         }
                         else if(request.HttpMethod == "POST")

@@ -2,11 +2,15 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace RemoteX.Data
+namespace RemoteX.Core
 {
+    public interface IConnectionInfo
+    {
+
+    }
     public class Connection
     {
-        public struct BluetoothConnectionInfo
+        public struct BluetoothConnectionInfo : IConnectionInfo
         {
             public ulong DeviceAddress { get; set; }
             public Guid Guid { get; set; }
@@ -15,6 +19,25 @@ namespace RemoteX.Data
                 string s = "MAC:" + DeviceAddress + '\n';
                 s += "UUID:" + Guid;
                 return s;
+            }
+            public string DeviceAddressString
+            {
+                get
+                {
+                    byte[] decbyte = BitConverter.GetBytes(DeviceAddress);
+                    string ans = "";
+                    for (int i = 0; i < decbyte.Length - 2; i++)
+                    {
+                        ans += Convert.ToString(decbyte[decbyte.Length - 3 - i], 16);
+                    }
+                    for (int j = 2; j <= 14; j += 2)
+                    {
+                        ans = ans.Insert(j, ":");
+                        j++;
+                    }
+                    ans = ans.ToUpper();
+                    return ans;
+                }
             }
         }
         public static string EncodeBluetoothConnection(ulong deviceAddress, Guid guid)
@@ -37,7 +60,5 @@ namespace RemoteX.Data
             };
             return info;
         }
-
-
     }
 }

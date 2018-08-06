@@ -7,7 +7,6 @@ using Windows.Networking.Sockets;
 using Windows.Storage.Streams;
 using RemoteX.Core;
 using System.Threading.Tasks;
-using System.Timers;
 using Windows.UI.Xaml;
 using System.Threading;
 
@@ -27,7 +26,7 @@ namespace RemoteX.PC.Core
             {
                 get
                 {
-                    return RemoteX.Data.Connection.EncodeBluetoothConnection(BluetoothManager._BluetoothAdapter.BluetoothAddress, Uuid);
+                    return Connection.EncodeBluetoothConnection(BluetoothManager._BluetoothAdapter.BluetoothAddress, Uuid);
                 }
             }
 
@@ -37,41 +36,38 @@ namespace RemoteX.PC.Core
 
             private Task _ReceiveTask;
 
-            private System.Timers.Timer _SendDetectorTimer;
-
-            
+            private Timer _SendDetectorTimer;
 
             public BluetoothServerConnection(BluetoothManager bluetoothManager ,Guid uuid):base(bluetoothManager)
             {
                 this.Uuid = uuid;
-                _SendDetectorTimer = new System.Timers.Timer();
-                _SendDetectorTimer.Interval = 500;
-                _SendDetectorTimer.Elapsed += OnSendDetectorTimerElapsed;
+                
+                
                 
             }
 
-            private async void OnSendDetectorTimerElapsed(object sender, ElapsedEventArgs e)
+            private async void _SendDetectorTimerCallback(object state)
             {
                 try
                 {
                     await SendAsync(1, new byte[1] { 0 });
                 }
-                catch(Exception exception)
+                catch (Exception)
                 {
-                    
+
                     _OnConnectionFailed();
-                    //System.Diagnostics.Process.GetCurrentProcess().
                 }
             }
 
             private void _OnConnectionFailed()
             {
-                _SendDetectorTimer.Stop();
+                _SendDetectorTimer.Dispose();
                 StartAdvertisingAsync();
             }
 
             public async void StartAdvertisingAsync()
             {
+                System.Diagnostics.Debug.WriteLine("Start Advertising");
                 ConnectionEstablishState = ConnectionEstablishState.Connecting;
                 OnConnectionEstalblishResult?.Invoke(this, ConnectionEstablishState);
                 BluetoothManager._ConnectedConnections.Add(this);
@@ -106,7 +102,7 @@ namespace RemoteX.PC.Core
                     SendDataWriter = new DataWriter(Socket.OutputStream);
                     System.Diagnostics.Debug.WriteLine("SUCCEES on Thread: " + Thread.CurrentThread.ManagedThreadId);
                     ConnectionEstablishState = ConnectionEstablishState.Succeeded;
-                    _SendDetectorTimer.Start();
+                    _SendDetectorTimer = new Timer(new TimerCallback(_SendDetectorTimerCallback), null, 0, 500);
                     OnConnectionEstalblishResult?.Invoke(this, ConnectionEstablishState);
                     
                 }

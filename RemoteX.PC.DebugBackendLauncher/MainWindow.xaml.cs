@@ -17,6 +17,7 @@ using System.Windows.Shapes;
 using RemoteX.DebugBackend;
 using RemoteX.Data;
 using Windows.System;
+using System.Timers;
 
 namespace RemoteX.PC.DebugBackendLauncher
 {
@@ -25,6 +26,8 @@ namespace RemoteX.PC.DebugBackendLauncher
     /// </summary>
     public partial class MainWindow : Window
     {
+        IServerConnection bluetoothServerConnection;
+        Timer startServerTimer;
         public MainWindow()
         {
             InitializeComponent();
@@ -35,43 +38,61 @@ namespace RemoteX.PC.DebugBackendLauncher
             DebugBackend.DebugBackend.Instance.OnServerStart += OnDebugServerStart;
             DebugBackend.DebugBackend.Instance.OnReceiveSendRequest += OnReceiveSendRequest;
             BluetoothManager bluetoothManager = BluetoothManager.Instance;
-            var bluetoothServerConnection = bluetoothManager.CreateRfcommServerConnection(Guid.Parse("14c5449a-6267-4c7e-bd10-63dd79740e5" + 0));
+            bluetoothServerConnection = bluetoothManager.CreateRfcommServerConnection(Guid.Parse("14c5449a-6267-4c7e-bd10-63dd79740e5" + 0));
             ConnectionManager.Instance.ControllerConnection = bluetoothServerConnection;
-            try
-            {
-                bluetoothServerConnection.StartServer();
-            }
-            catch(Exception e)
-            {
+            Timer startServerTimer = new Timer(5000);
+            startServerTimer.Elapsed += OnStartTimerElapsed;
+            startServerTimer.Start();
 
-            }
-            
 
-            DebugBackend.DebugBackend.Instance.StartBackend(8081);
+
+            DebugBackend.DebugBackend.Instance.StartBackend(8083);
             img_QR.Source = bluetoothServerConnection.GetQRCode().ToBitmapImage();
             tb_Mac.Text = bluetoothServerConnection.ConnectCode;
             
 
         }
-        /*
-        private Task StartServerTask()
-        {
-            return Task.Run(() =>
-            {
-                while (true)
-                {
-                    try
-                    {
-                        BluetoothManager bluetoothManager = BluetoothManager.Instance;
-                        bluetoothServerConnection.StartServer();
-                    }
-                    catch (Exception e)
-                    {
 
-                    }
+        private void OnStartTimerElapsed(object sender, ElapsedEventArgs e)
+        {
+            try
+            {
+                if(bluetoothServerConnection.ConnectionEstablishState != ConnectionEstablishState.Succeeded)
+                {
+                    bluetoothServerConnection.StartServer();
                 }
-            });
-        }*/
+                else
+                {
+                    startServerTimer.Stop();
+                }
+                
+            }
+            catch (Exception)
+            {
+
+            }
+            
+        }
+
+        /*
+private Task StartServerTask()
+{
+   return Task.Run(() =>
+   {
+       while (true)
+       {
+           try
+           {
+               BluetoothManager bluetoothManager = BluetoothManager.Instance;
+               bluetoothServerConnection.StartServer();
+           }
+           catch (Exception e)
+           {
+
+           }
+       }
+   });
+}*/
 
         private async void OnReceiveSendRequest(object sender, RemoteXControlMessage e)
         {
@@ -165,7 +186,7 @@ namespace RemoteX.PC.DebugBackendLauncher
                     label_SendState.Content = "Successful";
                 }
             }
-            catch (Exception exception)
+            catch (Exception)
             {
                 label_SendState.Content = "Failed";
             }
