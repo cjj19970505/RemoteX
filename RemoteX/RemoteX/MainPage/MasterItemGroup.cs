@@ -21,8 +21,8 @@ namespace RemoteX.MainPage
                 new MasterItemGroup("Connection")
                 {
                     new MasterMenuItem("Bluetooth",typeof(Bluetooth.BluetoothDeviceListPage)),
-                    new MasterMenuItem("WIFI P2P", typeof(WifiDirect.WifiDirectDeviceListPage))
-
+                    new MasterMenuItem("WIFI P2P", typeof(WifiDirect.WifiDirectDeviceListPage)),
+                    new MasterMenuItem("BLE", typeof(Bluetooth.LE.BLEAdvertiserTestPage))
 
                 },
                 

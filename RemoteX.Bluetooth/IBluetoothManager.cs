@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using RemoteX.Core;
+using RemoteX.Bluetooth.LE.Gatt;
 
 namespace RemoteX.Bluetooth
 {
@@ -48,5 +49,9 @@ namespace RemoteX.Bluetooth
         IBluetoothDevice[] PairedDevices { get; }
 
         IBluetoothDevice GetBluetoothDevice(ulong macAddress);
+
+        IGattServer GattSever { get; }
+
+        
     }
 }

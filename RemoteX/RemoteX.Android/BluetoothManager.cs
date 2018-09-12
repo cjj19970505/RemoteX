@@ -12,7 +12,9 @@ using Android.Views;
 using Android.Widget;
 using Java.Util;
 using RemoteX.Bluetooth;
+using RemoteX.Bluetooth.LE.Gatt;
 using RemoteX.Core;
+using RemoteX.Droid.Bluetooth.LE.Gatt;
 
 [assembly: Xamarin.Forms.Dependency(typeof(RemoteX.Droid.BluetoothManager))]
 namespace RemoteX.Droid
@@ -22,9 +24,9 @@ namespace RemoteX.Droid
     /// 使用使和Android.Bluetooth.BluetoothManager区分开来，两个不一样
     /// 
     /// </summary>
-    partial class BluetoothManager : RemoteX.Bluetooth.IBluetoothManager
+    internal partial class BluetoothManager : RemoteX.Bluetooth.IBluetoothManager
     {
-        BluetoothAdapter _BluetoothAdapter;
+        public BluetoothAdapter BluetoothAdapter { get; private set;}
         bool _IsDiscoverying;
         Receiver _DiscoveryStartedReceiver;
         Receiver _DevicesFoundReceiver;
@@ -36,14 +38,17 @@ namespace RemoteX.Droid
         /// </summary>
         private List<BluetoothClientConnection> _BluetoothConnections;
 
+        public Android.Bluetooth.BluetoothManager DroidBluetoothManager { get; private set; }
+
         public BluetoothManager()
         {
             _IsDiscoverying = false;
-            _BluetoothAdapter = BluetoothAdapter.DefaultAdapter;
+            BluetoothAdapter = BluetoothAdapter.DefaultAdapter;
             _DiscoveryStartedReceiver = new Receiver(this);
             _DevicesFoundReceiver = new Receiver(this);
             _DiscoveryFinishedReceiver = new Receiver(this);
             _BluetoothConnections = new List<BluetoothClientConnection>();
+            DroidBluetoothManager = Application.Context.GetSystemService(Context.BluetoothService) as Android.Bluetooth.BluetoothManager;
         }
         public bool IsDiscoverying
         {
@@ -60,7 +65,7 @@ namespace RemoteX.Droid
         {
             get
             {
-                if (_BluetoothAdapter != null)
+                if (BluetoothAdapter != null)
                 {
                     return true;
                 }
@@ -93,7 +98,7 @@ namespace RemoteX.Droid
             Application.Context.RegisterReceiver(_DevicesFoundReceiver, foundFilter);
             Application.Context.RegisterReceiver(_DiscoveryFinishedReceiver, finshFilter);
 
-            _BluetoothAdapter.StartDiscovery();
+            BluetoothAdapter.StartDiscovery();
         }
 
         public IClientConnection CreateRfcommClientConnection(RemoteX.Bluetooth.IBluetoothDevice deviceWrapper, Guid guid)
@@ -117,7 +122,7 @@ namespace RemoteX.Droid
             {
                 addressBytes[i] = addressBytesULong[5-i];
             }
-            BluetoothDevice device = _BluetoothAdapter.GetRemoteDevice(addressBytes);
+            BluetoothDevice device = BluetoothAdapter.GetRemoteDevice(addressBytes);
             return new BluetoothDeviceWrapper(device);
         }
 
@@ -125,8 +130,8 @@ namespace RemoteX.Droid
         {
             get
             {
-                ICollection<BluetoothDevice> pairedDevices = _BluetoothAdapter.BondedDevices;
-                List<RemoteX.Bluetooth.IBluetoothDevice> devices = new List<Bluetooth.IBluetoothDevice>();
+                ICollection<BluetoothDevice> pairedDevices = BluetoothAdapter.BondedDevices;
+                List<RemoteX.Bluetooth.IBluetoothDevice> devices = new List<RemoteX.Bluetooth.IBluetoothDevice>();
                 foreach(var droidDevice in pairedDevices)
                 {
                     BluetoothDeviceWrapper bluetoothDeviceWrapper = new BluetoothDeviceWrapper(droidDevice);
@@ -136,6 +141,20 @@ namespace RemoteX.Droid
             }
             
             
+        }
+
+
+        private GattServer _GattServer;
+        public IGattServer GattSever
+        {
+            get
+            {
+                if(_GattServer == null)
+                {
+                    _GattServer = new GattServer(this);
+                }
+                return _GattServer;
+            }
         }
 
         private class Receiver : BroadcastReceiver

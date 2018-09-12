@@ -69,6 +69,8 @@
     <Compile Include="BluetoothClientConnection.cs" />
     <Compile Include="BluetoothManager.cs" />
     <Compile Include="BluetoothDeviceWrapper.cs" />
+    <Compile Include="Bluetooth\LE\Gatt\GattServer.cs" />
+    <Compile Include="Bluetooth\LE\Gatt\GattService.cs" />
     <Compile Include="ConnectionManager.cs" />
     <Compile Include="InputManager.cs" />
     <Compile Include="MainActivity.cs" />
@@ -100,6 +102,10 @@
     </AndroidResource>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\RemoteX.Bluetooth\RemoteX.Bluetooth.csproj">
+      <Project>{2166debc-7295-4c76-9dcb-24755949f185}</Project>
+      <Name>RemoteX.Bluetooth</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\RemoteX.Core\RemoteX.Core.csproj">
       <Project>{2a58342e-4836-4bbb-85b3-efdaacb310cd}</Project>
       <Name>RemoteX.Core</Name>
@@ -113,5 +119,6 @@
       <Name>RemoteX</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
 </Project>

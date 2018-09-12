@@ -20,7 +20,7 @@ using RemoteX.Core;
 
 namespace RemoteX.Droid
 {
-    partial class BluetoothManager
+    internal partial class BluetoothManager
     {
         class BluetoothClientConnection : RemoteX.Bluetooth.IBluetoothClientConnection
         {

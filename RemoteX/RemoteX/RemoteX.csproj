@@ -44,6 +44,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\RemoteX.Bluetooth\RemoteX.Bluetooth.csproj" />
     <ProjectReference Include="..\..\RemoteX.Core\RemoteX.Core.csproj" />
     <ProjectReference Include="..\..\RemoteX.Data\RemoteX.Data.csproj" />
     <ProjectReference Include="..\..\SkiaBehaviour\SkiaBehaviour.csproj" />
@@ -59,6 +60,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Update="Bluetooth\LE\BLEAdvertiserTestPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
     <EmbeddedResource Update="MainPage\MainMasterDetailPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
