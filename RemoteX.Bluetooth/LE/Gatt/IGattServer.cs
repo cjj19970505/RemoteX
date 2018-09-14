@@ -9,6 +9,9 @@ namespace RemoteX.Bluetooth.LE.Gatt
         ulong Address { get; }
         void AddService(IGattService service);
         void StartAdvertising();
-        
+        void NotifyTest();
+        bool IsSupported { get; }
+
+
     }
 }

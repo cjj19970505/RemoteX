@@ -10,10 +10,11 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using RemoteX.Bluetooth.LE.Gatt;
+using RemoteX.Droid.Bluetooth.LE;
 
 namespace RemoteX.Droid.Bluetooth.LE.Gatt
 {
-    internal class GattService : IGattService
+    internal class GattServerService : IGattService
     {
         public Android.Bluetooth.BluetoothGattService DroidService { get; private set; }
 
@@ -31,14 +32,35 @@ namespace RemoteX.Droid.Bluetooth.LE.Gatt
                 }
             }
         }
-
+        
         public IGattCharacteristic[] MandatoryCharacteristics => throw new NotImplementedException();
 
         public IGattCharacteristic[] OptionalCharacteristics => throw new NotImplementedException();
 
-        public GattService(Guid uuid)
+        public Guid Uuid
         {
+            get
+            {
+                return DroidService.Uuid.ToGuid();
+            }
+        }
+
+        public IGattServer Server { get; private set; }
+
+        public List<GattServerCharacteristic> GattCharacteristics;
+
+        public GattServerService(GattServer server, Guid uuid)
+        {
+
+            GattCharacteristics = new List<GattServerCharacteristic>();
+            Server = server;
             DroidService = new Android.Bluetooth.BluetoothGattService(Java.Util.UUID.FromString(uuid.ToString()), Android.Bluetooth.GattServiceType.Primary);
+        }
+
+        public void AddCharacteristic(GattServerCharacteristic characteristic)
+        {
+            GattCharacteristics.Add(characteristic);
+            DroidService.AddCharacteristic(characteristic.DroidCharacteristic);
         }
     }
 }

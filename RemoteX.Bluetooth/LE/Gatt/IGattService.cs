@@ -11,6 +11,14 @@ namespace RemoteX.Bluetooth.LE.Gatt
     /// From Core_v5.0.pdf Page2230
     /// </summary>
     public enum GattServiceType { Primary, Secondary}
+    public struct GattPermissions
+    {
+        public bool Read;
+        public bool Write;
+    }
+    
+    
+
     public interface IGattClient
     {
         /// <summary>
@@ -33,14 +41,17 @@ namespace RemoteX.Bluetooth.LE.Gatt
     public interface IGattService
     {
         GattServiceType ServiceType { get; }
+        Guid Uuid { get; }
         IGattCharacteristic[] MandatoryCharacteristics { get; }
         IGattCharacteristic[] OptionalCharacteristics { get; }
+        IGattServer Server { get; }
     }
 
     public interface IGattCharacteristic
     {
         IGattService[] ReferencedServices { get; }
         IGattDescriptor[] Descriptors { get; }
+        IGattService Service { get; }
 
         //3.3.1 Characteristic declaration
         //Attribute Value Field
@@ -70,6 +81,7 @@ namespace RemoteX.Bluetooth.LE.Gatt
 
     public interface IGattDescriptor
     {
+        IGattCharacteristic Characteristic { get; }
         Guid Uuid { get; }
     }
 
@@ -88,6 +100,7 @@ namespace RemoteX.Bluetooth.LE.Gatt
         public bool AuthenticatedSignedWrites;
         public bool ExtendedProperties;
     }
+
 
     
 }

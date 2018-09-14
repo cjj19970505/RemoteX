@@ -13,6 +13,7 @@ using Android.Util;
 using Android.Views;
 using Android.Widget;
 using RemoteX.Bluetooth.LE.Gatt;
+using RemoteX.Bluetooth;
 
 namespace RemoteX.Droid.Bluetooth.LE.Gatt
 {
@@ -22,20 +23,39 @@ namespace RemoteX.Droid.Bluetooth.LE.Gatt
 
         internal Android.Bluetooth.BluetoothGattServer DroidGattServer { get; private set; }
         internal BluetoothManager BluetoothManager { get; private set; }
+
+        [Obsolete("Not Finished Yet")]
+        public bool IsSupported
+        {
+            get
+            {
+                return true;
+            }
+        }
+
         private ServerCallback _ServerCallback;
         private AdvertiserCallback _AdvertiserCallback;
 
+        /// <summary>
+        /// 用来储存这个Server上的Service
+        /// </summary>
+        public List<GattServerService> GattServices;
+
         internal GattServer(BluetoothManager bluetoothManager)
         {
-            _ServerCallback = new ServerCallback();
+            GattServices = new List<GattServerService>();
+            _ServerCallback = new ServerCallback(this);
             _AdvertiserCallback = new AdvertiserCallback();
             BluetoothManager = bluetoothManager;
             DroidGattServer = BluetoothManager.DroidBluetoothManager.OpenGattServer(Application.Context, _ServerCallback);
 
+            AddService(new DeviceInfomationService(this));
+            AddService(new BatteryService(this));
         }
 
         public void StartAdvertising()
         {
+            /*
             Guid testGuid = Guid.NewGuid();
             Android.Bluetooth.LE.AdvertiseSettings advertiseSettings = new Android.Bluetooth.LE.AdvertiseSettings.Builder()
                 .SetTxPowerLevel(Android.Bluetooth.LE.AdvertiseTx.PowerHigh)
@@ -46,31 +66,111 @@ namespace RemoteX.Droid.Bluetooth.LE.Gatt
             Android.Bluetooth.LE.AdvertiseData advertiseData = new Android.Bluetooth.LE.AdvertiseData.Builder()
                 .SetIncludeTxPowerLevel(false)
                 .SetIncludeDeviceName(true)
-                .AddServiceUuid(ParcelUuid.FromString(testGuid.ToString()))
+                .AddServiceUuid(ParcelUuid.FromString(SERVICE_DEVICE_INFORMATION.ToString()))
                 .Build();
             Android.Bluetooth.LE.AdvertiseData scanResult = new Android.Bluetooth.LE.AdvertiseData.Builder()
-                .AddServiceUuid(ParcelUuid.FromString(testGuid.ToString()))
+                .AddServiceUuid(ParcelUuid.FromString(SERVICE_DEVICE_INFORMATION.ToString()))
                 .Build();
             var advertisier = BluetoothManager.BluetoothAdapter.BluetoothLeAdvertiser;
+
+            AddService(_SetUpDeviceInformationService());
             advertisier.StartAdvertising(advertiseSettings, advertiseData, _AdvertiserCallback);
-            Log.Info("BLEAdver", "Ithinkitworks");
-            
+            Log.Info("BLEAdver", "Ithinkitworks");*/
+            Android.Bluetooth.LE.AdvertiseSettings advertiseSettings = new Android.Bluetooth.LE.AdvertiseSettings.Builder()
+                .SetTxPowerLevel(Android.Bluetooth.LE.AdvertiseTx.PowerHigh)
+                .SetConnectable(true)
+                .SetTimeout(0)
+                .SetAdvertiseMode(Android.Bluetooth.LE.AdvertiseMode.LowLatency)
+                .Build();
+
+            var advertiseDataBuilder = new Android.Bluetooth.LE.AdvertiseData.Builder().SetIncludeTxPowerLevel(false).SetIncludeDeviceName(true);
+            var scanResultBuilder = new Android.Bluetooth.LE.AdvertiseData.Builder();
+
+            foreach(var service in GattServices)
+            {
+                advertiseDataBuilder.AddServiceUuid(service.Uuid.ToJavaParcelUuid());
+                scanResultBuilder.AddServiceUuid(service.Uuid.ToJavaParcelUuid());
+            }
+            var advertiseData = advertiseDataBuilder.Build();
+            var scanResult = scanResultBuilder.Build();
+            var advertisier = BluetoothManager.BluetoothAdapter.BluetoothLeAdvertiser;
+            advertisier.StartAdvertising(advertiseSettings, advertiseData, _AdvertiserCallback);
 
         }
 
 
         public void AddService(IGattService service)
         {
-            DroidGattServer.AddService((service as GattService).DroidService);
+            GattServices.Add(service as GattServerService);
+            DroidGattServer.AddService((service as GattServerService).DroidService);
+        }
+
+        public void NotifyTest()
+        {
+            try
+            {
+                //DroidGattServer.NotifyCharacteristicChanged(_ConnectedDevice, GattServices[0].GattCharacteristics[0].DroidCharacteristic, false);
+            }
+            catch(Exception e)
+            {
+
+            }
         }
 
         private class ServerCallback : Android.Bluetooth.BluetoothGattServerCallback
         {
-            public override void OnCharacteristicReadRequest(BluetoothDevice device, int requestId, int offset, BluetoothGattCharacteristic characteristic)
+            public GattServer GattServer { get; private set; }
+            public ServerCallback(GattServer gattServer)
             {
-                base.OnCharacteristicReadRequest(device, requestId, offset, characteristic);
+                GattServer = gattServer;
             }
+            public override void OnCharacteristicReadRequest(BluetoothDevice device, int requestId, int offset, BluetoothGattCharacteristic droidCharacteristic)
+            {
+                base.OnCharacteristicReadRequest(device, requestId, offset, droidCharacteristic);
+                var service = GattServer.GattServices.GetFromUuid(droidCharacteristic.Service.Uuid.ToGuid());
+                var characteristic = service.GattCharacteristics.GetFromUuid(droidCharacteristic.Uuid.ToGuid());
+                characteristic.OnCharacteristicRead(device, requestId, offset);
+                //GattServer.DroidGattServer.SendResponse(device, requestId, GattStatus.Success, offset, Encoding.Default.GetBytes("XJSayHello"+requestId));
+                //characteristic.SetValue(Encoding.Default.GetBytes("FUCK" + requestId));
+
+                //GattServer._ConnectedDevice = device;
+                //Log.Info("BLEAdver", "OnCharacteristicReadRequest " + characteristic.Uuid+" Handle:"+characteristic.Handle);
+            }
+            public override void OnCharacteristicWriteRequest(BluetoothDevice device, int requestId, BluetoothGattCharacteristic characteristic, bool preparedWrite, bool responseNeeded, int offset, byte[] value)
+            {
+                base.OnCharacteristicWriteRequest(device, requestId, characteristic, preparedWrite, responseNeeded, offset, value);
+                Log.Info("BLEAdver", "OnCharacteristicWriteRequest");
+            }
+
+            public override void OnDescriptorWriteRequest(BluetoothDevice device, int requestId, BluetoothGattDescriptor droidDescriptor, bool preparedWrite, bool responseNeeded, int offset, byte[] value)
+            {
+                base.OnDescriptorWriteRequest(device, requestId, droidDescriptor, preparedWrite, responseNeeded, offset, value);
+                var descriptor = droidDescriptor.ToDescriptor(GattServer);
+                descriptor.OnWriteRequest(device, requestId, preparedWrite, responseNeeded, offset, value);
+                
+            }
+            public override void OnDescriptorReadRequest(BluetoothDevice device, int requestId, int offset, BluetoothGattDescriptor droidDescriptor)
+            {
+                base.OnDescriptorReadRequest(device, requestId, offset, droidDescriptor);
+                var descriptor = droidDescriptor.ToDescriptor(GattServer);
+                descriptor.OnReadRequest(device, requestId, offset);
+                Log.Info("BLEAdver", "OnDescriptorReadRequest");
+            }
+            public override void OnExecuteWrite(BluetoothDevice device, int requestId, bool execute)
+            {
+                base.OnExecuteWrite(device, requestId, execute);
+                Log.Info("BLEAdver", "OnExecuteWrite");
+            }
+            public override void OnConnectionStateChange(BluetoothDevice device, [GeneratedEnum] ProfileState status, [GeneratedEnum] ProfileState newState)
+            {
+                base.OnConnectionStateChange(device, status, newState);
+                Log.Info("BLEAdver", "OnExecuteWrite State:"+status+" New"+ newState);
+
+            }
+
+
         }
+    
 
         private class AdvertiserCallback : Android.Bluetooth.LE.AdvertiseCallback
         {
@@ -82,7 +182,36 @@ namespace RemoteX.Droid.Bluetooth.LE.Gatt
             {
                 base.OnStartFailure(errorCode);
             }
-
         }
+
+        /*
+        private static Guid SERVICE_DEVICE_INFORMATION = BluetoothUtils.ShortValueUuid(0x180A);
+        private static Guid CHARACTERISTIC_MANUFACTURER_NAME = BluetoothUtils.ShortValueUuid(0x2A29);
+        private static Guid CHARACTERISTIC_MODEL_NUMBER = BluetoothUtils.ShortValueUuid(0x2A24);
+        private static Guid CHARACTERISTIC_SERIAL_NUMBER = BluetoothUtils.ShortValueUuid(0x2A25);
+
+        
+        private static GattServerService _SetUpDeviceInformationService()
+        {
+            GattServerService gattService = new GattServerService(SERVICE_DEVICE_INFORMATION);
+            GattCharacteristicProperties properties = new GattCharacteristicProperties
+            {
+                Read = true,
+                WriteWithoutResponse = true,
+                Write = true,
+                Notify = true
+
+            };
+            GattPermissions gattPermissions = new GattPermissions
+            {
+                Read = true,
+                Write = true
+            };
+            gattService.AddCharacteristic(new GattServerCharacteristic(CHARACTERISTIC_MANUFACTURER_NAME, properties, gattPermissions));
+            gattService.AddCharacteristic(new GattServerCharacteristic(CHARACTERISTIC_MODEL_NUMBER, properties, gattPermissions));
+            gattService.AddCharacteristic(new GattServerCharacteristic(CHARACTERISTIC_SERIAL_NUMBER, properties, gattPermissions));
+            return gattService;
+        }
+        */
     }
 }

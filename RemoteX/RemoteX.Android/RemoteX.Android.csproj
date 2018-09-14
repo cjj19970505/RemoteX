@@ -69,8 +69,14 @@
     <Compile Include="BluetoothClientConnection.cs" />
     <Compile Include="BluetoothManager.cs" />
     <Compile Include="BluetoothDeviceWrapper.cs" />
+    <Compile Include="Bluetooth\LE\Gatt\BatteryService.cs" />
+    <Compile Include="Bluetooth\LE\Gatt\ClientCharacteristicConfigurationDescriptor.cs" />
+    <Compile Include="Bluetooth\LE\Gatt\DeviceInfomationService.cs" />
+    <Compile Include="Bluetooth\LE\Gatt\Extensions.cs" />
+    <Compile Include="Bluetooth\LE\Gatt\GattServerCharacteristic.cs" />
+    <Compile Include="Bluetooth\LE\Gatt\GattServerDescriptor.cs" />
     <Compile Include="Bluetooth\LE\Gatt\GattServer.cs" />
-    <Compile Include="Bluetooth\LE\Gatt\GattService.cs" />
+    <Compile Include="Bluetooth\LE\Gatt\GattServerService.cs" />
     <Compile Include="ConnectionManager.cs" />
     <Compile Include="InputManager.cs" />
     <Compile Include="MainActivity.cs" />

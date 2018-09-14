@@ -7,6 +7,9 @@
             <Label Text="Welcome to Xamarin.Forms!"
                 VerticalOptions="CenterAndExpand" 
                 HorizontalOptions="CenterAndExpand" />
+            <Button x:Name="SendNotifyButton"
+                    Text="Send Notify"
+                    Clicked="SendNotifyButton_Clicked"/>
             <Button x:Name="StartAdvertisingButton"
                     Text="Start Advertising"
                     Clicked="StartAdvertisingButton_Clicked"/>
