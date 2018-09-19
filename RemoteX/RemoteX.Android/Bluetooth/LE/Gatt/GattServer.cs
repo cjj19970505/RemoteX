@@ -104,12 +104,12 @@ namespace RemoteX.Droid.Bluetooth.LE.Gatt
             GattServices.Add(service as GattServerService);
             DroidGattServer.AddService((service as GattServerService).DroidService);
         }
-
+        BluetoothDevice _ConnectedDevice;
         public void NotifyTest()
         {
             try
             {
-                //DroidGattServer.NotifyCharacteristicChanged(_ConnectedDevice, GattServices[0].GattCharacteristics[0].DroidCharacteristic, false);
+                DroidGattServer.NotifyCharacteristicChanged(_ConnectedDevice, GattServices.GetFromUuid(BatteryService.BATTERY_SERVICE_UUID).GattCharacteristics.GetFromUuid(BatteryService.BatteryLevelCharacteristic.BATTERY_LEVEL_UUID).DroidCharacteristic, false);
             }
             catch(Exception e)
             {
@@ -126,6 +126,7 @@ namespace RemoteX.Droid.Bluetooth.LE.Gatt
             }
             public override void OnCharacteristicReadRequest(BluetoothDevice device, int requestId, int offset, BluetoothGattCharacteristic droidCharacteristic)
             {
+                
                 base.OnCharacteristicReadRequest(device, requestId, offset, droidCharacteristic);
                 var service = GattServer.GattServices.GetFromUuid(droidCharacteristic.Service.Uuid.ToGuid());
                 var characteristic = service.GattCharacteristics.GetFromUuid(droidCharacteristic.Uuid.ToGuid());
@@ -140,12 +141,29 @@ namespace RemoteX.Droid.Bluetooth.LE.Gatt
             {
                 base.OnCharacteristicWriteRequest(device, requestId, characteristic, preparedWrite, responseNeeded, offset, value);
                 Log.Info("BLEAdver", "OnCharacteristicWriteRequest");
+                //bluetoothGattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, offset, requestBytes);
+                GattServer.DroidGattServer.SendResponse(device, requestId, GattStatus.Success, offset, value);
+
             }
 
             public override void OnDescriptorWriteRequest(BluetoothDevice device, int requestId, BluetoothGattDescriptor droidDescriptor, bool preparedWrite, bool responseNeeded, int offset, byte[] value)
             {
+                GattServer._ConnectedDevice = device;
                 base.OnDescriptorWriteRequest(device, requestId, droidDescriptor, preparedWrite, responseNeeded, offset, value);
                 var descriptor = droidDescriptor.ToDescriptor(GattServer);
+                GattServer.DroidGattServer.SendResponse(device, requestId, GattStatus.Success, offset, value);
+                StringBuilder sb = new StringBuilder();
+                sb.Append("(");
+                for (int i = 0; i < value.Length; i++)
+                {
+                    sb.Append(value[i]);
+                    if(i != value.Length - 1)
+                    {
+                        sb.Append(", ");
+                    }
+                }
+                sb.Append(")");
+                Log.Info("BLEAdver", "OnDescriptorWriteRequest: "+sb.ToString());
                 descriptor.OnWriteRequest(device, requestId, preparedWrite, responseNeeded, offset, value);
                 
             }
