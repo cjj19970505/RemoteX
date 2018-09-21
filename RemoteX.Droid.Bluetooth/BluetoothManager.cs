@@ -16,7 +16,7 @@ using RemoteX.Bluetooth.LE.Gatt;
 using RemoteX.Core;
 using RemoteX.Droid.Bluetooth.LE.Gatt;
 
-[assembly: Xamarin.Forms.Dependency(typeof(RemoteX.Droid.BluetoothManager))]
+//[assembly: Xamarin.Forms.Dependency(typeof(RemoteX.Droid.BluetoothManager))]
 namespace RemoteX.Droid
 {
     /// <summary>
@@ -24,13 +24,14 @@ namespace RemoteX.Droid
     /// 使用使和Android.Bluetooth.BluetoothManager区分开来，两个不一样
     /// 
     /// </summary>
-    internal partial class BluetoothManager : RemoteX.Bluetooth.IBluetoothManager
+    public partial class BluetoothManager : RemoteX.Bluetooth.IBluetoothManager
     {
         public BluetoothAdapter BluetoothAdapter { get; private set;}
         bool _IsDiscoverying;
         Receiver _DiscoveryStartedReceiver;
         Receiver _DevicesFoundReceiver;
         Receiver _DiscoveryFinishedReceiver;
+        
 
         /// <summary>
         /// 只有正在 建立连接 已经建立完连接 才有资格加入这里面
@@ -84,9 +85,9 @@ namespace RemoteX.Droid
             }
         }
 
-        public event RemoteX.Bluetooth.BluetoothScanResultHandler onDevicesFound;
-        public event RemoteX.Bluetooth.BluetoothStartEndScanHandler onDiscoveryFinished;
-        public event RemoteX.Bluetooth.BluetoothStartEndScanHandler onDiscoveryStarted;
+        public event RemoteX.Bluetooth.BluetoothScanResultHandler OnDevicesFound;
+        public event RemoteX.Bluetooth.BluetoothStartEndScanHandler OnDiscoveryFinished;
+        public event RemoteX.Bluetooth.BluetoothStartEndScanHandler OnDiscoveryStarted;
 
         public void SearchForBlutoothDevices()
         {
@@ -171,7 +172,7 @@ namespace RemoteX.Droid
                 if (BluetoothAdapter.ActionDiscoveryStarted == action)
                 {
                     this._BluetoothManager.IsDiscoverying = true;
-                    _BluetoothManager.onDiscoveryStarted?.Invoke(_BluetoothManager);
+                    _BluetoothManager.OnDiscoveryStarted?.Invoke(_BluetoothManager);
                     Application.Context.UnregisterReceiver(this);
                 }
                 if (BluetoothDevice.ActionFound == action)
@@ -179,12 +180,12 @@ namespace RemoteX.Droid
                     BluetoothDevice device = intent.GetParcelableExtra(BluetoothDevice.ExtraDevice) as BluetoothDevice;
                     BluetoothDeviceWrapper deviceWrapper = new BluetoothDeviceWrapper(device);
 
-                    _BluetoothManager.onDevicesFound?.Invoke(_BluetoothManager, new RemoteX.Bluetooth.IBluetoothDevice[] { deviceWrapper });
+                    _BluetoothManager.OnDevicesFound?.Invoke(_BluetoothManager, new RemoteX.Bluetooth.IBluetoothDevice[] { deviceWrapper });
                 }
                 if (BluetoothAdapter.ActionDiscoveryFinished == action)
                 {
                     _BluetoothManager.IsDiscoverying = false;
-                    _BluetoothManager.onDiscoveryFinished?.Invoke(_BluetoothManager);
+                    _BluetoothManager.OnDiscoveryFinished?.Invoke(_BluetoothManager);
                     Application.Context.UnregisterReceiver(this);
                     Application.Context.UnregisterReceiver(_BluetoothManager._DevicesFoundReceiver);
                 }

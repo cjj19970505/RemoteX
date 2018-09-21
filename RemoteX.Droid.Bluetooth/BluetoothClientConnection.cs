@@ -15,12 +15,11 @@ using Android.Widget;
 using Java.IO;
 using Java.Util;
 using RemoteX;
-using Xamarin.Forms;
 using RemoteX.Core;
 
 namespace RemoteX.Droid
 {
-    internal partial class BluetoothManager
+    public partial class BluetoothManager
     {
         class BluetoothClientConnection : RemoteX.Bluetooth.IBluetoothClientConnection
         {
@@ -168,7 +167,7 @@ namespace RemoteX.Droid
                 }
                 if (this.ConnectionEstablishState == ConnectionEstablishState.Succeeded)
                 {
-                    Device.StartTimer(new TimeSpan(0, 0, 0, 0, 500), sendControlCodeTimerFunc);
+                    //Device.StartTimer(new TimeSpan(0, 0, 0, 0, 500), sendControlCodeTimerFunc);
                 }
                 this.OnConnectionEstalblishResult?.Invoke(this, this.ConnectionEstablishState);
                 return state;

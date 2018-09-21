@@ -85,7 +85,7 @@ namespace RemoteX.Droid.Bluetooth.LE.Gatt
             return (Android.Bluetooth.GattDescriptorPermission)permissionCode;
         }
 
-        public static GattServerService GetFromUuid(this IEnumerable<GattServerService> self, Guid uuid)
+        public static GattServer.GattServerService GetFromUuid(this IEnumerable<GattServer.GattServerService> self, Guid uuid)
         {
             foreach(var gattService in self)
             {
@@ -97,7 +97,7 @@ namespace RemoteX.Droid.Bluetooth.LE.Gatt
             return null;
         }
 
-        public static GattServerCharacteristic GetFromUuid(this IEnumerable<GattServerCharacteristic> self, Guid uuid)
+        public static GattServer.GattServerService.GattServerCharacteristic GetFromUuid(this IEnumerable<GattServer.GattServerService.GattServerCharacteristic> self, Guid uuid)
         {
             foreach (var gattCharacteristic in self)
             {
@@ -109,19 +109,19 @@ namespace RemoteX.Droid.Bluetooth.LE.Gatt
             return null;
         }
 
-        public static GattServerDescriptor GetFromUuid(this IEnumerable<IGattDescriptor> self, Guid uuid)
+        public static GattServer.GattServerService.GattServerCharacteristic.GattServerDescriptor GetFromUuid(this IEnumerable<IGattDescriptor> self, Guid uuid)
         {
             foreach (var gattDescriptor in self)
             {
                 if (gattDescriptor.Uuid == uuid)
                 {
-                    return gattDescriptor as GattServerDescriptor;
+                    return gattDescriptor as GattServer.GattServerService.GattServerCharacteristic.GattServerDescriptor;
                 }
             }
             return null;
         }
 
-        public static GattServerDescriptor ToDescriptor(this Android.Bluetooth.BluetoothGattDescriptor self, GattServer server)
+        public static GattServer.GattServerService.GattServerCharacteristic.GattServerDescriptor ToDescriptor(this Android.Bluetooth.BluetoothGattDescriptor self, GattServer server)
         {
             var service = server.GattServices.GetFromUuid(self.Characteristic.Service.Uuid.ToGuid());
             var characteristic = service.GattCharacteristics.GetFromUuid(self.Characteristic.Uuid.ToGuid());

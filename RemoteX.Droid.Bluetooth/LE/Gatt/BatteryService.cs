@@ -15,12 +15,12 @@ using RemoteX.Bluetooth.LE.Gatt;
 
 namespace RemoteX.Droid.Bluetooth.LE.Gatt
 {
-    internal class BatteryService:GattServerService
+    internal class BatteryService:GattServer.GattServerService
     {
         public static Guid BATTERY_SERVICE_UUID = BluetoothUtils.ShortValueUuid(0x180F);
-        public BatteryService(GattServer server):base(server, BATTERY_SERVICE_UUID)
+        public BatteryService():base(BATTERY_SERVICE_UUID)
         {
-            AddCharacteristic(new BatteryLevelCharacteristic(this));
+            AddCharacteristic(new BatteryLevelCharacteristic());
         }
 
         public class BatteryLevelCharacteristic : GattServerCharacteristic
@@ -39,10 +39,10 @@ namespace RemoteX.Droid.Bluetooth.LE.Gatt
                 Write = true
 
             };
-            public BatteryLevelCharacteristic(BatteryService service):base(service, BATTERY_LEVEL_UUID, PROPERTIES, PERMISSIONS)
+            public BatteryLevelCharacteristic():base(BATTERY_LEVEL_UUID, PROPERTIES, PERMISSIONS)
             {
                 _BatteryLevel = 89;
-                AddDescriptor(new ClientCharacteristicConfigurationDescriptor(this));
+                AddDescriptor(new ClientCharacteristicConfigurationDescriptor());
                 DroidCharacteristic.SetValue(BitConverter.GetBytes(BatteryLevel));
             }
             
@@ -58,7 +58,7 @@ namespace RemoteX.Droid.Bluetooth.LE.Gatt
                     _BatteryLevel = value;
                 }
             }
-            internal override void OnCharacteristicRead(BluetoothDevice device, int requestId, int offset)
+            public override void OnCharacteristicRead(BluetoothDevice device, int requestId, int offset)
             {
                 base.OnCharacteristicRead(device, requestId, offset);
                 (Service.Server as GattServer).DroidGattServer.SendResponse(device, requestId, GattStatus.Success, offset, new byte[] { BitConverter.GetBytes(BatteryLevel)[0] });

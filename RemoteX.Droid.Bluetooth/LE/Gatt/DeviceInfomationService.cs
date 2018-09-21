@@ -16,16 +16,16 @@ using RemoteX.Bluetooth.LE.Gatt;
 
 namespace RemoteX.Droid.Bluetooth.LE.Gatt
 {
-    internal class DeviceInfomationService:GattServerService
+    internal class DeviceInfomationService:GattServer.GattServerService
     {
         private static Guid SERVICE_DEVICE_INFORMATION = BluetoothUtils.ShortValueUuid(0x180A);
         private static Guid CHARACTERISTIC_MANUFACTURER_NAME = BluetoothUtils.ShortValueUuid(0x2A29);
         private static Guid CHARACTERISTIC_MODEL_NUMBER = BluetoothUtils.ShortValueUuid(0x2A24);
         private static Guid CHARACTERISTIC_SERIAL_NUMBER = BluetoothUtils.ShortValueUuid(0x2A25);
 
-        public DeviceInfomationService(GattServer server) : base(server, SERVICE_DEVICE_INFORMATION)
+        public DeviceInfomationService() : base(SERVICE_DEVICE_INFORMATION)
         {
-            AddCharacteristic(new ManufacturerNameStringCharacteristic(this, "XJStudio"));
+            AddCharacteristic(new ManufacturerNameStringCharacteristic("XJStudio"));
         }
 
         class ManufacturerNameStringCharacteristic : GattServerCharacteristic
@@ -40,11 +40,11 @@ namespace RemoteX.Droid.Bluetooth.LE.Gatt
                 Read = true
             };
             public string ManufacturerName { get; private set; }
-            public ManufacturerNameStringCharacteristic(DeviceInfomationService service, string manufacturerName) : base(service, CHARACTERISTIC_MANUFACTURER_NAME, PROPERTIES, PERMISSIONS)
+            public ManufacturerNameStringCharacteristic(string manufacturerName) : base(CHARACTERISTIC_MANUFACTURER_NAME, PROPERTIES, PERMISSIONS)
             {
                 ManufacturerName = manufacturerName;
             }
-            internal override void OnCharacteristicRead(BluetoothDevice device, int requestId, int offset)
+            public override void OnCharacteristicRead(BluetoothDevice device, int requestId, int offset)
             {
                 base.OnCharacteristicRead(device, requestId, offset);
                 (Service.Server as GattServer).DroidGattServer.SendResponse(device, requestId, GattStatus.Success, offset, Encoding.Default.GetBytes(ManufacturerName));

@@ -16,27 +16,6 @@ namespace RemoteX.Bluetooth.LE.Gatt
         public bool Read;
         public bool Write;
     }
-    
-    
-
-    public interface IGattClient
-    {
-        /// <summary>
-        /// 4.8.1
-        /// This sub-procedure is used to read a Characteristic Value from a server when the client knows the Characteristic Value Handle. The Attribute Protocol Read Request is used with the Attribute Handle parameter set to the Characteristic Value Handle. The Read Response returns the Characteristic Value in the Attribute Value parameter.
-        /// </summary>
-        /// <param name="characteristicValueHandle"></param>
-        /// <returns></returns>
-        Task<byte[]> ReadCharacteristicValue(int characteristicValueHandle);
-
-        /// <summary>
-        /// 4.8.2
-        /// This sub-procedure is used to read a Characteristic Value from a server when the client only knows the characteristic UUID and does not know the handle of the characteristic. 
-        /// </summary>
-        /// <param name="CharacteristicUuid"></param>
-        /// <returns></returns>
-        Task<byte[]> ReadCharacteristicValue(Guid characteristicUuid);
-    }
 
     public interface IGattService
     {
@@ -49,7 +28,6 @@ namespace RemoteX.Bluetooth.LE.Gatt
 
     public interface IGattCharacteristic
     {
-        IGattService[] ReferencedServices { get; }
         IGattDescriptor[] Descriptors { get; }
         IGattService Service { get; }
 

@@ -11,7 +11,5 @@ namespace RemoteX.Bluetooth.LE.Gatt
         void StartAdvertising();
         void NotifyTest();
         bool IsSupported { get; }
-
-
     }
 }

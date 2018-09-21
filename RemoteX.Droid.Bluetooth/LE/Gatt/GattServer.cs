@@ -17,7 +17,7 @@ using RemoteX.Bluetooth;
 
 namespace RemoteX.Droid.Bluetooth.LE.Gatt
 {
-    internal class GattServer : IGattServer
+    public partial class GattServer : IGattServer
     {
         public ulong Address => throw new NotImplementedException();
 
@@ -39,18 +39,26 @@ namespace RemoteX.Droid.Bluetooth.LE.Gatt
         /// <summary>
         /// 用来储存这个Server上的Service
         /// </summary>
-        public List<GattServerService> GattServices;
+        private List<GattServerService> _GattServices;
+
+        public GattServerService[] GattServices
+        {
+            get
+            {
+                return _GattServices.ToArray();
+            }
+        }
 
         internal GattServer(BluetoothManager bluetoothManager)
         {
-            GattServices = new List<GattServerService>();
+            _GattServices = new List<GattServerService>();
             _ServerCallback = new ServerCallback(this);
             _AdvertiserCallback = new AdvertiserCallback();
             BluetoothManager = bluetoothManager;
             DroidGattServer = BluetoothManager.DroidBluetoothManager.OpenGattServer(Application.Context, _ServerCallback);
 
-            AddService(new DeviceInfomationService(this));
-            AddService(new BatteryService(this));
+            AddService(new DeviceInfomationService());
+            AddService(new BatteryService());
         }
 
         public void StartAdvertising()
@@ -86,8 +94,17 @@ namespace RemoteX.Droid.Bluetooth.LE.Gatt
             var advertiseDataBuilder = new Android.Bluetooth.LE.AdvertiseData.Builder().SetIncludeTxPowerLevel(false).SetIncludeDeviceName(true);
             var scanResultBuilder = new Android.Bluetooth.LE.AdvertiseData.Builder();
 
-            foreach(var service in GattServices)
+            foreach(var service in _GattServices)
             {
+                Log.Info("BLEAdver", "Service:"+service.DroidService.Uuid.ToString());
+                foreach(var chara in service.DroidService.Characteristics)
+                {
+                    Log.Info("BLEAdver", "Char:" + chara.Uuid.ToString());
+                    foreach(var des in chara.Descriptors)
+                    {
+                        Log.Info("BLEAdver", "Des:" + des.Uuid);
+                    }
+                }
                 advertiseDataBuilder.AddServiceUuid(service.Uuid.ToJavaParcelUuid());
                 scanResultBuilder.AddServiceUuid(service.Uuid.ToJavaParcelUuid());
             }
@@ -95,21 +112,20 @@ namespace RemoteX.Droid.Bluetooth.LE.Gatt
             var scanResult = scanResultBuilder.Build();
             var advertisier = BluetoothManager.BluetoothAdapter.BluetoothLeAdvertiser;
             advertisier.StartAdvertising(advertiseSettings, advertiseData, _AdvertiserCallback);
-
+            
         }
 
 
         public void AddService(IGattService service)
         {
-            GattServices.Add(service as GattServerService);
-            DroidGattServer.AddService((service as GattServerService).DroidService);
+            (service as GattServerService).AddToServer(this);
         }
         BluetoothDevice _ConnectedDevice;
         public void NotifyTest()
         {
             try
             {
-                DroidGattServer.NotifyCharacteristicChanged(_ConnectedDevice, GattServices.GetFromUuid(BatteryService.BATTERY_SERVICE_UUID).GattCharacteristics.GetFromUuid(BatteryService.BatteryLevelCharacteristic.BATTERY_LEVEL_UUID).DroidCharacteristic, false);
+                DroidGattServer.NotifyCharacteristicChanged(_ConnectedDevice, _GattServices.GetFromUuid(BatteryService.BATTERY_SERVICE_UUID).GattCharacteristics.GetFromUuid(BatteryService.BatteryLevelCharacteristic.BATTERY_LEVEL_UUID).DroidCharacteristic, false);
             }
             catch(Exception e)
             {
@@ -128,7 +144,7 @@ namespace RemoteX.Droid.Bluetooth.LE.Gatt
             {
                 
                 base.OnCharacteristicReadRequest(device, requestId, offset, droidCharacteristic);
-                var service = GattServer.GattServices.GetFromUuid(droidCharacteristic.Service.Uuid.ToGuid());
+                var service = GattServer._GattServices.GetFromUuid(droidCharacteristic.Service.Uuid.ToGuid());
                 var characteristic = service.GattCharacteristics.GetFromUuid(droidCharacteristic.Uuid.ToGuid());
                 characteristic.OnCharacteristicRead(device, requestId, offset);
                 //GattServer.DroidGattServer.SendResponse(device, requestId, GattStatus.Success, offset, Encoding.Default.GetBytes("XJSayHello"+requestId));

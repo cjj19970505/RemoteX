@@ -115,7 +115,7 @@ namespace RemoteX.Bluetooth
             IConnectionManager connectionManager = DependencyService.Get<IConnectionManager>();
             IClientConnection currentConnection = connectionManager.ControllerConnection as IClientConnection;
             ConnectionEstablishState connectState = ConnectionEstablishState.Failed;
-            IClientConnection connection = DependencyService.Get<IBluetoothManager>().CreateRfcommClientConnection(_BluetoothDevice, (Guid)_SelectedGuid);
+            IClientConnection connection = DependencyService.Get<IManagerManager>().BluetoothManager.CreateRfcommClientConnection(_BluetoothDevice, (Guid)_SelectedGuid);
             if(connectionManager.ControllerConnection != null)
             {
                 bool result = await DisplayAlert("Connect", "Stop Current Connection ?", "Yes", "No");

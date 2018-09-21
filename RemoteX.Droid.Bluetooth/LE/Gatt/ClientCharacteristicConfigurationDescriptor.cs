@@ -16,7 +16,7 @@ using RemoteX.Bluetooth.LE.Gatt;
 
 namespace RemoteX.Droid.Bluetooth.LE.Gatt
 {
-    class ClientCharacteristicConfigurationDescriptor:GattServerDescriptor
+    class ClientCharacteristicConfigurationDescriptor: GattServer.GattServerService.GattServerCharacteristic.GattServerDescriptor
     {
         private static Guid CLIENT_CHARACTERISTIC_CONFIGURATION_UUID = BluetoothUtils.ShortValueUuid(0x2902);
         private static GattPermissions PERMISSIONS = new GattPermissions
@@ -25,7 +25,7 @@ namespace RemoteX.Droid.Bluetooth.LE.Gatt
             Write = true,
             
         };
-        public ClientCharacteristicConfigurationDescriptor(GattServerCharacteristic characteristic):base(characteristic, CLIENT_CHARACTERISTIC_CONFIGURATION_UUID, PERMISSIONS)
+        public ClientCharacteristicConfigurationDescriptor():base(CLIENT_CHARACTERISTIC_CONFIGURATION_UUID, PERMISSIONS)
         {
             Notifications = true;
         }

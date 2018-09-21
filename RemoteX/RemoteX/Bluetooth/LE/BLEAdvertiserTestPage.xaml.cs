@@ -19,14 +19,13 @@ namespace RemoteX.Bluetooth.LE
 
         private void StartAdvertisingButton_Clicked(object sender, EventArgs e)
         {
-            var bluetoothManager = DependencyService.Get<IBluetoothManager>();
+            var bluetoothManager = DependencyService.Get<IManagerManager>().BluetoothManager;
             bluetoothManager.GattSever.StartAdvertising();
         }
 
         private void SendNotifyButton_Clicked(object sender, EventArgs e)
         {
-            var bluetoothManager = DependencyService.Get<IBluetoothManager>();
-            bluetoothManager.GattSever.StartAdvertising();
+            var bluetoothManager = DependencyService.Get<IManagerManager>().BluetoothManager;
             bluetoothManager.GattSever.NotifyTest();
         }
     }

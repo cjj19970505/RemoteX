@@ -14,7 +14,7 @@ using Java.Util;
 
 namespace RemoteX.Droid
 {
-    internal partial class BluetoothManager
+    public partial class BluetoothManager
     {
         /// <summary>
         /// 针对Xamarin.Form中IBluetoothDevice对Android的BluetoothDevice进行的一层包装

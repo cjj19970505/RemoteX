@@ -17,17 +17,17 @@ namespace RemoteX.Bluetooth
         /// <summary>
         /// 查找设备过程中找到时触发
         /// </summary>
-        event BluetoothScanResultHandler onDevicesFound;
+        event BluetoothScanResultHandler OnDevicesFound;
 
         /// <summary>
         /// 查找设备完成时触发
         /// </summary>
-        event BluetoothStartEndScanHandler onDiscoveryFinished;
+        event BluetoothStartEndScanHandler OnDiscoveryFinished;
 
         /// <summary>
         /// 查找设备开始时触发
         /// </summary>
-        event BluetoothStartEndScanHandler onDiscoveryStarted;
+        event BluetoothStartEndScanHandler OnDiscoveryStarted;
 
         /// <summary>
         /// 本机是否支持蓝牙
