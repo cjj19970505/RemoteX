@@ -66,45 +66,6 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\RemoteX.Droid.Bluetooth\BluetoothClientConnection.cs">
-      <Link>Bluetooth\BluetoothClientConnection.cs</Link>
-    </Compile>
-    <Compile Include="..\..\RemoteX.Droid.Bluetooth\BluetoothDeviceWrapper.cs">
-      <Link>Bluetooth\BluetoothDeviceWrapper.cs</Link>
-    </Compile>
-    <Compile Include="..\..\RemoteX.Droid.Bluetooth\BluetoothManager.cs">
-      <Link>Bluetooth\BluetoothManager.cs</Link>
-    </Compile>
-    <Compile Include="..\..\RemoteX.Droid.Bluetooth\LE\Gatt\BatteryService.cs">
-      <Link>Bluetooth\BatteryService.cs</Link>
-    </Compile>
-    <Compile Include="..\..\RemoteX.Droid.Bluetooth\LE\Gatt\ClientCharacteristicConfigurationDescriptor.cs">
-      <Link>Bluetooth\ClientCharacteristicConfigurationDescriptor.cs</Link>
-    </Compile>
-    <Compile Include="..\..\RemoteX.Droid.Bluetooth\LE\Gatt\DeviceInfomationService.cs">
-      <Link>Bluetooth\DeviceInfomationService.cs</Link>
-    </Compile>
-    <Compile Include="..\..\RemoteX.Droid.Bluetooth\LE\Gatt\Extensions.cs">
-      <Link>Bluetooth\Extensions.cs</Link>
-    </Compile>
-    <Compile Include="..\..\RemoteX.Droid.Bluetooth\LE\Gatt\GattCharacteristicBuilder.cs">
-      <Link>Bluetooth\GattCharacteristicBuilder.cs</Link>
-    </Compile>
-    <Compile Include="..\..\RemoteX.Droid.Bluetooth\LE\Gatt\GattServer.cs">
-      <Link>Bluetooth\GattServer.cs</Link>
-    </Compile>
-    <Compile Include="..\..\RemoteX.Droid.Bluetooth\LE\Gatt\GattServerCharacteristic.cs">
-      <Link>Bluetooth\GattServerCharacteristic.cs</Link>
-    </Compile>
-    <Compile Include="..\..\RemoteX.Droid.Bluetooth\LE\Gatt\GattServerDescriptor.cs">
-      <Link>Bluetooth\GattServerDescriptor.cs</Link>
-    </Compile>
-    <Compile Include="..\..\RemoteX.Droid.Bluetooth\LE\Gatt\GattServerService.cs">
-      <Link>Bluetooth\GattServerService.cs</Link>
-    </Compile>
-    <Compile Include="..\..\RemoteX.Droid.Bluetooth\LE\Gatt\GattServiceBuilder.cs">
-      <Link>Bluetooth\GattServiceBuilder.cs</Link>
-    </Compile>
     <Compile Include="ConnectionManager.cs" />
     <Compile Include="InputManager.cs" />
     <Compile Include="MainActivity.cs" />
@@ -148,6 +109,10 @@
     <ProjectReference Include="..\..\RemoteX.Data\RemoteX.Data.csproj">
       <Project>{87c30186-7988-4e6b-91de-7df3c1b02536}</Project>
       <Name>RemoteX.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\RemoteX.Droid.Bluetooth\RemoteX.Droid.Bluetooth.csproj">
+      <Project>{67af9fdf-111a-4610-9c91-881c42c42022}</Project>
+      <Name>RemoteX.Droid.Bluetooth</Name>
     </ProjectReference>
     <ProjectReference Include="..\RemoteX\RemoteX.csproj">
       <Project>{5C72240C-35E4-45D0-971C-83BE8C72BCBE}</Project>

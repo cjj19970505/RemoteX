@@ -20,13 +20,29 @@ namespace RemoteX.Droid.Bluetooth.LE.Gatt
         {
             public Android.Bluetooth.BluetoothGattService DroidService { get; private set; }
 
-            public GattServiceType ServiceType { get; private set; }
+            public GattServiceType ServiceType
+            {
+                get
+                {
+                    if(DroidService.Type == Android.Bluetooth.GattServiceType.Primary)
+                    {
+                        return GattServiceType.Primary;
+                    }
+                    return GattServiceType.Secondary;
+                }
+            }
 
             public IGattCharacteristic[] MandatoryCharacteristics => throw new NotImplementedException();
 
             public IGattCharacteristic[] OptionalCharacteristics => throw new NotImplementedException();
 
-            public Guid Uuid { get; private set; }
+            public Guid Uuid
+            {
+                get
+                {
+                    return DroidService.Uuid.ToGuid();
+                }
+            }
 
             /// <summary>
             /// Only avalible when the service is added to the server

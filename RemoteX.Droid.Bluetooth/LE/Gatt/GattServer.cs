@@ -96,7 +96,7 @@ namespace RemoteX.Droid.Bluetooth.LE.Gatt
 
             foreach(var service in _GattServices)
             {
-                Log.Info("BLEAdver", "Service:"+service.DroidService.Uuid.ToString());
+                Log.Info("BLEAdver", "Service:"+ service.Uuid.ToString());
                 foreach(var chara in service.DroidService.Characteristics)
                 {
                     Log.Info("BLEAdver", "Char:" + chara.Uuid.ToString());

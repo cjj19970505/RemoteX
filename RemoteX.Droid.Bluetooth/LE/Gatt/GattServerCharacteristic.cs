@@ -45,7 +45,6 @@ namespace RemoteX.Droid.Bluetooth.LE.Gatt
                 {
                     get
                     {
-
                         return Guid.Parse(DroidCharacteristic.Uuid.ToString());
                     }
                 }
