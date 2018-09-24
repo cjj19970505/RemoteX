@@ -10,6 +10,9 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using RemoteX.Bluetooth.LE.Gatt;
+using static RemoteX.Droid.Bluetooth.LE.Gatt.GattServer.GattServerService;
+using static RemoteX.Droid.Bluetooth.LE.Gatt.GattServer.GattServerService.GattServerCharacteristic;
+using static RemoteX.Droid.Bluetooth.LE.Gatt.GattServer.GattServerService.GattServerCharacteristic.GattServerDescriptor;
 
 namespace RemoteX.Droid.Bluetooth.LE.Gatt
 {
@@ -39,7 +42,17 @@ namespace RemoteX.Droid.Bluetooth.LE.Gatt
 
         public IGattCharacteristic Build()
         {
-            throw new NotImplementedException();
+            GattPermissions permissions = new GattPermissions
+            {
+                Read = true,
+                Write = true
+            };
+            GattServerCharacteristic characteristic = new GattServerCharacteristic(Uuid, Properties, permissions);
+            foreach(var descriptor in _DescriptorsList)
+            {
+                characteristic.AddDescriptor(descriptor as GattServerDescriptor);
+            }
+            return characteristic;
         }
 
         public IGattCharacteristicBuilder SetProperties(GattCharacteristicProperties properties)

@@ -76,7 +76,7 @@ namespace RemoteX.Droid.Bluetooth.LE.Gatt
 
                 public virtual void OnCharacteristicRead(Android.Bluetooth.BluetoothDevice device, int requestId, int offset)
                 {
-
+                    
                 }
 
 
