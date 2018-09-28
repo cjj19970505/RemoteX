@@ -50,8 +50,14 @@ namespace RemoteX.Bluetooth
 
         IBluetoothDevice GetBluetoothDevice(ulong macAddress);
 
+        //Ble Zone
         IGattServer GattSever { get; }
 
-        
+        IGattServiceBuilder NewGattServiceBuilder();
+        IGattCharacteristicBuilder NewGattCharacteristicBuilder();
+        IGattDescriptorBuilder NewGattDescriptorBuilder();
+
+
+
     }
 }

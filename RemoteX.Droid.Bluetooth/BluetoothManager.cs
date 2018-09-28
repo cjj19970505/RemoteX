@@ -31,7 +31,6 @@ namespace RemoteX.Droid
         Receiver _DiscoveryStartedReceiver;
         Receiver _DevicesFoundReceiver;
         Receiver _DiscoveryFinishedReceiver;
-        
 
         /// <summary>
         /// 只有正在 建立连接 已经建立完连接 才有资格加入这里面
@@ -41,6 +40,8 @@ namespace RemoteX.Droid
 
         public Android.Bluetooth.BluetoothManager DroidBluetoothManager { get; private set; }
 
+        public List<BluetoothDeviceWrapper> _KnownBluetoothDevices;
+
         public BluetoothManager()
         {
             _IsDiscoverying = false;
@@ -49,6 +50,7 @@ namespace RemoteX.Droid
             _DevicesFoundReceiver = new Receiver(this);
             _DiscoveryFinishedReceiver = new Receiver(this);
             _BluetoothConnections = new List<BluetoothClientConnection>();
+            _KnownBluetoothDevices = new List<BluetoothDeviceWrapper>();
             DroidBluetoothManager = Application.Context.GetSystemService(Context.BluetoothService) as Android.Bluetooth.BluetoothManager;
         }
         public bool IsDiscoverying
@@ -109,7 +111,7 @@ namespace RemoteX.Droid
             {
                 return null;
             }
-            BluetoothDevice device = (deviceWrapper as BluetoothDeviceWrapper).BluetoothDevice;
+            BluetoothDevice device = (deviceWrapper as BluetoothDeviceWrapper).DroidDevice;
             BluetoothClientConnection clientConnection = new BluetoothClientConnection(this, device, uuid);
             _BluetoothConnections.Add(clientConnection);
             return clientConnection;
@@ -124,7 +126,22 @@ namespace RemoteX.Droid
                 addressBytes[i] = addressBytesULong[5-i];
             }
             BluetoothDevice device = BluetoothAdapter.GetRemoteDevice(addressBytes);
-            return new BluetoothDeviceWrapper(device);
+            return BluetoothDeviceWrapper.GetBluetoothDeviceFromDroidDevice(this, device);
+        }
+
+        public IGattServiceBuilder NewGattServiceBuilder()
+        {
+            return new GattServiceBuilder();
+        }
+
+        public IGattCharacteristicBuilder NewGattCharacteristicBuilder()
+        {
+            return new GattCharacteristicBuilder();
+        }
+
+        public IGattDescriptorBuilder NewGattDescriptorBuilder()
+        {
+            return new GattDescriptorBuilder();
         }
 
         public RemoteX.Bluetooth.IBluetoothDevice[] PairedDevices
@@ -135,15 +152,12 @@ namespace RemoteX.Droid
                 List<RemoteX.Bluetooth.IBluetoothDevice> devices = new List<RemoteX.Bluetooth.IBluetoothDevice>();
                 foreach(var droidDevice in pairedDevices)
                 {
-                    BluetoothDeviceWrapper bluetoothDeviceWrapper = new BluetoothDeviceWrapper(droidDevice);
+                    BluetoothDeviceWrapper bluetoothDeviceWrapper = BluetoothDeviceWrapper.GetBluetoothDeviceFromDroidDevice(this, droidDevice);
                     devices.Add(bluetoothDeviceWrapper);
                 }
                 return devices.ToArray();
             }
-            
-            
         }
-
 
         private GattServer _GattServer;
         public IGattServer GattSever
@@ -178,7 +192,7 @@ namespace RemoteX.Droid
                 if (BluetoothDevice.ActionFound == action)
                 {
                     BluetoothDevice device = intent.GetParcelableExtra(BluetoothDevice.ExtraDevice) as BluetoothDevice;
-                    BluetoothDeviceWrapper deviceWrapper = new BluetoothDeviceWrapper(device);
+                    BluetoothDeviceWrapper deviceWrapper = BluetoothDeviceWrapper.GetBluetoothDeviceFromDroidDevice(_BluetoothManager, device);
 
                     _BluetoothManager.OnDevicesFound?.Invoke(_BluetoothManager, new RemoteX.Bluetooth.IBluetoothDevice[] { deviceWrapper });
                 }

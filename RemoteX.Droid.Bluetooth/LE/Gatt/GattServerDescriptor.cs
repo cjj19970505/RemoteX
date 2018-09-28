@@ -16,11 +16,11 @@ namespace RemoteX.Droid.Bluetooth.LE.Gatt
 {
     public partial class GattServer : IGattServer
     {
-        public partial class GattServerService : IGattService
+        public partial class GattServerService : IGattServerService
         {
-            public partial class GattServerCharacteristic : IGattCharacteristic
+            public partial class GattServerCharacteristic : IGattServerCharacteristic
             {
-                public class GattServerDescriptor : IGattDescriptor
+                public class GattServerDescriptor : IGattServerDescriptor
                 {
                     public Guid Uuid
                     {
@@ -44,7 +44,7 @@ namespace RemoteX.Droid.Bluetooth.LE.Gatt
                     /// <summary>
                     /// Only avalivable when added to a Characteristic
                     /// </summary>
-                    public IGattCharacteristic Characteristic { get; private set; }
+                    public IGattServerCharacteristic Characteristic { get; private set; }
 
                     public GattServerDescriptor(Guid uuid, GattPermissions permissions)
                     {

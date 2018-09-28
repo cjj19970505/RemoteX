@@ -4,11 +4,9 @@ using System.Text;
 
 namespace RemoteX.Bluetooth.LE.Gatt
 {
-    public interface IGattService
+    public interface IGattDescriptor
     {
-        GattServiceType ServiceType { get; }
+        IGattServerCharacteristic Characteristic { get; }
         Guid Uuid { get; }
-        IGattServer Server { get; }
     }
-    
 }

@@ -16,7 +16,7 @@ namespace RemoteX.Droid.Bluetooth.LE.Gatt
 {
     public partial class GattServer: IGattServer
     {
-        public partial class GattServerService : IGattService
+        public partial class GattServerService : IGattServerService
         {
             public Android.Bluetooth.BluetoothGattService DroidService { get; private set; }
 
@@ -32,9 +32,7 @@ namespace RemoteX.Droid.Bluetooth.LE.Gatt
                 }
             }
 
-            public IGattCharacteristic[] MandatoryCharacteristics => throw new NotImplementedException();
 
-            public IGattCharacteristic[] OptionalCharacteristics => throw new NotImplementedException();
 
             public Guid Uuid
             {
@@ -50,6 +48,14 @@ namespace RemoteX.Droid.Bluetooth.LE.Gatt
             public IGattServer Server { get; private set; }
 
             public List<GattServerCharacteristic> GattCharacteristics { get; private set; }
+
+            IGattServerCharacteristic[] Characteristics
+            {
+                get
+                {
+                    return GattCharacteristics.ToArray();
+                }
+            }
 
             public GattServerService(Guid uuid)
             {

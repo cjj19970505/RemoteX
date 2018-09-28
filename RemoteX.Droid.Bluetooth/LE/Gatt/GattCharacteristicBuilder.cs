@@ -18,41 +18,44 @@ namespace RemoteX.Droid.Bluetooth.LE.Gatt
 {
     class GattCharacteristicBuilder : IGattCharacteristicBuilder
     {
-        private List<IGattDescriptor> _DescriptorsList;
+        private List<IGattServerDescriptor> _DescriptorsList;
 
         public GattCharacteristicBuilder()
         {
-            _DescriptorsList = new List<IGattDescriptor>();
+            _DescriptorsList = new List<IGattServerDescriptor>();
         }
 
         public GattCharacteristicProperties Properties { get; set; }
         public Guid Uuid { get; set; }
 
-        public IGattCharacteristicBuilder AddDescriptors(params IGattDescriptor[] gattDescriptors)
+        public GattPermissions Permissions { get; private set; }
+
+        public IGattCharacteristicBuilder AddDescriptors(params IGattServerDescriptor[] gattDescriptors)
         {
-            AddDescriptors(gattDescriptors as IEnumerable<IGattDescriptor>);
+            AddDescriptors(gattDescriptors as IEnumerable<IGattServerDescriptor>);
             return this;
         }
 
-        public IGattCharacteristicBuilder AddDescriptors(IEnumerable<IGattDescriptor> gattDescriptors)
+        public IGattCharacteristicBuilder AddDescriptors(IEnumerable<IGattServerDescriptor> gattDescriptors)
         {
             _DescriptorsList.AddRange(gattDescriptors);
             return this;
         }
 
-        public IGattCharacteristic Build()
+        public IGattServerCharacteristic Build()
         {
-            GattPermissions permissions = new GattPermissions
-            {
-                Read = true,
-                Write = true
-            };
-            GattServerCharacteristic characteristic = new GattServerCharacteristic(Uuid, Properties, permissions);
+            GattServerCharacteristic characteristic = new GattServerCharacteristic(Uuid, Properties, Permissions);
             foreach(var descriptor in _DescriptorsList)
             {
                 characteristic.AddDescriptor(descriptor as GattServerDescriptor);
             }
             return characteristic;
+        }
+
+        public IGattCharacteristicBuilder SetPermissions(GattPermissions permissions)
+        {
+            Permissions = permissions;
+            return this;
         }
 
         public IGattCharacteristicBuilder SetProperties(GattCharacteristicProperties properties)

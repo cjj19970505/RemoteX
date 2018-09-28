@@ -47,15 +47,5 @@
     <Compile Include="ConnectionManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\RemoteX.UnityCompat.Core\RemoteX.UnityCompat.Core.csproj">
-      <Project>{43f396c2-b174-40d7-8e7e-2096bed8ea99}</Project>
-      <Name>RemoteX.UnityCompat.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\RemoteX.UnityCompat.Data\RemoteX.UnityCompat.Data.csproj">
-      <Project>{f908e3e0-2997-48e9-bd7e-31bc0257f9ff}</Project>
-      <Name>RemoteX.UnityCompat.Data</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

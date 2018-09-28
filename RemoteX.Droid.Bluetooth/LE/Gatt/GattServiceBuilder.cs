@@ -19,25 +19,25 @@ namespace RemoteX.Droid.Bluetooth.LE.Gatt
     {
         public GattServiceType ServiceType { get; set; }
         public Guid Uuid { get; set; }
-        private List<IGattCharacteristic> _CharacteristicsList;
+        private List<IGattServerCharacteristic> _CharacteristicsList;
         public GattServiceBuilder()
         {
-            _CharacteristicsList = new List<IGattCharacteristic>();
+            _CharacteristicsList = new List<IGattServerCharacteristic>();
         }
 
-        public IGattServiceBuilder AddCharacteristics(params IGattCharacteristic[] characteristics)
+        public IGattServiceBuilder AddCharacteristics(params IGattServerCharacteristic[] characteristics)
         {
-            AddCharacteristics(characteristics as IEnumerable<IGattCharacteristic>);
+            AddCharacteristics(characteristics as IEnumerable<IGattServerCharacteristic>);
             return this;
         }
 
-        public IGattServiceBuilder AddCharacteristics(IEnumerable<IGattCharacteristic> characteristics)
+        public IGattServiceBuilder AddCharacteristics(IEnumerable<IGattServerCharacteristic> characteristics)
         {
             _CharacteristicsList.AddRange(characteristics);
             return this;
         }
 
-        public IGattService Build()
+        public IGattServerService Build()
         {
             GattServerService gattServerService = new GattServerService(Uuid);
             

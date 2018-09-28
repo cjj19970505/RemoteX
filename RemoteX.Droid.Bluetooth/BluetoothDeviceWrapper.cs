@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 
 using Android.App;
-using Android.Bluetooth;
 using Android.Content;
 using Android.OS;
 using Android.Runtime;
@@ -20,7 +19,7 @@ namespace RemoteX.Droid
         /// 针对Xamarin.Form中IBluetoothDevice对Android的BluetoothDevice进行的一层包装
         /// 目前不足：在FetchUuid的时候要是遇到蓝牙或者Discovery被中途退出，或者一直获取不到uuid，IsFetchingUuids就会一直为true
         /// </summary>
-        class BluetoothDeviceWrapper : RemoteX.Bluetooth.IBluetoothDevice
+        public class BluetoothDeviceWrapper : RemoteX.Bluetooth.IBluetoothDevice
         {
             Receiver _Receiver;
 
@@ -34,11 +33,23 @@ namespace RemoteX.Droid
 
             public event RemoteX.Bluetooth.BluetoothDeviceGetUuidsHanlder OnUuidsFetched;
 
-            public BluetoothDevice BluetoothDevice { get; private set; }
+            public Android.Bluetooth.BluetoothDevice DroidDevice { get; private set; }
 
-            public BluetoothDeviceWrapper(BluetoothDevice bluetoothDevice)
+            
+            public static BluetoothDeviceWrapper GetBluetoothDeviceFromDroidDevice(BluetoothManager bluetoothManager, Android.Bluetooth.BluetoothDevice droidDevice)
             {
-                this.BluetoothDevice = bluetoothDevice;
+                var existDevice = bluetoothManager._KnownBluetoothDevices.GetFromAddress(droidDevice.Address);
+                if(existDevice == null)
+                {
+                    existDevice = new BluetoothDeviceWrapper(droidDevice);
+                    bluetoothManager._KnownBluetoothDevices.Add(existDevice);
+                }
+                return existDevice;
+            }
+
+            private BluetoothDeviceWrapper(Android.Bluetooth.BluetoothDevice bluetoothDevice)
+            {
+                this.DroidDevice = bluetoothDevice;
                 IsFetchingUuids = false;
                 _Receiver = new Receiver(this);
                 this.Name = bluetoothDevice.Name;
@@ -63,9 +74,9 @@ namespace RemoteX.Droid
                     return;
                 }
                 IsFetchingUuids = true;
-                IntentFilter intentFilter = new IntentFilter(BluetoothDevice.ActionUuid);
+                IntentFilter intentFilter = new IntentFilter(Android.Bluetooth.BluetoothDevice.ActionUuid);
                 Application.Context.RegisterReceiver(_Receiver, intentFilter);
-                BluetoothDevice.FetchUuidsWithSdp();
+                DroidDevice.FetchUuidsWithSdp();
             }
 
             public void stopFetchingUuidsWithSdp()
@@ -75,10 +86,9 @@ namespace RemoteX.Droid
                     return;
                 }
                 IsFetchingUuids = false;
-                BluetoothAdapter.DefaultAdapter.CancelDiscovery();
+                Android.Bluetooth.BluetoothAdapter.DefaultAdapter.CancelDiscovery();
                 Application.Context.UnregisterReceiver(_Receiver);
             }
-
 
 
             private class Receiver : BroadcastReceiver
@@ -92,9 +102,9 @@ namespace RemoteX.Droid
                 public override void OnReceive(Context context, Intent intent)
                 {
                     string action = intent.Action;
-                    if (BluetoothDevice.ActionUuid == action)
+                    if (Android.Bluetooth.BluetoothDevice.ActionUuid == action)
                     {
-                        IParcelable[] parcelUuids = intent.GetParcelableArrayExtra(BluetoothDevice.ExtraUuid);
+                        IParcelable[] parcelUuids = intent.GetParcelableArrayExtra(Android.Bluetooth.BluetoothDevice.ExtraUuid);
                         List<Guid> guids = new List<Guid>();
                         if (parcelUuids != null && parcelUuids.Length > 0)
                         {

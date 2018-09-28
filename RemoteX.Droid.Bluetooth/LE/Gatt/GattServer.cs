@@ -14,6 +14,7 @@ using Android.Views;
 using Android.Widget;
 using RemoteX.Bluetooth.LE.Gatt;
 using RemoteX.Bluetooth;
+using static RemoteX.Droid.BluetoothManager;
 
 namespace RemoteX.Droid.Bluetooth.LE.Gatt
 {
@@ -57,7 +58,7 @@ namespace RemoteX.Droid.Bluetooth.LE.Gatt
             BluetoothManager = bluetoothManager;
             DroidGattServer = BluetoothManager.DroidBluetoothManager.OpenGattServer(Application.Context, _ServerCallback);
 
-            AddService(new DeviceInfomationService());
+            //AddService(new DeviceInfomationService());
             AddService(new BatteryService());
         }
 
@@ -116,7 +117,7 @@ namespace RemoteX.Droid.Bluetooth.LE.Gatt
         }
 
 
-        public void AddService(IGattService service)
+        public void AddService(IGattServerService service)
         {
             (service as GattServerService).AddToServer(this);
         }
@@ -131,6 +132,11 @@ namespace RemoteX.Droid.Bluetooth.LE.Gatt
             {
 
             }
+        }
+        public void SendResponse(IBluetoothDevice bluetoothDevice, int requestId, byte[] responseBytes)
+        {
+            //GattServer.DroidGattServer.SendResponse(device, requestId, GattStatus.Success, offset, Encoding.Default.GetBytes("XJSayHello"+requestId));
+            DroidGattServer.SendResponse((bluetoothDevice as BluetoothDeviceWrapper).DroidDevice, requestId, GattStatus.Success, 0, responseBytes);
         }
 
         private class ServerCallback : Android.Bluetooth.BluetoothGattServerCallback
@@ -153,12 +159,16 @@ namespace RemoteX.Droid.Bluetooth.LE.Gatt
                 //GattServer._ConnectedDevice = device;
                 //Log.Info("BLEAdver", "OnCharacteristicReadRequest " + characteristic.Uuid+" Handle:"+characteristic.Handle);
             }
-            public override void OnCharacteristicWriteRequest(BluetoothDevice device, int requestId, BluetoothGattCharacteristic characteristic, bool preparedWrite, bool responseNeeded, int offset, byte[] value)
+            public override void OnCharacteristicWriteRequest(BluetoothDevice device, int requestId, BluetoothGattCharacteristic droidCharacteristic, bool preparedWrite, bool responseNeeded, int offset, byte[] value)
             {
-                base.OnCharacteristicWriteRequest(device, requestId, characteristic, preparedWrite, responseNeeded, offset, value);
+                base.OnCharacteristicWriteRequest(device, requestId, droidCharacteristic, preparedWrite, responseNeeded, offset, value);
+
                 Log.Info("BLEAdver", "OnCharacteristicWriteRequest");
-                //bluetoothGattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, offset, requestBytes);
-                GattServer.DroidGattServer.SendResponse(device, requestId, GattStatus.Success, offset, value);
+                var service = GattServer._GattServices.GetFromUuid(droidCharacteristic.Service.Uuid.ToGuid());
+                var characteristic = service.GattCharacteristics.GetFromUuid(droidCharacteristic.Uuid.ToGuid());
+                characteristic.OnCharacteristicWrite(device, requestId, droidCharacteristic, preparedWrite, responseNeeded, offset, value);
+
+                //GattServer.DroidGattServer.SendResponse(device, requestId, GattStatus.Success, offset, value);
 
             }
 

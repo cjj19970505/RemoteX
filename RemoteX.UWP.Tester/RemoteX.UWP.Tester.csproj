@@ -136,10 +136,6 @@
       <Project>{2A58342E-4836-4BBB-85B3-EFDAACB310CD}</Project>
       <Name>RemoteX.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\RemoteX.UWP.Core\RemoteX.UWP.Core.csproj">
-      <Project>{c45fbd4b-95b0-48bb-86bb-160cdee405ce}</Project>
-      <Name>RemoteX.UWP.Core</Name>
-    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

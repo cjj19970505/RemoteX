@@ -48,11 +48,13 @@
     <Compile Include="BluetoothClientConnection.cs" />
     <Compile Include="BluetoothDeviceWrapper.cs" />
     <Compile Include="BluetoothManager.cs" />
+    <Compile Include="Extensions.cs" />
     <Compile Include="LE\Gatt\BatteryService.cs" />
     <Compile Include="LE\Gatt\ClientCharacteristicConfigurationDescriptor.cs" />
     <Compile Include="LE\Gatt\DeviceInfomationService.cs" />
     <Compile Include="LE\Gatt\Extensions.cs" />
     <Compile Include="LE\Gatt\GattCharacteristicBuilder.cs" />
+    <Compile Include="LE\Gatt\GattDescriptorBuilder.cs" />
     <Compile Include="LE\Gatt\GattServer.cs" />
     <Compile Include="LE\Gatt\GattServerCharacteristic.cs" />
     <Compile Include="LE\Gatt\GattServerDescriptor.cs" />

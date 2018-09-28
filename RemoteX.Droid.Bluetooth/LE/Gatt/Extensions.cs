@@ -85,6 +85,36 @@ namespace RemoteX.Droid.Bluetooth.LE.Gatt
             return (Android.Bluetooth.GattDescriptorPermission)permissionCode;
         }
 
+        public static GattPermissions ToGattPermissions(this Android.Bluetooth.GattPermission self)
+        {
+            int permissionsCode = (int)self;
+            GattPermissions permissions = new GattPermissions();
+            if((self &= Android.Bluetooth.GattPermission.Read)!=0)
+            {
+                permissions.Read = true;
+            }
+            if ((self &= Android.Bluetooth.GattPermission.Write) != 0)
+            {
+                permissions.Write = true;
+            }
+            return permissions;
+        }
+
+        public static GattPermissions ToGattPermissions(this Android.Bluetooth.GattDescriptorPermission self)
+        {
+            int permissionsCode = (int)self;
+            GattPermissions permissions = new GattPermissions();
+            if ((self &= Android.Bluetooth.GattDescriptorPermission.Read) != 0)
+            {
+                permissions.Read = true;
+            }
+            if ((self &= Android.Bluetooth.GattDescriptorPermission.Write) != 0)
+            {
+                permissions.Write = true;
+            }
+            return permissions;
+        }
+
         public static GattServer.GattServerService GetFromUuid(this IEnumerable<GattServer.GattServerService> self, Guid uuid)
         {
             foreach(var gattService in self)
@@ -109,7 +139,7 @@ namespace RemoteX.Droid.Bluetooth.LE.Gatt
             return null;
         }
 
-        public static GattServer.GattServerService.GattServerCharacteristic.GattServerDescriptor GetFromUuid(this IEnumerable<IGattDescriptor> self, Guid uuid)
+        public static GattServer.GattServerService.GattServerCharacteristic.GattServerDescriptor GetFromUuid(this IEnumerable<IGattServerDescriptor> self, Guid uuid)
         {
             foreach (var gattDescriptor in self)
             {
