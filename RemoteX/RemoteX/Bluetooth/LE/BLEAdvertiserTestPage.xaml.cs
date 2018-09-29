@@ -13,6 +13,7 @@ namespace RemoteX.Bluetooth.LE
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class BLEAdvertiserTestPage : ContentPage
     {
+        BatteryServiceWrapper BatteryServiceWrapper;
         public BLEAdvertiserTestPage()
         {
             InitializeComponent();
@@ -22,6 +23,8 @@ namespace RemoteX.Bluetooth.LE
         {
             var bluetoothManager = DependencyService.Get<IManagerManager>().BluetoothManager;
             bluetoothManager.GattSever.AddService(new DeviceInfomationServiceBuilder(bluetoothManager).Build());
+            BatteryServiceWrapper = new BatteryServiceWrapper(bluetoothManager);
+            bluetoothManager.GattSever.AddService(BatteryServiceWrapper.GattServerService);
             bluetoothManager.GattSever.StartAdvertising();
         }
 
@@ -29,6 +32,12 @@ namespace RemoteX.Bluetooth.LE
         {
             var bluetoothManager = DependencyService.Get<IManagerManager>().BluetoothManager;
             bluetoothManager.GattSever.NotifyTest();
+        }
+
+        private void NotifyTestSlider_ValueChanged(object sender, ValueChangedEventArgs e)
+        {
+            BatteryServiceWrapper.BatteryLevelCharacteristicWrapper.BatteryLevel = (int)e.NewValue;
+            BatteryServiceWrapper.BatteryLevelCharacteristicWrapper.NotifyAll();
         }
     }
 }

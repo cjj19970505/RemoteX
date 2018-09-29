@@ -31,7 +31,7 @@ namespace RemoteX.Bluetooth.LE.Gatt
             (sender as IGattServerCharacteristic).Service.Server.SendResponse(e.Device, e.RequestId, null);
         }
 
-        private void OnManufacturerNameStringCharacteristicRead(object sender, ReadRequest e)
+        private void OnManufacturerNameStringCharacteristicRead(object sender, CharacteristicReadRequest e)
         {
             (sender as IGattServerCharacteristic).Service.Server.SendResponse(e.Device, e.RequestId, Encoding.Default.GetBytes("XJStudio"));
         }

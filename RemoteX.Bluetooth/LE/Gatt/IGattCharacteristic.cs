@@ -34,6 +34,6 @@ namespace RemoteX.Bluetooth.LE.Gatt
         Guid Uuid { get; }
 
         //3.3.2 Characteristic Value Declaration
-        byte[] Value { get; }
+        //byte[] Value { get; }
     }
 }

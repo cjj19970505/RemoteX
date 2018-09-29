@@ -49,7 +49,7 @@ namespace RemoteX.Droid.Bluetooth.LE.Gatt
 
             public List<GattServerCharacteristic> GattCharacteristics { get; private set; }
 
-            IGattServerCharacteristic[] Characteristics
+            public IGattServerCharacteristic[] Characteristics
             {
                 get
                 {

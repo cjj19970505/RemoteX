@@ -4,6 +4,10 @@
              x:Class="RemoteX.Bluetooth.LE.BLEAdvertiserTestPage">
     <ContentPage.Content>
         <StackLayout>
+            <Slider x:Name="NotifyTestSlider"
+                    Maximum="100"
+                    Minimum="0"
+                    ValueChanged="NotifyTestSlider_ValueChanged"/>
             <Label Text="Welcome to Xamarin.Forms!"
                 VerticalOptions="CenterAndExpand" 
                 HorizontalOptions="CenterAndExpand" />

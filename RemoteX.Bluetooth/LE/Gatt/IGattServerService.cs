@@ -11,9 +11,18 @@ namespace RemoteX.Bluetooth.LE.Gatt
     /// From Core_v5.0.pdf Page2230
     /// </summary>
     public enum GattServiceType { Primary, Secondary}
-    public struct ReadRequest
+    public struct CharacteristicReadRequest
     {
         public IBluetoothDevice Device;
+        public IGattServerCharacteristic TargetCharacteristic; 
+        public int RequestId;
+        public int Offset;
+        public byte[] Value;
+    }
+    public struct DescriptorReadRequest
+    {
+        public IBluetoothDevice Device;
+        public IGattServerDescriptor TargetDescriptor;
         public int RequestId;
         public int Offset;
         public byte[] Value;
@@ -42,15 +51,18 @@ namespace RemoteX.Bluetooth.LE.Gatt
 
     public interface IGattServerCharacteristic:IGattCharacteristic
     {
-        event EventHandler<ReadRequest> OnRead;
+        event EventHandler<CharacteristicReadRequest> OnRead;
         event EventHandler<WriteRequest> OnWrite;
-        
+        byte[] Value { get; set; }
+        void NotifyValueChanged(IBluetoothDevice bluetoothDevice, bool confirm);
         //BluetoothDevice device, int requestId, BluetoothGattCharacteristic characteristic, bool preparedWrite, bool responseNeeded, int offset, byte[] value
 
     }
 
     public interface IGattServerDescriptor:IGattDescriptor
     {
+        event EventHandler<DescriptorReadRequest> OnRead;
+        event EventHandler<WriteRequest> OnWrite;
         
     }
 

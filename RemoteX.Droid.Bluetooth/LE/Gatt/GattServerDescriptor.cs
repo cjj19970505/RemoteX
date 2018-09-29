@@ -11,6 +11,7 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using RemoteX.Bluetooth.LE.Gatt;
+using RemoteX.Bluetooth;
 
 namespace RemoteX.Droid.Bluetooth.LE.Gatt
 {
@@ -40,6 +41,8 @@ namespace RemoteX.Droid.Bluetooth.LE.Gatt
                     }
 
                     public Android.Bluetooth.BluetoothGattDescriptor DroidDescriptor { get; private set; }
+                    public event EventHandler<DescriptorReadRequest> OnRead;
+                    public event EventHandler<WriteRequest> OnWrite;
 
                     /// <summary>
                     /// Only avalivable when added to a Characteristic
@@ -51,6 +54,8 @@ namespace RemoteX.Droid.Bluetooth.LE.Gatt
                         DroidDescriptor = new Android.Bluetooth.BluetoothGattDescriptor(uuid.ToJavaUuid(), permissions.ToDroidGattDescriptorPermission());
                     }
 
+                    
+
                     public virtual void AddToCharacteristic(GattServerCharacteristic characteristic)
                     {
                         Characteristic = characteristic;
@@ -58,15 +63,37 @@ namespace RemoteX.Droid.Bluetooth.LE.Gatt
                         characteristic.DroidCharacteristic.AddDescriptor(DroidDescriptor);
                     }
 
-                    public virtual void OnWriteRequest(BluetoothDevice device, int requestId, bool preparedWrite, bool responseNeeded, int offset, byte[] value)
+                    public virtual void OnWriteRequest(BluetoothDevice droidDevice, int requestId, bool preparedWrite, bool responseNeeded, int offset, byte[] value)
                     {
-
+                        var bluetoothManager = (Characteristic.Service.Server as GattServer).BluetoothManager;
+                        var device = BluetoothManager.BluetoothDeviceWrapper.GetBluetoothDeviceFromDroidDevice(bluetoothManager, droidDevice);
+                        WriteRequest writeRequest = new WriteRequest
+                        {
+                            Device = device,
+                            Offset = offset,
+                            ResponseNeeded = responseNeeded,
+                            RequestId = requestId,
+                            Value = value
+                        };
+                        OnWrite?.Invoke(this, writeRequest);
                     }
 
-                    public virtual void OnReadRequest(BluetoothDevice device, int requestId, int offset)
+                    public virtual void OnReadRequest(BluetoothDevice droidDevice, int requestId, int offset)
                     {
+                        var bluetoothManager = (Characteristic.Service.Server as GattServer).BluetoothManager;
+                        var device = BluetoothManager.BluetoothDeviceWrapper.GetBluetoothDeviceFromDroidDevice(bluetoothManager, droidDevice);
+                        DescriptorReadRequest readRequest = new DescriptorReadRequest
+                        {
+                            Device = device,
+                            RequestId = requestId,
+                            TargetDescriptor = this,
+                            Offset = offset,
 
+                        };
+                        OnRead?.Invoke(this, readRequest);
                     }
+
+                    
                 }
             }
             

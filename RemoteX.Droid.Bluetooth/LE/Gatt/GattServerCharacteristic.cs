@@ -12,6 +12,7 @@ using Android.Widget;
 using RemoteX.Bluetooth.LE.Gatt;
 using RemoteX.Droid.Bluetooth;
 using RemoteX.Droid;
+using RemoteX.Bluetooth;
 
 namespace RemoteX.Droid.Bluetooth.LE.Gatt
 {
@@ -25,7 +26,7 @@ namespace RemoteX.Droid.Bluetooth.LE.Gatt
 
                 private List<GattServerDescriptor> _Descritptor;
 
-                public event EventHandler<ReadRequest> OnRead;
+                public event EventHandler<CharacteristicReadRequest> OnRead;
                 public event EventHandler<WriteRequest> OnWrite;
 
                 public IGattServerDescriptor[] Descriptors
@@ -62,7 +63,17 @@ namespace RemoteX.Droid.Bluetooth.LE.Gatt
                     }
                 }
 
-                public byte[] Value => throw new NotImplementedException();
+                public byte[] Value
+                {
+                    get
+                    {
+                        return DroidCharacteristic.GetValue();
+                    }
+                    set
+                    {
+                        DroidCharacteristic.SetValue(value);
+                    }
+                }
 
                 /// <summary>
                 /// Only avalible when added to a service
@@ -73,7 +84,6 @@ namespace RemoteX.Droid.Bluetooth.LE.Gatt
                 {
                     DroidCharacteristic = new Android.Bluetooth.BluetoothGattCharacteristic(uuid.ToJavaUuid(), properties.ToDroidGattProperty(), permission.ToDroidGattPermission());
                     _Descritptor = new List<GattServerDescriptor>();
-                    AddDescriptor(new ClientCharacteristicConfigurationDescriptor());
                 }
 
                 public void AddDescriptor(GattServerDescriptor descriptor)
@@ -87,12 +97,18 @@ namespace RemoteX.Droid.Bluetooth.LE.Gatt
                     service.GattCharacteristics.Add(this);
                     service.DroidService.AddCharacteristic(DroidCharacteristic);
                 }
+                public void NotifyValueChanged(IBluetoothDevice bluetoothDevice, bool confirm)
+                {
+                    //DroidGattServer.NotifyCharacteristicChanged(_ConnectedDevice, _GattServices.GetFromUuid(BatteryService.BATTERY_SERVICE_UUID).GattCharacteristics.GetFromUuid(BatteryService.BatteryLevelCharacteristic.BATTERY_LEVEL_UUID).DroidCharacteristic, false);
+                    (Service.Server as GattServer).DroidGattServer.NotifyCharacteristicChanged((bluetoothDevice as BluetoothManager.BluetoothDeviceWrapper).DroidDevice, DroidCharacteristic, confirm);
+                }
 
                 public virtual void OnCharacteristicRead(Android.Bluetooth.BluetoothDevice device, int requestId, int offset)
                 {
-                    ReadRequest readRequest = new ReadRequest
+                    CharacteristicReadRequest readRequest = new CharacteristicReadRequest
                     {
                         Device = BluetoothManager.BluetoothDeviceWrapper.GetBluetoothDeviceFromDroidDevice((Service.Server as GattServer).BluetoothManager, device),
+                        TargetCharacteristic = this,
                         Offset = offset,
                         RequestId = requestId,
                     };

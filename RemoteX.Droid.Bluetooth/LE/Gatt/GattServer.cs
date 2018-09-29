@@ -59,7 +59,7 @@ namespace RemoteX.Droid.Bluetooth.LE.Gatt
             DroidGattServer = BluetoothManager.DroidBluetoothManager.OpenGattServer(Application.Context, _ServerCallback);
 
             //AddService(new DeviceInfomationService());
-            AddService(new BatteryService());
+            //AddService(new BatteryService());
         }
 
         public void StartAdvertising()
