@@ -7,6 +7,10 @@ using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using RemoteX.Bluetooth.LE.Gatt;
+using RemoteX.Input;
+using RemoteX.Data.Mathf;
+using RemoteX.Core;
+using RemoteX.Data;
 
 namespace RemoteX.Bluetooth.LE
 {
@@ -14,8 +18,10 @@ namespace RemoteX.Bluetooth.LE
     public partial class BLEAdvertiserTestPage : ContentPage
     {
         BatteryServiceWrapper BatteryServiceWrapper;
+        TestServiceWrapper TestServiceWrapper;
         public BLEAdvertiserTestPage()
         {
+
             InitializeComponent();
         }
 
@@ -25,7 +31,12 @@ namespace RemoteX.Bluetooth.LE
             bluetoothManager.GattSever.AddService(new DeviceInfomationServiceBuilder(bluetoothManager).Build());
             BatteryServiceWrapper = new BatteryServiceWrapper(bluetoothManager);
             bluetoothManager.GattSever.AddService(BatteryServiceWrapper.GattServerService);
+            TestServiceWrapper = new TestServiceWrapper(bluetoothManager);
+            bluetoothManager.GattSever.AddService(TestServiceWrapper.GattServerService);
             bluetoothManager.GattSever.StartAdvertising();
+            IInputManager inputManager = DependencyService.Get<IInputManager>();
+            inputManager.OnTouchAction += onTouchAction;
+
         }
 
         private void SendNotifyButton_Clicked(object sender, EventArgs e)
@@ -38,6 +49,47 @@ namespace RemoteX.Bluetooth.LE
         {
             BatteryServiceWrapper.BatteryLevelCharacteristicWrapper.BatteryLevel = (int)e.NewValue;
             BatteryServiceWrapper.BatteryLevelCharacteristicWrapper.NotifyAll();
+        }
+
+        private ITouch _FirstTouch;
+        private Vector2 previousTouchPos;
+        private float _SpeedFactor;
+        private float _RotateRadiusFactor;
+        private void onTouchAction(ITouch touch, TouchMotionAction action)
+        {
+            if (_FirstTouch == null && action == TouchMotionAction.Down)
+            {
+                _FirstTouch = touch;
+                previousTouchPos = touch.Position;
+            }
+            if (touch != _FirstTouch)
+            {
+                return;
+            }
+            if (action == TouchMotionAction.Move)
+            {
+                Vector2 speed = (touch.Position - previousTouchPos) * (float)NotifyTestSlider.Value;
+                previousTouchPos = touch.Position;
+                TestServiceWrapper.TestCharacteristicWrapper.SetMouseSpeed(speed);
+                System.Diagnostics.Debug.WriteLine("XJ" + speed);
+                /*
+                IConnectionManager controllerManager = DependencyService.Get<IConnectionManager>();
+                IConnection connection = controllerManager.ControllerConnection;
+                if (connection != null && connection.ConnectionEstablishState == ConnectionEstablishState.Succeeded)
+                {
+                    RemoteXControlMessage data = new RemoteXControlMessage((int)DataType.TouchMouseSpeed, new float[] { speed.x, speed.y });
+                    await connection.SendAsync(data.Bytes);
+                }
+                */
+            }
+            else if (action == TouchMotionAction.Up)
+            {
+                if (touch == _FirstTouch)
+                {
+                    _FirstTouch = null;
+                    TestServiceWrapper.TestCharacteristicWrapper.SetMouseSpeed(Vector2.Zero);
+                }
+            }
         }
     }
 }

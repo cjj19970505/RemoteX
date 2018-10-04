@@ -104,11 +104,11 @@ namespace RemoteX.Droid.Bluetooth.LE.Gatt
         {
             int permissionsCode = (int)self;
             GattPermissions permissions = new GattPermissions();
-            if ((self &= Android.Bluetooth.GattDescriptorPermission.Read) != 0)
+            if ((self & Android.Bluetooth.GattDescriptorPermission.Read) != 0)
             {
                 permissions.Read = true;
             }
-            if ((self &= Android.Bluetooth.GattDescriptorPermission.Write) != 0)
+            if ((self & Android.Bluetooth.GattDescriptorPermission.Write) != 0)
             {
                 permissions.Write = true;
             }

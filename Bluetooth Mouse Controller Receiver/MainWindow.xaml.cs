@@ -63,7 +63,7 @@ namespace Bluetooth_Mouse_Controller_Receiver
             BluetoothManager bluetoothManager = BluetoothManager.Instance;
             var bluetoothServerConnection = bluetoothManager.CreateRfcommServerConnection(Guid.Parse("14c5449a-6267-4c7e-bd10-63dd79740e5" + 0));
             bluetoothServerConnection.OnConnectionEstalblishResult += OnConnectionEstalblishResult;
-            bluetoothServerConnection.onReceiveMessage += _OnReceiveMessage;
+            bluetoothServerConnection.OnReceiveMessage += _OnReceiveMessage;
             bluetoothServerConnection.StartServer();
             controllerManagers.Add(bluetoothServerConnection, controllerManager);
 

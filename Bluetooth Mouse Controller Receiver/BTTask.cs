@@ -264,7 +264,7 @@ namespace Bluetooth_Mouse_Controller_Receiver
 
         }
 
-        
+        /*
         public Bitmap QRCode
         {
             get
@@ -282,7 +282,7 @@ namespace Bluetooth_Mouse_Controller_Receiver
                 Bitmap map = writer.Write(encodedConnection);
                 return map;
             }
-        }
+        }*/
 
         class MessagePack
         {
