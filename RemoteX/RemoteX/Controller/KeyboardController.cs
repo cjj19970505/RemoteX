@@ -4,6 +4,9 @@ using System.Text;
 using SkiaBehaviour;
 using SkiaSharp;
 using RemoteX.SkiaComponent;
+using RemoteX.Data.Mathf;
+using RemoteX.Input;
+
 namespace RemoteX.Controller
 {
     class KeyboardController:SkiaController
@@ -40,6 +43,27 @@ namespace RemoteX.Controller
             rectButton3.RectTransform.AnchorMax = new SKPoint(0.5f, 1);
             rectButton3.RectTransform.OffsetMin = new SKPoint(-47.8f, -102.4f);
             rectButton3.RectTransform.OffsetMax = new SKPoint(62.59999f, -55.40002f);
+        }
+
+        private Vector2 _PrePos;
+
+        protected override void Update()
+        {
+            base.Update();
+            //SkiaBehaviourEngine.GetSkiaInputManager().OnSkiaTouchAction += _HandleSkiaTouchAction;
+            SkiaInputManager skiaInputManager = SkiaBehaviourEngine.GetSkiaInputManager();
+            skiaInputManager.OnSkiaTouchAction += _OnSkiaTouchAction;
+            SkiaTouch[] touches = skiaInputManager.Touches;
+            if (touches.Length > 0)
+            {
+                
+            }
+
+        }
+
+        private void _OnSkiaTouchAction(SkiaTouch skiaTouch, TouchMotionAction action)
+        {
+            throw new NotImplementedException();
         }
     }
 }

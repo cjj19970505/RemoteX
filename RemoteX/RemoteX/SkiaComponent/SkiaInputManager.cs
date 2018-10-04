@@ -10,14 +10,23 @@ namespace RemoteX.SkiaComponent
 {
     public class SkiaInputManager : SkiaObject
     {
-        private List<SkiaTouch> skiaTouches;
+        private List<SkiaTouch> _SkiaTouches;
         public delegate void SkiaTouchMotionHandler(SkiaTouch skiaTouch, TouchMotionAction action);
         public event SkiaTouchMotionHandler OnSkiaTouchAction;
+
+        public SkiaTouch[] Touches
+        {
+            get
+            {
+                return _SkiaTouches.ToArray();
+            }
+        }
+
         protected override void Init()
         {
             base.Init();
             IInputManager inputManager = DependencyService.Get<IInputManager>();
-            skiaTouches = new List<SkiaTouch>();
+            _SkiaTouches = new List<SkiaTouch>();
             inputManager.OnTouchAction += handleTouchAction;
             
         }
@@ -38,27 +47,27 @@ namespace RemoteX.SkiaComponent
                     heightLevel = skiaInputComponent.InputHeightLevel;
                 }
                 skiaTouch = new SkiaTouch(touch, heightLevel);
-                skiaTouches.Add(skiaTouch);
+                _SkiaTouches.Add(skiaTouch);
             }
             else if (action == TouchMotionAction.Up)
             {
-                for (int i = 0; i < skiaTouches.Count; i++)
+                for (int i = 0; i < _SkiaTouches.Count; i++)
                 {
-                    if (skiaTouches[i].Touch == touch)
+                    if (_SkiaTouches[i].Touch == touch)
                     {
-                        skiaTouch = skiaTouches[i];
-                        skiaTouches.RemoveAt(i);
+                        skiaTouch = _SkiaTouches[i];
+                        _SkiaTouches.RemoveAt(i);
                         break;
                     }
                 }
             }
             else
             {
-                for (int i = 0; i < skiaTouches.Count; i++)
+                for (int i = 0; i < _SkiaTouches.Count; i++)
                 {
-                    if (skiaTouches[i].Touch == touch)
+                    if (_SkiaTouches[i].Touch == touch)
                     {
-                        skiaTouch = skiaTouches[i];
+                        skiaTouch = _SkiaTouches[i];
                     }
                 }
             }
