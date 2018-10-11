@@ -13,12 +13,16 @@ namespace RemoteX.Bluetooth.LE
         public IGattServerService GattServerService { get; }
         public TestCharacteristicWrapper TestCharacteristicWrapper;
 
+        public KeepNotifyingCharacteristicWrapper KeepNotifyingCharacteristicWrapper { get; }
+
         public TestServiceWrapper(IBluetoothManager bluetoothManager)
         {
             IGattServiceBuilder builder = bluetoothManager.NewGattServiceBuilder();
             builder.SetUuid(SERVICE_UUID).SetServiceType(GattServiceType.Primary);
             TestCharacteristicWrapper = new TestCharacteristicWrapper(bluetoothManager);
+            KeepNotifyingCharacteristicWrapper = new KeepNotifyingCharacteristicWrapper(bluetoothManager);
             builder.AddCharacteristics(TestCharacteristicWrapper.GattServerCharacteristic);
+            builder.AddCharacteristics(KeepNotifyingCharacteristicWrapper.GattServerCharacteristic);
             GattServerService = builder.Build();
         }
 
@@ -51,7 +55,7 @@ namespace RemoteX.Bluetooth.LE
             GattServerCharacteristic = builder.Build();
             GattServerCharacteristic.OnRead += _OnRead;
         }
-
+        private DateTime _LastNotifyTime;
         public void SetMouseSpeed(Vector2 mouseVelocity)
         {
             List<byte> bytesList = new List<byte>();
@@ -59,6 +63,10 @@ namespace RemoteX.Bluetooth.LE
             bytesList.AddRange(BitConverter.GetBytes(mouseVelocity.y));
             GattServerCharacteristic.Value = bytesList.ToArray();
             NotifyAll();
+            System.Diagnostics.Debug.WriteLine("XJNotifyDeltaTime:" + (DateTime.Now - _LastNotifyTime).TotalMilliseconds);
+            _LastNotifyTime = DateTime.Now;
+
+            
         }
 
         private void _OnRead(object sender, CharacteristicReadRequest e)

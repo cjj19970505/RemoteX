@@ -8,14 +8,19 @@
                     Maximum="100"
                     Minimum="0"
                     ValueChanged="NotifyTestSlider_ValueChanged"/>
-            <Label Text="Welcome to Xamarin.Forms!"
-                VerticalOptions="CenterAndExpand" 
-                HorizontalOptions="CenterAndExpand" />
+            <Slider x:Name="NotifyLengthSlider"
+                    Maximum="100"
+                    Minimum="8"
+                    ValueChanged="NotifyLengthSlider_ValueChanged"/>
+            <Label x:Name ="IntervalLabel" Text="XXX" FontSize="Large"/>
+            <Label x:Name ="LengthLabel" Text="XXX" FontSize="Large"/>
             <Button x:Name="SendNotifyButton"
                     Text="Send Notify"
+                    VerticalOptions="EndAndExpand"
                     Clicked="SendNotifyButton_Clicked"/>
             <Button x:Name="StartAdvertisingButton"
                     Text="Start Advertising"
+                    VerticalOptions="End"
                     Clicked="StartAdvertisingButton_Clicked"/>
         </StackLayout>
     </ContentPage.Content>

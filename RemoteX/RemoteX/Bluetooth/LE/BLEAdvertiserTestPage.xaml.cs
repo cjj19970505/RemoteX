@@ -32,23 +32,31 @@ namespace RemoteX.Bluetooth.LE
             BatteryServiceWrapper = new BatteryServiceWrapper(bluetoothManager);
             bluetoothManager.GattSever.AddService(BatteryServiceWrapper.GattServerService);
             TestServiceWrapper = new TestServiceWrapper(bluetoothManager);
+            TestServiceWrapper.KeepNotifyingCharacteristicWrapper.NotifyLength = 8;
             bluetoothManager.GattSever.AddService(TestServiceWrapper.GattServerService);
             bluetoothManager.GattSever.StartAdvertising();
-            IInputManager inputManager = DependencyService.Get<IInputManager>();
-            inputManager.OnTouchAction += onTouchAction;
 
         }
 
         private void SendNotifyButton_Clicked(object sender, EventArgs e)
         {
-            var bluetoothManager = DependencyService.Get<IManagerManager>().BluetoothManager;
-            bluetoothManager.GattSever.NotifyTest();
+            if (TestServiceWrapper.KeepNotifyingCharacteristicWrapper.Notifying)
+            {
+                TestServiceWrapper.KeepNotifyingCharacteristicWrapper.StopNotify();
+            }
+            else
+            {
+                TestServiceWrapper.KeepNotifyingCharacteristicWrapper.KeepNotifyAsync();
+            }
         }
 
         private void NotifyTestSlider_ValueChanged(object sender, ValueChangedEventArgs e)
         {
             BatteryServiceWrapper.BatteryLevelCharacteristicWrapper.BatteryLevel = (int)e.NewValue;
             BatteryServiceWrapper.BatteryLevelCharacteristicWrapper.NotifyAll();
+            IntervalLabel.Text = e.NewValue.ToString();
+            TestServiceWrapper.KeepNotifyingCharacteristicWrapper.Interval = TimeSpan.FromMilliseconds(e.NewValue);
+
         }
 
         private ITouch _FirstTouch;
@@ -57,6 +65,7 @@ namespace RemoteX.Bluetooth.LE
         private float _RotateRadiusFactor;
         private void onTouchAction(ITouch touch, TouchMotionAction action)
         {
+            
             if (_FirstTouch == null && action == TouchMotionAction.Down)
             {
                 _FirstTouch = touch;
@@ -90,6 +99,12 @@ namespace RemoteX.Bluetooth.LE
                     TestServiceWrapper.TestCharacteristicWrapper.SetMouseSpeed(Vector2.Zero);
                 }
             }
+        }
+
+        private void NotifyLengthSlider_ValueChanged(object sender, ValueChangedEventArgs e)
+        {
+            TestServiceWrapper.KeepNotifyingCharacteristicWrapper.NotifyLength = (int)e.NewValue;
+            LengthLabel.Text = TestServiceWrapper.KeepNotifyingCharacteristicWrapper.NotifyLength.ToString();
         }
     }
 }
