@@ -8,7 +8,7 @@ namespace RemoteX.Bluetooth.LE.Gatt
     public interface IGattCharacteristic
     {
         IGattServerDescriptor[] Descriptors { get; }
-        IGattServerService Service { get; }
+        
         GattPermissions Permissions { get; }
 
         //(Service.Server as GattServer).DroidGattServer.SendResponse(device, requestId, GattStatus.Success, offset, new byte[] { BitConverter.GetBytes(BatteryLevel)[0]});

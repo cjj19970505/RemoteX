@@ -20,7 +20,7 @@ namespace RemoteX.Droid
         {
             foreach(var device in bluetoothDevices)
             {
-                if(macAddress == device.Address)
+                if(BluetoothUtils.AddressStringToInt64(macAddress) == device.Address)
                 {
                     return device;
                 }

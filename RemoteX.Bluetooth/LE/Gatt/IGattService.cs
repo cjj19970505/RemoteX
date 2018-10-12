@@ -8,7 +8,7 @@ namespace RemoteX.Bluetooth.LE.Gatt
     {
         GattServiceType ServiceType { get; }
         Guid Uuid { get; }
-        IGattServer Server { get; }
+        
     }
     
 }

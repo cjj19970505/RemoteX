@@ -46,15 +46,17 @@ namespace RemoteX.Bluetooth.LE.Gatt
     public interface IGattServerService:IGattService
     {
         IGattServerCharacteristic[] Characteristics { get; }
-
+        IGattServer Server { get; }
     }
 
     public interface IGattServerCharacteristic:IGattCharacteristic
     {
         event EventHandler<CharacteristicReadRequest> OnRead;
         event EventHandler<WriteRequest> OnWrite;
+        IGattServerService Service { get; }
         byte[] Value { get; set; }
         void NotifyValueChanged(IBluetoothDevice bluetoothDevice, bool confirm);
+        
         //BluetoothDevice device, int requestId, BluetoothGattCharacteristic characteristic, bool preparedWrite, bool responseNeeded, int offset, byte[] value
 
     }

@@ -10,6 +10,7 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using Java.Util;
+using RemoteX.Bluetooth;
 
 namespace RemoteX.Droid
 {
@@ -23,9 +24,21 @@ namespace RemoteX.Droid
         {
             Receiver _Receiver;
 
-            public string Name { get; private set; }
+            public string Name
+            {
+                get
+                {
+                    return DroidDevice.Name;
+                }
+            }
 
-            public string Address { get; private set; }
+            public ulong Address
+            {
+                get
+                {
+                    return BluetoothUtils.AddressStringToInt64(DroidDevice.Address);
+                }
+            }
 
             public Guid[] LastestFetchedUuids { get; private set; }
 
@@ -35,7 +48,14 @@ namespace RemoteX.Droid
 
             public Android.Bluetooth.BluetoothDevice DroidDevice { get; private set; }
 
-            
+            [Obsolete("Will this update the BluetoothDevice locally ?")]
+            /// <summary>
+            /// Will this update the BluetoothDevice locally ?
+            /// Not yet! But I think it will be someday
+            /// </summary>
+            /// <param name="bluetoothManager"></param>
+            /// <param name="droidDevice"></param>
+            /// <returns></returns>
             public static BluetoothDeviceWrapper GetBluetoothDeviceFromDroidDevice(BluetoothManager bluetoothManager, Android.Bluetooth.BluetoothDevice droidDevice)
             {
                 var existDevice = bluetoothManager._KnownBluetoothDevices.GetFromAddress(droidDevice.Address);
@@ -52,8 +72,6 @@ namespace RemoteX.Droid
                 this.DroidDevice = bluetoothDevice;
                 IsFetchingUuids = false;
                 _Receiver = new Receiver(this);
-                this.Name = bluetoothDevice.Name;
-                this.Address = bluetoothDevice.Address;
                 ParcelUuid[] uuids = bluetoothDevice.GetUuids();
                 if (uuids != null)
                 {

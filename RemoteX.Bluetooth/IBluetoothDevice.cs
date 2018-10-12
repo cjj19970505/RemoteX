@@ -20,7 +20,7 @@ namespace RemoteX.Bluetooth
         /// <summary>
         /// 设备的mac地址
         /// </summary>
-        string Address { get; }
+        ulong Address { get; }
 
         /// <summary>
         /// 最新获取的Uuid
