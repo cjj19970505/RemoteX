@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using SkiaBehaviour;
 using SkiaSharp;
-namespace RemoteX.SkiaComponent
+namespace RemoteX
 {
     public class CanvasInfoProvider : ICanvasInfoProvider
     {

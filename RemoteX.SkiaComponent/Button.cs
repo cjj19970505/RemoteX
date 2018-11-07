@@ -47,7 +47,7 @@ namespace RemoteX.SkiaComponent
                 return;
             }
 
-            CanvasInfoProvider canvasInfoProvider = SkiaBehaviourEngine.CanvasInfoProvider as CanvasInfoProvider;
+            ICanvasInfoProvider canvasInfoProvider = SkiaBehaviourEngine.CanvasInfoProvider as ICanvasInfoProvider;
             if (action == TouchMotionAction.Down)
             {
                 

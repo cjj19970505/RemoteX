@@ -47,6 +47,7 @@
     <ProjectReference Include="..\..\RemoteX.Bluetooth\RemoteX.Bluetooth.csproj" />
     <ProjectReference Include="..\..\RemoteX.Core\RemoteX.Core.csproj" />
     <ProjectReference Include="..\..\RemoteX.Data\RemoteX.Data.csproj" />
+    <ProjectReference Include="..\..\RemoteX.Input\RemoteX.Input.csproj" />
     <ProjectReference Include="..\..\SkiaBehaviour\SkiaBehaviour.csproj" />
   </ItemGroup>
 

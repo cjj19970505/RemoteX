@@ -9,6 +9,7 @@ using SkiaSharp;
 using SkiaSharp.Views.Forms;
 using RemoteX.SkiaComponent;
 using SkiaBehaviour;
+using RemoteX.Input;
 
 namespace RemoteX.Controller
 {
@@ -27,6 +28,7 @@ namespace RemoteX.Controller
             canvasInfoProvider = new CanvasInfoProvider();
             SkiaBehaviourEngine = new SkiaBehaviourEngine(canvasInfoProvider);
             SkiaInputManager skiaInputManager = SkiaBehaviourEngine.Instantiate<SkiaInputManager>();
+            skiaInputManager.InputManager = DependencyService.Get<IInputManager>();
             exit = false;
             Device.StartTimer(TimeSpan.FromSeconds(1 / 60f), () => { CanvasView.InvalidateSurface(); return !exit; });
 
